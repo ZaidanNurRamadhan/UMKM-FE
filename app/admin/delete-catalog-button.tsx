@@ -7,7 +7,7 @@ import { deleteArticle } from "@/services/article.service";
 import { signOutAdmin } from "@/services/auth.service";
 import { deleteUmkm } from "@/services/umkm.service";
 import { deleteWarung } from "@/services/warung.service";
-import type { CatalogKind } from "./catalog-admin-form";
+import type { CatalogKind } from "@/types/catalog";
 
 type DeleteCatalogButtonProps = {
   kind: CatalogKind;

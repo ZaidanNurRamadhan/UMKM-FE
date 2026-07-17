@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { Toaster } from "sonner";
+import { SITE_CONFIG } from "@/config/site";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -10,9 +11,8 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Katalog Potensi Desa Mangli & Munggangsari",
-  description:
-    "Portal katalog potensi desa, produk UMKM, wisata, galeri, dan cerita inspiratif Desa Mangli & Munggangsari.",
+  title: SITE_CONFIG.name,
+  description: SITE_CONFIG.description,
 };
 
 const themeScript = `

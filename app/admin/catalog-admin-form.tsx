@@ -3,17 +3,30 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState, type DragEvent } from "react";
+import { useMemo, type DragEvent } from "react";
 import { useForm, useWatch, type FieldErrors } from "react-hook-form";
 import { toast } from "sonner";
+import {
+  CameraIcon,
+  ImageIcon,
+  InfoIcon,
+  SaveIcon,
+  UploadCloudIcon,
+  WhatsAppIcon,
+} from "@/components/icons/admin-icons";
+import { CATALOG_CONFIG } from "@/constants/catalog";
+import { PHOTO_ACCEPT_ATTRIBUTE } from "@/constants/storage";
 import { focusFirstFieldError } from "@/lib/errors/validation-error";
-import { normalizeWhatsAppNumber } from "@/lib/whatsapp";
+import { emptyStringToNull } from "@/lib/utils/string";
+import { normalizeWhatsAppNumber } from "@/lib/utils/whatsapp";
+import { useImagePreview } from "@/hooks/use-image-preview";
 import { createArticle, updateArticle } from "@/services/article.service";
 import { signOutAdmin } from "@/services/auth.service";
 import { deletePhoto, getVillageAssetUrl, uploadPhoto } from "@/services/storage.service";
 import { createUmkm, updateUmkm } from "@/services/umkm.service";
 import { getVillageBySlug } from "@/services/village.service";
 import { createWarung, updateWarung } from "@/services/warung.service";
+import type { CatalogFormMode, CatalogKind } from "@/types/catalog";
 import type { Article, Umkm, VillageSlug, Warung } from "@/types/database";
 import type { ArticleFormValues } from "@/validations/article.schema";
 import { articleFormSchema } from "@/validations/article.schema";
@@ -21,9 +34,6 @@ import type { UmkmFormValues } from "@/validations/umkm.schema";
 import { umkmFormSchema } from "@/validations/umkm.schema";
 import type { WarungFormValues } from "@/validations/warung.schema";
 import { warungFormSchema } from "@/validations/warung.schema";
-
-export type CatalogKind = "umkm" | "warung" | "article";
-export type CatalogFormMode = "create" | "edit";
 
 type CatalogAdminFormProps = {
   kind: CatalogKind;
@@ -35,37 +45,8 @@ type CatalogAdminFormProps = {
   onSaved?: () => void;
 };
 
-const kindCopy = {
-  umkm: {
-    folder: "umkm",
-    listSegment: "umkm",
-    successCreate: "UMKM berhasil ditambahkan.",
-    successUpdate: "UMKM berhasil diperbarui.",
-  },
-  warung: {
-    folder: "warung",
-    listSegment: "warung",
-    successCreate: "Warung berhasil ditambahkan.",
-    successUpdate: "Warung berhasil diperbarui.",
-  },
-  article: {
-    folder: "umkm",
-    listSegment: "artikel",
-    successCreate: "Artikel berhasil ditambahkan.",
-    successUpdate: "Artikel berhasil diperbarui.",
-  },
-} satisfies Record<
-  CatalogKind,
-  {
-    folder: "umkm" | "warung";
-    listSegment: string;
-    successCreate: string;
-    successUpdate: string;
-  }
->;
-
 function getListHref(village: VillageSlug, kind: CatalogKind): string {
-  return `/admin/${village}/${kindCopy[kind].listSegment}`;
+  return `/admin/${village}/${CATALOG_CONFIG[kind].segment}`;
 }
 
 function inputClass(hasError: boolean): string {
@@ -98,12 +79,6 @@ function FieldError({ id, message }: { id: string; message?: string }) {
 
 function RequiredMark() {
   return <span className="text-[#ff1f1f]">*</span>;
-}
-
-function toNullableString(value: string): string | null {
-  const trimmedValue = value.trim();
-
-  return trimmedValue || null;
 }
 
 async function handleSessionExpired(message: string, router: ReturnType<typeof useRouter>) {
@@ -182,7 +157,7 @@ function UmkmAdminForm({
 }) {
   const router = useRouter();
   const listHref = getListHref(village, "umkm");
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const { previewUrl, setPreviewFile } = useImagePreview();
   const existingPhotoUrl = useMemo(
     () => getVillageAssetUrl(initialData?.photo_path ?? null),
     [initialData?.photo_path],
@@ -209,23 +184,9 @@ function UmkmAdminForm({
   const descriptionValue = useWatch({ control, name: "description" }) ?? "";
   const addressValue = useWatch({ control, name: "address" }) ?? "";
 
-  useEffect(() => {
-    return () => {
-      if (previewUrl?.startsWith("blob:")) {
-        URL.revokeObjectURL(previewUrl);
-      }
-    };
-  }, [previewUrl]);
-
   function updatePhoto(file: File | null) {
     setValue("photo", file, { shouldDirty: true, shouldValidate: true });
-    setPreviewUrl((currentUrl) => {
-      if (currentUrl?.startsWith("blob:")) {
-        URL.revokeObjectURL(currentUrl);
-      }
-
-      return file ? URL.createObjectURL(file) : null;
-    });
+    setPreviewFile(file);
   }
 
   function handlePhotoDrop(event: DragEvent<HTMLDivElement>) {
@@ -239,7 +200,7 @@ function UmkmAdminForm({
     try {
       if (values.photo) {
         const uploadResult = await uploadPhoto(values.photo, {
-          folder: "umkm",
+          folder: CATALOG_CONFIG.umkm.folder,
           villageSlug: village,
         });
 
@@ -258,7 +219,7 @@ function UmkmAdminForm({
           name: values.name,
           description: values.description,
           whatsapp_number: normalizeWhatsAppNumber(values.whatsapp_number),
-          address: toNullableString(values.address),
+          address: emptyStringToNull(values.address),
           photo_path: uploadedPhotoPath ?? initialData.photo_path,
         });
 
@@ -280,7 +241,7 @@ function UmkmAdminForm({
           }
         }
 
-        toast.success(updateResult.message || kindCopy.umkm.successUpdate);
+        toast.success(updateResult.message || CATALOG_CONFIG.umkm.successUpdate);
         onSaved?.();
         if (!onSaved) {
           router.push(listHref);
@@ -293,7 +254,7 @@ function UmkmAdminForm({
         name: values.name,
         description: values.description,
         whatsapp_number: normalizeWhatsAppNumber(values.whatsapp_number),
-        address: toNullableString(values.address),
+        address: emptyStringToNull(values.address),
         photo_path: uploadedPhotoPath,
       });
 
@@ -307,9 +268,9 @@ function UmkmAdminForm({
         return;
       }
 
-      toast.success(createResult.message || kindCopy.umkm.successCreate);
+      toast.success(createResult.message || CATALOG_CONFIG.umkm.successCreate);
       reset();
-      setPreviewUrl(null);
+      setPreviewFile(null);
       onSaved?.();
       if (!onSaved) {
         router.push(listHref);
@@ -517,7 +478,7 @@ function UmkmAdminForm({
           </div>
           <input
             type="file"
-            accept="image/jpeg,image/png,image/webp"
+            accept={PHOTO_ACCEPT_ATTRIBUTE}
             className="sr-only"
             aria-invalid={Boolean(errors.photo)}
             aria-describedby={errors.photo ? errorId("photo") : undefined}
@@ -551,7 +512,7 @@ function WarungAdminForm({
 }) {
   const router = useRouter();
   const listHref = getListHref(village, "warung");
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const { previewUrl, setPreviewFile } = useImagePreview();
   const existingPhotoUrl = useMemo(
     () => getVillageAssetUrl(initialData?.photo_path ?? null),
     [initialData?.photo_path],
@@ -575,23 +536,9 @@ function WarungAdminForm({
     },
   });
 
-  useEffect(() => {
-    return () => {
-      if (previewUrl?.startsWith("blob:")) {
-        URL.revokeObjectURL(previewUrl);
-      }
-    };
-  }, [previewUrl]);
-
   function updatePhoto(file: File | null) {
     setValue("photo", file, { shouldDirty: true, shouldValidate: true });
-    setPreviewUrl((currentUrl) => {
-      if (currentUrl?.startsWith("blob:")) {
-        URL.revokeObjectURL(currentUrl);
-      }
-
-      return file ? URL.createObjectURL(file) : null;
-    });
+    setPreviewFile(file);
   }
 
   async function onSubmit(values: WarungFormValues) {
@@ -608,7 +555,7 @@ function WarungAdminForm({
     try {
       if (values.photo) {
         const uploadResult = await uploadPhoto(values.photo, {
-          folder: "warung",
+          folder: CATALOG_CONFIG.warung.folder,
           villageSlug: village,
         });
 
@@ -626,8 +573,8 @@ function WarungAdminForm({
           id: initialData.id,
           village_id: villageResult.data.id,
           name: values.name,
-          owner_name: toNullableString(values.owner_name),
-          address: toNullableString(values.address),
+          owner_name: emptyStringToNull(values.owner_name),
+          address: emptyStringToNull(values.address),
           whatsapp_number: normalizeWhatsAppNumber(values.whatsapp_number),
           photo_path: uploadedPhotoPath ?? initialData.photo_path,
         });
@@ -650,7 +597,9 @@ function WarungAdminForm({
           }
         }
 
-        toast.success(updateResult.message || kindCopy.warung.successUpdate);
+        toast.success(
+          updateResult.message || CATALOG_CONFIG.warung.successUpdate,
+        );
         onSaved?.();
         if (!onSaved) {
           router.push(listHref);
@@ -662,8 +611,8 @@ function WarungAdminForm({
       const createResult = await createWarung({
         village_id: villageResult.data.id,
         name: values.name,
-        owner_name: toNullableString(values.owner_name),
-        address: toNullableString(values.address),
+        owner_name: emptyStringToNull(values.owner_name),
+        address: emptyStringToNull(values.address),
         whatsapp_number: normalizeWhatsAppNumber(values.whatsapp_number),
         photo_path: uploadedPhotoPath,
       });
@@ -678,9 +627,11 @@ function WarungAdminForm({
         return;
       }
 
-      toast.success(createResult.message || kindCopy.warung.successCreate);
+      toast.success(
+        createResult.message || CATALOG_CONFIG.warung.successCreate,
+      );
       reset();
-      setPreviewUrl(null);
+      setPreviewFile(null);
       onSaved?.();
       if (!onSaved) {
         router.push(listHref);
@@ -785,7 +736,7 @@ function WarungAdminForm({
             </div>
             <input
               type="file"
-              accept="image/jpeg,image/png,image/webp"
+              accept={PHOTO_ACCEPT_ATTRIBUTE}
               className="sr-only"
               aria-invalid={Boolean(errors.photo)}
               aria-describedby={errors.photo ? errorId("photo") : undefined}
@@ -879,7 +830,9 @@ function ArticleAdminForm({
         return;
       }
 
-      toast.success(updateResult.message || kindCopy.article.successUpdate);
+      toast.success(
+        updateResult.message || CATALOG_CONFIG.article.successUpdate,
+      );
       onSaved?.();
       if (!onSaved) {
         router.push(listHref);
@@ -901,7 +854,9 @@ function ArticleAdminForm({
       return;
     }
 
-    toast.success(createResult.message || kindCopy.article.successCreate);
+    toast.success(
+      createResult.message || CATALOG_CONFIG.article.successCreate,
+    );
     reset();
     onSaved?.();
     if (!onSaved) {
@@ -1022,69 +977,5 @@ function SubmitActions({
         </button>
       </div>
     </div>
-  );
-}
-
-type IconProps = {
-  className?: string;
-};
-
-function CameraIcon({ className }: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" className={className}>
-      <path d="M4 8h4l2-3h4l2 3h4v11H4V8Z" />
-      <circle cx="12" cy="13.5" r="3.2" />
-      <path d="M19 3v5" />
-      <path d="M16.5 5.5h5" />
-    </svg>
-  );
-}
-
-function InfoIcon({ className }: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className={className}>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 10v6" />
-      <path d="M12 7h.01" />
-    </svg>
-  );
-}
-
-function ImageIcon({ className }: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className={className}>
-      <rect x="4" y="4" width="16" height="16" rx="2" />
-      <path d="m4 16 4.5-4.5 3.5 3.5 2-2 6 6" />
-      <circle cx="8.5" cy="8.5" r="1.3" />
-    </svg>
-  );
-}
-
-function UploadCloudIcon({ className }: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" className={className}>
-      <path d="M16.5 18H18a4 4 0 0 0 .4-7.98A6.5 6.5 0 0 0 6 8.4A4.8 4.8 0 0 0 6.8 18H8" />
-      <path d="m12 12-3 3" />
-      <path d="m12 12 3 3" />
-      <path d="M12 12v8" />
-    </svg>
-  );
-}
-
-function WhatsAppIcon({ className }: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-      <path d="M12.04 2C6.56 2 2.1 6.41 2.1 11.84c0 1.73.46 3.41 1.33 4.89L2 22l5.4-1.4a10.1 10.1 0 0 0 4.64 1.15c5.48 0 9.94-4.41 9.94-9.84C21.98 6.41 17.52 2 12.04 2Zm0 18.05a8.4 8.4 0 0 1-4.27-1.17l-.31-.18-3.2.83.86-3.08-.2-.32a8.05 8.05 0 0 1-1.24-4.29c0-4.48 3.75-8.14 8.36-8.14 4.61 0 8.36 3.66 8.36 8.14 0 4.56-3.75 8.21-8.36 8.21Zm4.58-6.15c-.25-.12-1.48-.72-1.71-.8-.23-.08-.4-.12-.57.12-.17.25-.66.8-.81.97-.15.16-.3.18-.55.06-.25-.12-1.06-.38-2.02-1.21-.75-.65-1.25-1.45-1.4-1.7-.15-.24-.02-.37.11-.49.12-.11.25-.29.38-.43.13-.15.17-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.57-1.35-.78-1.84-.2-.47-.41-.41-.57-.42h-.48c-.17 0-.43.06-.66.31-.23.25-.87.84-.87 2.04s.89 2.36 1.02 2.53c.13.16 1.76 2.65 4.27 3.72.6.25 1.06.4 1.43.52.6.19 1.14.16 1.57.1.48-.07 1.48-.59 1.69-1.16.21-.57.21-1.06.15-1.16-.06-.11-.23-.17-.48-.29Z" />
-    </svg>
-  );
-}
-
-function SaveIcon({ className }: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className={className}>
-      <path d="M5 4h12l2 2v14H5V4Z" />
-      <path d="M8 4v6h8V4" />
-      <path d="M8 20v-6h8v6" />
-    </svg>
   );
 }

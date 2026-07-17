@@ -1,13 +1,13 @@
 import { supabase } from "@/lib/supabase/client";
+import { VILLAGE_ASSETS_BUCKET, type StorageFolder } from "@/constants/storage";
 import { mapSupabaseError } from "@/lib/errors/supabase-error";
+import { createStorageFileName } from "@/lib/utils/file";
 import { debugCurrentSession } from "@/services/auth.service";
 import type { ServiceResult } from "@/types/service-result";
 
-const VILLAGE_ASSETS_BUCKET = "village-assets";
-
 type UploadPhotoOptions = {
   villageSlug: string;
-  folder: "umkm" | "warung";
+  folder: StorageFolder;
 };
 
 export function getVillageAssetUrl(photoPath: string | null): string | null {
@@ -41,8 +41,7 @@ export async function uploadPhoto(
       };
     }
 
-    const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
-    const path = `${options.villageSlug}/${options.folder}/${crypto.randomUUID()}.${extension}`;
+    const path = `${options.villageSlug}/${options.folder}/${createStorageFileName(file.name)}`;
     const { data, error } = await supabase.storage
       .from(VILLAGE_ASSETS_BUCKET)
       .upload(path, file, {

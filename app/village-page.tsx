@@ -5,7 +5,7 @@ import { AnimatedHeader } from "@/components/animations/AnimatedHeader";
 import { FadeIn } from "@/components/animations/FadeIn";
 import { StaggerContainer } from "@/components/animations/StaggerContainer";
 import { StaggerItem } from "@/components/animations/StaggerItem";
-import { getWhatsAppUrl } from "@/lib/whatsapp";
+import { getWhatsAppUrl } from "@/lib/utils/whatsapp";
 import { getArticles } from "@/services/article.service";
 import { getVillageAssetUrl } from "@/services/storage.service";
 import { getUmkm } from "@/services/umkm.service";

@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import UmkmFormPage from "../../../../umkm-form-page";
+import CatalogFormPage from "../../../../catalog-form-page";
 import { getWarungById } from "@/services/warung.service";
 
 export const dynamic = "force-dynamic";
@@ -17,7 +17,7 @@ export default async function AdminMangliEditWarungPage({ params }: PageProps) {
   }
 
   return (
-    <UmkmFormPage
+    <CatalogFormPage
       village="mangli"
       kind="warung"
       mode="edit"

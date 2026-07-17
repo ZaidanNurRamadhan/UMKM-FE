@@ -1,13 +1,5 @@
 import { z } from "zod";
-
-export const MAX_PHOTO_SIZE_BYTES = 2 * 1024 * 1024;
-
-const ALLOWED_PHOTO_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-];
+import { ALLOWED_PHOTO_TYPES, MAX_PHOTO_SIZE_BYTES } from "@/constants/storage";
 
 function isFile(value: unknown): value is File {
   return typeof File !== "undefined" && value instanceof File;
@@ -20,7 +12,11 @@ export const optionalPhotoFileSchema = z
   )
   .transform((value) => value ?? null)
   .refine(
-    (file) => file === null || ALLOWED_PHOTO_TYPES.includes(file.type),
+    (file) =>
+      file === null ||
+      ALLOWED_PHOTO_TYPES.includes(
+        file.type as (typeof ALLOWED_PHOTO_TYPES)[number],
+      ),
     "Foto harus berformat JPG, PNG, atau WebP.",
   )
   .refine(

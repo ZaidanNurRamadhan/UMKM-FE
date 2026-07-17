@@ -66,22 +66,6 @@ export async function getUmkm(options: ListOptions = {}): Promise<Umkm[]> {
   return ((data ?? []) as unknown as UmkmQueryRow[]).map(normalizeUmkmRow);
 }
 
-export async function getUmkmById(id: string): Promise<Umkm | null> {
-  const { data, error } = await supabase
-    .from("umkm")
-    .select(UMKM_SELECT)
-    .eq("id", id)
-    .maybeSingle();
-
-  if (error) {
-    throw new Error(
-      getSupabaseErrorMessage(error, "Data tidak dapat dimuat. Silakan coba lagi."),
-    );
-  }
-
-  return data ? normalizeUmkmRow(data as unknown as UmkmQueryRow) : null;
-}
-
 export async function createUmkm(
   payload: CreateUmkmInput,
 ): Promise<ServiceResult<Umkm>> {

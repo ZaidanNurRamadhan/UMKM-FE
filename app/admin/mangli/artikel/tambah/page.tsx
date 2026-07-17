@@ -1,5 +1,5 @@
-import UmkmFormPage from "../../../umkm-form-page";
+import CatalogFormPage from "../../../catalog-form-page";
 
 export default function AdminMangliTambahArtikelPage() {
-  return <UmkmFormPage village="mangli" kind="article" />;
+  return <CatalogFormPage village="mangli" kind="article" />;
 }

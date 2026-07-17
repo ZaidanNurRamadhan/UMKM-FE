@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import UmkmFormPage from "../../../../umkm-form-page";
+import CatalogFormPage from "../../../../catalog-form-page";
 import { getArticleById } from "@/services/article.service";
 
 export const dynamic = "force-dynamic";
@@ -19,7 +19,7 @@ export default async function AdminMunggangsariEditArtikelPage({
   }
 
   return (
-    <UmkmFormPage
+    <CatalogFormPage
       village="munggangsari"
       kind="article"
       mode="edit"

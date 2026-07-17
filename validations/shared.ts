@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { normalizeWhatsAppNumber } from "@/lib/whatsapp";
+import { normalizeWhatsAppNumber } from "@/lib/utils/whatsapp";
 
 export const uuidSchema = z
   .string()
