@@ -15,9 +15,6 @@ export function AdminHeader({ village, variant = "default" }: AdminHeaderProps) 
           <h1 className="text-2xl font-black text-[#0f6b24]">
             Dashboard Overview
           </h1>
-          <p className="mt-1 text-sm font-medium text-[#6a7280]">
-            Katalog Potensi Desa
-          </p>
         </div>
         <div className="flex items-center gap-5 text-[#0f6b24]">
           <p className="hidden text-base font-black sm:block">
@@ -37,9 +34,6 @@ export function AdminHeader({ village, variant = "default" }: AdminHeaderProps) 
         <h1 className="text-2xl font-black text-[#2e6230]">
           Dashboard Overview
         </h1>
-        <p className="text-sm font-bold text-[#8aa100]">
-          Katalog Potensi Desa
-        </p>
       </div>
       <div className="flex items-center gap-5 text-[#2e6230]">
         <p className="hidden text-xl font-black sm:block">

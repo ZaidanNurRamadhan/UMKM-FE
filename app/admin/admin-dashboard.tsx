@@ -13,13 +13,13 @@ const adminConfig = {
   mangli: {
     primaryLabel: "Total UMKM",
     manageLabel: "Kelola UMKM",
-    addLabel: "Tambah Data",
+    addLabel: "Tambah UMKM",
     manageSegment: "umkm",
   },
   munggangsari: {
     primaryLabel: "Total Warung",
     manageLabel: "Kelola Warung",
-    addLabel: "Tambah Data",
+    addLabel: "Tambah Warung",
     manageSegment: "warung",
   },
 } satisfies Record<

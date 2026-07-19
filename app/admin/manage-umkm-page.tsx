@@ -19,12 +19,11 @@ import { AdminSidebar } from "@/components/layout/admin-sidebar";
 import { DeleteCatalogButton } from "./delete-catalog-button";
 import { ManageUmkmPanelPage } from "./manage-umkm-panel-page";
 import { RetryButton } from "./retry-button";
-import { getArticles } from "@/services/article.service";
 import { getVillageAssetUrl } from "@/services/storage.service";
 import { getUmkm } from "@/services/umkm.service";
 import { getWarungs } from "@/services/warung.service";
 import type { CatalogKind } from "@/types/catalog";
-import type { Article, Umkm, VillageSlug, Warung } from "@/types/database";
+import type { Umkm, VillageSlug, Warung } from "@/types/database";
 
 type ManageUmkmPageProps = {
   village: VillageSlug;
@@ -279,16 +278,6 @@ async function loadCatalogRows(
   kind: CatalogKind,
 ): Promise<UmkmData> {
   try {
-    if (kind === "article") {
-      const articles = await getArticles({ villageSlug: village });
-
-      return {
-        items: articles.slice(0, 5).map(mapArticleRow),
-        total: articles.length,
-        error: null,
-      };
-    }
-
     if (kind === "warung") {
       const warungs = await getWarungs({ villageSlug: village });
 
@@ -316,16 +305,6 @@ async function loadCatalogRows(
           : "Data tidak dapat dimuat. Silakan coba lagi.",
     };
   }
-}
-
-function mapArticleRow(item: Article): UmkmRow {
-  return {
-    id: item.id,
-    name: item.title,
-    category: "ARTIKEL",
-    whatsappNumber: null,
-    photoUrl: null,
-  };
 }
 
 function mapUmkmRow(item: Umkm): UmkmRow {

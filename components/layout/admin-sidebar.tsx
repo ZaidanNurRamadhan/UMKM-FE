@@ -19,11 +19,11 @@ export type AdminSidebarAction = {
 };
 
 type AdminSidebarProps = {
-  village: VillageSlug;
+  village?: VillageSlug;
   items: AdminSidebarItem[];
   variant?: "default" | "form";
   showAdminName?: boolean;
-  primaryAction?: AdminSidebarAction;
+  primaryAction?: AdminSidebarAction | AdminSidebarAction[];
 };
 
 export function AdminSidebar({
@@ -31,7 +31,6 @@ export function AdminSidebar({
   items,
   variant = "default",
   showAdminName = false,
-  primaryAction,
 }: AdminSidebarProps) {
   const isForm = variant === "form";
   const asideClass = isForm
@@ -43,15 +42,15 @@ export function AdminSidebar({
   const navClass = isForm
     ? "hidden space-y-4 lg:block" : "hidden space-y-4 lg:block pt-10";
   const logoutClass = isForm
-    ? "flex h-12 w-[280px] items-center justify-center gap-4 rounded-lg bg-[#fff0f0] text-base font-black text-[#ef1b1b] transition hover:bg-[#ffe2e2]"
-    : "flex h-12 w-[220px] items-center justify-center gap-4 rounded-lg bg-[#ffc9cf] text-base font-black text-[#111] transition hover:bg-[#ffb9c1]";
+    ? "flex h-12 items-center justify-center gap-4 rounded-lg bg-[#fff0f0] text-base font-black text-[#ef1b1b] transition hover:bg-[#ffe2e2]"
+    : "flex h-12 items-center justify-center gap-4 rounded-lg bg-[#ffc9cf] text-base font-black text-[#111] transition hover:bg-[#ffb9c1]";
 
   return (
     <aside className={asideClass}>
       <div className="flex w-full items-center justify-between gap-6 lg:block">
         <div>
           <VillageLogo />
-          {showAdminName && (
+          {showAdminName && village && (
             <p className="mt-5 text-base font-black text-[#2e6230]">
               {ADMIN_NAMES[village]}
             </p>
@@ -77,34 +76,12 @@ export function AdminSidebar({
       </nav>
 
       <div className={`mt-auto hidden space-y-5 ${isForm ? "pb-7" : "pb-10"} lg:block`}>
-        {primaryAction && <SidebarAction action={primaryAction} />}
         <Link href="/admin/sign-in" className={logoutClass}>
           <LogOutIcon className="h-6 w-6" />
           Log Out
         </Link>
       </div>
     </aside>
-  );
-}
-
-function SidebarAction({ action }: { action: AdminSidebarAction }) {
-  const className =
-    "flex h-12 w-[210px] items-center justify-center gap-4 rounded-lg bg-[#33a4ff] text-base font-black text-white transition hover:bg-[#198de9]";
-
-  if (action.href) {
-    return (
-      <Link href={action.href} className={className}>
-        {action.icon}
-        {action.label}
-      </Link>
-    );
-  }
-
-  return (
-    <button type="button" onClick={action.onClick} className={className}>
-      {action.icon}
-      {action.label}
-    </button>
   );
 }
 

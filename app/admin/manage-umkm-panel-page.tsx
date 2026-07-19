@@ -48,6 +48,19 @@ export function ManageUmkmPanelPage({
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [panelMode, setPanelMode] = useState<CatalogFormMode>("create");
   const [selectedItem, setSelectedItem] = useState<Umkm | null>(null);
+  const sidebarItems = [
+    {
+      href: `/admin/${village}`,
+      label: "Dashboard",
+      icon: <DashboardIcon className="h-5 w-5" />,
+    },
+    {
+      href: `/admin/${village}/umkm`,
+      label: "Kelola UMKM",
+      icon: <StoreIcon className="h-5 w-5" />,
+      active: true,
+    },
+  ];
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -61,7 +74,7 @@ export function ManageUmkmPanelPage({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  function openCreatePanel() {
+  function openCreateUmkmPanel() {
     setSelectedItem(null);
     setPanelMode("create");
     setIsPanelOpen(true);
@@ -83,19 +96,7 @@ export function ManageUmkmPanelPage({
         <AdminSidebar
           village={village}
           showAdminName
-          items={[
-            {
-              href: `/admin/${village}`,
-              label: "Dashboard",
-              icon: <DashboardIcon className="h-5 w-5" />,
-            },
-            {
-              href: `/admin/${village}/umkm`,
-              label: "Kelola UMKM",
-              icon: <StoreIcon className="h-5 w-5" />,
-              active: true,
-            },
-          ]}
+          items={sidebarItems}
         />
 
         <div>
@@ -113,7 +114,7 @@ export function ManageUmkmPanelPage({
               </div>
               <button
                 type="button"
-                onClick={openCreatePanel}
+                onClick={openCreateUmkmPanel}
                 className="inline-flex h-12 w-fit items-center justify-center gap-2 rounded-lg bg-[#33a4ff] px-6 text-base font-black text-white transition hover:bg-[#198de9]"
               >
                 <PlusCircleIcon className="h-5 w-5" />
@@ -251,20 +252,18 @@ export function ManageUmkmPanelPage({
         onClick={closePanel}
       />
       <aside
-        aria-label={panelMode === "edit" ? "Edit UMKM" : "Tambah UMKM"}
-        className={`fixed right-0 top-0 z-50 flex h-screen w-full sm:w-[75vw] max-w-none flex-col bg-white shadow-[-22px_0_50px_rgb(15_23_42/0.2)] transition-transform duration-300 ease-out ${
+        aria-label={getPanelTitle(panelMode)}
+        className={`fixed right-0 top-0 z-50 flex h-screen w-full max-w-none flex-col bg-white shadow-[-22px_0_50px_rgb(15_23_42/0.2)] transition-transform duration-300 ease-out sm:w-[75vw] ${
           isPanelOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <div className="flex items-start justify-between border-b border-[#dfe6df] px-5 py-5 sm:px-7">
           <div>
             <h2 className="text-2xl font-black text-[#202a37]">
-              {panelMode === "edit" ? "Edit UMKM" : "Tambah UMKM"}
+              {getPanelTitle(panelMode)}
             </h2>
             <p className="mt-1 text-sm font-medium text-[#667085]">
-              {panelMode === "edit"
-                ? "Perbarui data UMKM tanpa berpindah halaman."
-                : "Lengkapi data UMKM tanpa berpindah halaman."}
+              {getPanelDescription(panelMode)}
             </p>
           </div>
           <button
@@ -276,7 +275,7 @@ export function ManageUmkmPanelPage({
             <CloseIcon className="h-5 w-5" />
           </button>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="min-h-0 flex-1 overflow-y-auto lg:overflow-hidden">
           {isPanelOpen && (
             <CatalogAdminForm
               key={`${panelMode}-${selectedItem?.id ?? "baru"}`}
@@ -293,4 +292,14 @@ export function ManageUmkmPanelPage({
       </aside>
     </main>
   );
+}
+
+function getPanelTitle(mode: CatalogFormMode): string {
+  return mode === "edit" ? "Edit UMKM" : "Tambah UMKM";
+}
+
+function getPanelDescription(mode: CatalogFormMode): string {
+  return mode === "edit"
+    ? "Perbarui data UMKM tanpa berpindah halaman."
+    : "Lengkapi data UMKM tanpa berpindah halaman.";
 }

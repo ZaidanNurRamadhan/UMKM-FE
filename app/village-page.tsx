@@ -1,22 +1,25 @@
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatedCounter } from "@/components/animations/AnimatedCounter";
-import { AnimatedHeader } from "@/components/animations/AnimatedHeader";
 import { FadeIn } from "@/components/animations/FadeIn";
 import { StaggerContainer } from "@/components/animations/StaggerContainer";
 import { StaggerItem } from "@/components/animations/StaggerItem";
+import {
+  PublicFooter,
+  PublicHeader,
+  VillageSwitch,
+} from "@/components/layout/public-site-shell";
 import { getWhatsAppUrl } from "@/lib/utils/whatsapp";
 import { getArticles } from "@/services/article.service";
 import { getVillageAssetUrl } from "@/services/storage.service";
 import { getUmkm } from "@/services/umkm.service";
 import { getWarungs } from "@/services/warung.service";
 import type { Article, Umkm, VillageSlug, Warung } from "@/types/database";
-import { ThemeToggle } from "./theme-toggle";
 
 const stats = [
-  { value: "120+", label: "UMKM Terdaftar", icon: StoreIcon },
-  { value: "15", label: "Wisata Menarik", icon: CompassIcon },
-  { value: "2", label: "Desa Bersatu", icon: HomeIcon },
+  { value: "120+", label: "UMKM Terdaftar", icon: StoreIcon, color: "#2e6b35" },
+  { value: "15", label: "Wisata Menarik", icon: CompassIcon, color: "#ef8b00" },
+  { value: "2", label: "Desa Bersatu", icon: HomeIcon, color: "#2e6b35" },
 ];
 
 const values = [
@@ -27,15 +30,6 @@ const values = [
 
 const villageCards = [
   {
-    title: "Wisata Kuliner & Warung",
-    copy: "Nikmati keramahan warga Munggangsari melalui deretan warung kuliner autentik yang menyajikan hidangan khas pedesaan dengan pemandangan alam yang asri.",
-    image: "/images/culinary.jpg",
-    button: "Jelajahi Munggangsari",
-    badge: "Desa Munggangsari",
-    badgeColor: "bg-[#ef8b00]",
-    href: "/munggangsari",
-  },
-  {
     title: "Pusat UMKM & Kerajinan",
     copy: "Temukan berbagai produk unggulan dari tangan terampil warga Mangli, mulai dari kerajinan anyaman hingga camilan tradisional yang sudah bersertifikat halal.",
     image: "/images/mangli.jpg",
@@ -43,6 +37,15 @@ const villageCards = [
     badge: "Desa Mangli",
     badgeColor: "bg-[#2e6b35]",
     href: "/mangli",
+  },
+  {
+    title: "Wisata Kuliner & Warung",
+    copy: "Nikmati keramahan warga Munggangsari melalui deretan warung kuliner autentik yang menyajikan hidangan khas pedesaan dengan pemandangan alam yang asri.",
+    image: "/images/culinary.jpg",
+    button: "Jelajahi Munggangsari",
+    badge: "Desa Munggangsari",
+    badgeColor: "bg-[#ef8b00]",
+    href: "/munggangsari",
   },
 ];
 
@@ -53,6 +56,66 @@ const gallery = [
   "/images/village.jpg",
   "/images/hero.jpg",
   "/images/forest.jpg",
+];
+
+const fallbackUmkmPreview: PreviewItem[] = [
+  {
+    id: "fallback-umkm-keripik-talas-1",
+    title: "Keripik Talas",
+    category: "Makanan & Minuman",
+    description: "Camilan lokal desa.",
+    village: "Desa Mangli",
+    image: "/images/chips.jpg",
+    whatsappUrl: null,
+  },
+  {
+    id: "fallback-umkm-keripik-talas-2",
+    title: "Keripik Talas",
+    category: "Makanan & Minuman",
+    description: "Camilan lokal desa.",
+    village: "Desa Mangli",
+    image: "/images/chips.jpg",
+    whatsappUrl: null,
+  },
+  {
+    id: "fallback-umkm-keripik-talas-3",
+    title: "Keripik Talas",
+    category: "Makanan & Minuman",
+    description: "Camilan lokal desa.",
+    village: "Desa Mangli",
+    image: "/images/chips.jpg",
+    whatsappUrl: null,
+  },
+];
+
+const fallbackArticlePreview: ArticlePreview[] = [
+  {
+    id: "fallback-article-gula-aren-1",
+    title: "Cara Pembuatan Gula Aren Berkualitas Tinggi",
+    description:
+      "Pembuatan Gula Aren Berkualitas melalui proses yang sudah turun temurun dilakukan di desa kami.",
+    articleUrl: "#",
+    date: "12 Mei 2026",
+    village: "Desa Mangli",
+  },
+  {
+    id: "fallback-article-gula-aren-2",
+    title: "Cara Pembuatan Gula Aren Berkualitas Tinggi",
+    description:
+      "Pembuatan Gula Aren Berkualitas melalui proses yang sudah turun temurun dilakukan di desa kami.",
+    articleUrl: "#",
+    date: "12 Mei 2026",
+    village: "Desa Mangli",
+  },
+  {
+    id: "fallback-article-gula-aren-3",
+    title: "Cara Pembuatan Gula Aren Berkualitas Tinggi",
+    description:
+      "Pembuatan Gula Aren Berkualitas melalui proses yang sudah turun temurun dilakukan di desa kami.",
+    articleUrl: "#",
+    date: "12 Mei 2026",
+    village: "Desa Mangli",
+  },
 ];
 
 type VillagePageProps = {
@@ -101,9 +164,9 @@ export default async function VillagePage({
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#f7f8f4] text-[#141d13] transition-colors dark:bg-[#10150f] dark:text-[#f5f7f2]">
-      <Header village={village} />
+      <PublicHeader village={village} />
 
-      <section id="beranda" className="relative min-h-[680px] overflow-hidden bg-[#1e321f] text-white">
+      <section id="beranda" className="relative min-h-[560px] overflow-hidden bg-[#1e321f] text-white md:min-h-[680px]">
         <Image
           src="/images/hero.jpg"
           alt="Pemandangan desa di kaki gunung"
@@ -113,12 +176,15 @@ export default async function VillagePage({
           className="object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-[#152417]/58" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/58 via-black/24 to-transparent" />
-        <div className="relative mx-auto flex min-h-[680px] max-w-7xl flex-col justify-center px-6 py-28 md:px-10">
-          <StaggerContainer className="max-w-3xl">
+        <div className="absolute inset-0 bg-[#152417]/38 md:bg-[#152417]/58" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/8 via-black/18 to-black/34 md:bg-gradient-to-r md:from-black/58 md:via-black/24 md:to-transparent" />
+        <div className="absolute left-0 right-0 top-3 z-10 flex justify-center px-6 md:hidden">
+          <VillageSwitch village={village} />
+        </div>
+        <div className="relative mx-auto flex min-h-[560px] max-w-7xl flex-col justify-center px-6 pb-16 pt-24 md:min-h-[680px] md:px-10 md:py-28">
+          <StaggerContainer className="mx-auto max-w-[310px] md:mx-0 md:max-w-3xl">
             <StaggerItem>
-            <h1 className="max-w-full text-5xl font-black leading-[0.96] sm:text-6xl md:text-7xl">
+            <h1 className="max-w-full text-[2.05rem] font-black leading-[0.98] md:text-7xl">
               {isAll ? (
                 <>
                   Katalog Potensi
@@ -139,23 +205,25 @@ export default async function VillagePage({
             </h1>
             </StaggerItem>
             <StaggerItem>
-            <p className="mt-10 max-w-xl text-lg font-medium leading-8 text-white/86">
+            <p className="mt-4 max-w-[310px] text-[0.72rem] font-medium leading-5 text-white/86 md:mt-10 md:max-w-xl md:text-lg md:leading-8">
               Membangun kemandirian ekonomi desa melalui integrasi teknologi
               dan kearifan lokal.
             </p>
             </StaggerItem>
-            <div className="mt-9 flex flex-wrap gap-3">
-              {stats.map(({ value, label, icon: Icon }) => (
+            <div className="mx-auto mt-5 grid max-w-[286px] grid-cols-3 gap-3 md:mx-0 md:mt-9 md:flex md:max-w-none md:flex-wrap">
+              {stats.map(({ value, label, icon: Icon, color }) => (
                 <StaggerItem
                   key={label}
-                  className="flex min-w-[150px] items-center gap-3 rounded-lg border border-white/12 bg-black/24 px-4 py-3 backdrop-blur"
+                  className="flex min-h-[70px] flex-col items-center justify-center gap-1 rounded-lg bg-white px-2 py-2 text-center text-[#141d13] shadow-lg shadow-black/18 md:min-w-[150px] md:flex-row md:justify-start md:gap-3 md:border md:border-white/12 md:bg-black/24 md:px-4 md:py-3 md:text-left md:text-white md:shadow-none md:backdrop-blur"
                 >
-                  <Icon className="h-6 w-6 text-[#ef8b00]" />
+                  <span style={{ color }}>
+                    <Icon className="h-5 w-5 md:h-6 md:w-6" />
+                  </span>
                   <div>
-                    <p className="text-lg font-black leading-5">
+                    <p className="text-sm font-black leading-4 md:text-lg md:leading-5">
                       <AnimatedCounter value={value} />
                     </p>
-                    <p className="text-xs font-semibold text-white/78">
+                    <p className="text-[0.55rem] font-semibold leading-3 text-[#263225] md:text-xs md:text-white/78">
                       {label}
                     </p>
                   </div>
@@ -165,7 +233,7 @@ export default async function VillagePage({
             <StaggerItem>
             <a
               href={isAll ? "#jelajahi" : "#potensi"}
-              className="btn-motion focus-ring mt-12 inline-flex h-14 items-center gap-3 rounded-lg bg-[#ef8b00] px-7 text-base font-black text-white shadow-lg shadow-black/20 transition hover:bg-[#d97e00]"
+              className="btn-motion focus-ring mx-auto mt-5 inline-flex h-11 w-full max-w-[286px] items-center justify-center gap-3 rounded-full bg-[#ef8b00] px-7 text-sm font-black text-white shadow-lg shadow-black/20 transition hover:bg-[#d97e00] md:mx-0 md:mt-12 md:h-14 md:w-auto md:rounded-lg md:text-base"
             >
               Eksplorasi Sekarang
               <ArrowRightIcon className="motion-arrow h-5 w-5" />
@@ -173,17 +241,28 @@ export default async function VillagePage({
             </StaggerItem>
           </StaggerContainer>
         </div>
+        <svg
+          aria-hidden="true"
+          className="absolute bottom-[-1px] left-0 h-14 w-full text-white md:hidden dark:text-[#10150f]"
+          viewBox="0 0 390 56"
+          preserveAspectRatio="none"
+        >
+          <path
+            fill="currentColor"
+            d="M0 18C58 2 97-2 144 23c53 29 95 23 144-3 41-22 75-20 102 1v35H0V18Z"
+          />
+        </svg>
       </section>
 
-      <section id="potensi" className="bg-[#f0f1ee] py-24 transition-colors md:py-32 dark:bg-[#151c14]">
-        <div className="mx-auto grid max-w-7xl items-center gap-16 px-6 md:grid-cols-[1fr_0.92fr] md:px-10">
+      <section id="potensi" className="bg-white pt-16 pb-14 transition-colors md:bg-[#f0f1ee] md:py-32 dark:bg-[#10150f] md:dark:bg-[#151c14]">
+        <div className="mx-auto grid max-w-7xl items-center gap-7 px-6 md:grid-cols-[1fr_0.92fr] md:gap-16 md:px-10">
           <FadeIn direction="left">
-            <h2 className="max-w-2xl text-4xl font-black leading-[1.05] md:text-5xl">
+            <h2 className="max-w-2xl text-[1.72rem] font-black leading-[1.02] md:text-5xl">
               Gerbang Digital
               <br />
               Untuk <span className="text-[#2e6b35] dark:text-[#8bc98c]">Masa Depan Desa</span>
             </h2>
-            <div className="mt-8 max-w-2xl space-y-5 text-base font-medium leading-7 text-[#334135] dark:text-[#d4decf]">
+            <div className="mt-4 max-w-2xl space-y-3 text-[0.72rem] font-medium leading-5 text-[#334135] md:mt-8 md:space-y-5 md:text-base md:leading-7 dark:text-[#d4decf]">
               <p>
                 Inisiatif Desa Digital merupakan langkah strategis untuk
                 menghubungkan potensi unik {isAll ? "Desa Mangli dan Munggangsari" : `Desa ${titleVillage}`} dengan pasar yang
@@ -199,7 +278,7 @@ export default async function VillagePage({
                 akses ekonomi.
               </p>
             </div>
-            <StaggerContainer className="mt-10 grid max-w-2xl gap-6 sm:grid-cols-3 sm:divide-x sm:divide-[#bbc7b9] sm:dark:divide-[#41523f]">
+            <StaggerContainer className="mt-10 hidden max-w-2xl gap-6 sm:grid-cols-3 sm:divide-x sm:divide-[#bbc7b9] md:grid sm:dark:divide-[#41523f]">
               {values.map(({ title, text, icon: Icon }) => (
                 <StaggerItem key={title} className="feature-motion sm:px-4 sm:first:pl-0">
                   <Icon className="mb-3 h-7 w-7 text-[#2e6b35] dark:text-[#8bc98c]" />
@@ -211,7 +290,7 @@ export default async function VillagePage({
               ))}
             </StaggerContainer>
           </FadeIn>
-          <FadeIn direction="right" className="relative aspect-[1.35] overflow-hidden rounded-lg">
+          <FadeIn direction="right" className="relative aspect-[1.35] overflow-hidden rounded-xl md:rounded-lg">
             <Image
               src="/images/community.jpg"
               alt="Kegiatan budaya masyarakat desa"
@@ -220,26 +299,37 @@ export default async function VillagePage({
               sizes="(min-width: 768px) 42vw, 100vw"
             />
           </FadeIn>
+          <StaggerContainer className="grid grid-cols-3 gap-2 pt-1 text-center md:hidden">
+            {values.map(({ title, text, icon: Icon }) => (
+              <StaggerItem key={title} className="feature-motion px-1">
+                <Icon className="mx-auto mb-2 h-5 w-5 text-[#2e6b35] dark:text-[#8bc98c]" />
+                <h3 className="text-[0.74rem] font-black leading-4">{title}</h3>
+                <p className="mt-1 text-[0.48rem] font-semibold leading-3 text-[#536052] dark:text-[#b2bdae]">
+                  {text}
+                </p>
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
         </div>
       </section>
 
-      <section id="jelajahi" className="bg-white py-24 transition-colors dark:bg-[#10150f]">
-        <div className="mx-auto max-w-7xl px-6 md:px-10">
+      <section id="jelajahi" className="bg-white pb-14 pt-2 transition-colors md:py-24 dark:bg-[#10150f]">
+        <div className="mx-auto max-w-7xl px-5 md:px-10">
           <FadeIn>
-          <p className="text-sm font-black text-[#2e6b35] dark:text-[#8bc98c]">Jelajahi Desa</p>
-          <h2 className="mt-4 text-4xl font-black md:text-5xl">
+          <p className="text-[0.66rem] font-black text-[#2e6b35] md:text-sm dark:text-[#8bc98c]">Jelajahi Desa</p>
+          <h2 className="mt-2 text-[1.45rem] font-black leading-tight md:mt-4 md:text-5xl">
             Dua Desa, Beragam Cerita
           </h2>
-          <p className="mt-4 max-w-3xl text-base font-medium text-[#536052] dark:text-[#b2bdae]">
+          <p className="mt-4 hidden max-w-3xl text-base font-medium text-[#536052] md:block dark:text-[#b2bdae]">
             Jelajahi keunikan masing-masing desa melalui katalog produk dan
             artikel potensi yang telah kami kurasi.
           </p>
           </FadeIn>
-          <StaggerContainer className="mt-10 grid gap-5 md:grid-cols-2">
+          <StaggerContainer className="mt-5 grid grid-cols-2 gap-3 md:mt-10 md:gap-5">
             {villageCards.map((card) => (
               <StaggerItem
                 key={card.title}
-                className="village-card-motion group relative min-h-[340px] overflow-hidden rounded-lg bg-[#20351f] text-white"
+                className="village-card-motion group relative min-h-[148px] overflow-hidden rounded-lg bg-[#20351f] text-white md:min-h-[340px]"
               >
                 <Image
                   src={card.image}
@@ -248,23 +338,23 @@ export default async function VillagePage({
                   className="object-cover transition duration-500 group-hover:scale-105"
                   sizes="(min-width: 768px) 50vw, 100vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/72 via-black/32 to-transparent transition duration-300 group-hover:from-black/78 group-hover:via-black/38" />
-                <div className="relative flex min-h-[340px] max-w-[520px] flex-col justify-center p-8 transition duration-300 group-hover:-translate-y-1">
-                  <span className={`${card.badgeColor} mb-6 w-fit rounded-lg px-4 py-2 text-xs font-black`}>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/76 via-black/28 to-transparent transition duration-300 md:bg-gradient-to-r md:from-black/72 md:via-black/32 md:to-transparent md:group-hover:from-black/78 md:group-hover:via-black/38" />
+                <div className="relative flex min-h-[148px] max-w-[520px] flex-col justify-end p-3 transition duration-300 group-hover:-translate-y-1 md:min-h-[340px] md:justify-center md:p-8">
+                  <span className={`${card.badgeColor} mb-2 w-fit rounded-md px-2 py-1 text-[0.48rem] font-black md:mb-6 md:rounded-lg md:px-4 md:py-2 md:text-xs`}>
                     {card.badge}
                   </span>
-                  <h3 className="text-4xl font-black leading-none md:text-5xl">
+                  <h3 className="text-[1.18rem] font-black leading-[1.04] md:text-5xl">
                     {card.title}
                   </h3>
-                  <p className="mt-4 text-sm font-semibold leading-6 text-white/84">
+                  <p className="mt-4 hidden text-sm font-semibold leading-6 text-white/84 md:block">
                     {card.copy}
                   </p>
                   <Link
                     href={card.href}
-                    className="btn-motion focus-ring mt-6 inline-flex h-10 w-fit items-center gap-3 rounded-lg bg-white px-5 text-sm font-black text-[#20351f]"
+                    className="btn-motion focus-ring mt-3 inline-flex h-7 w-full items-center justify-center gap-2 rounded-full bg-white px-2 text-[0.48rem] font-black text-[#20351f] md:mt-6 md:h-10 md:w-fit md:gap-3 md:rounded-lg md:px-5 md:text-sm"
                   >
                     {card.button}
-                    <ArrowRightIcon className="motion-arrow h-4 w-4" />
+                    <ArrowRightIcon className="motion-arrow h-3 w-3 md:h-4 md:w-4" />
                   </Link>
                 </div>
               </StaggerItem>
@@ -284,27 +374,39 @@ export default async function VillagePage({
       />
 
       {shouldShowWarungs && (
-        <PreviewSection
-          id="warung"
-          eyebrow="Warung Kuliner Unggulan"
-          heading="Warung Lokal Pilihan"
-          ctaHref="/munggangsari/warung"
-          ctaLabel="Lihat Semua Warung"
-          emptyMessage="Belum ada data warung yang tersedia."
-          result={warungResult}
-        />
+        <div className={isAll ? "hidden md:block" : undefined}>
+          <PreviewSection
+            id="warung"
+            eyebrow="Warung Kuliner Unggulan"
+            heading="Warung Lokal Pilihan"
+            ctaHref="/munggangsari/warung"
+            ctaLabel="Lihat Semua Warung"
+            emptyMessage="Belum ada data warung yang tersedia."
+            result={warungResult}
+          />
+        </div>
       )}
 
-      <section id="artikel" className="bg-white pb-24 transition-colors dark:bg-[#10150f]">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 md:grid-cols-[1fr_0.84fr] md:px-10">
+      <section id="artikel" className="bg-white pb-14 transition-colors md:pb-24 dark:bg-[#10150f]">
+        <div className="mx-auto grid max-w-7xl gap-12 px-5 md:grid-cols-[1fr_0.84fr] md:px-10">
           <div className="md:border-r md:border-[#899483] md:pr-10 md:dark:border-[#4d5e49]">
-            <FadeIn>
+            <div className="flex items-center justify-between md:hidden">
+              <h2 className="text-sm font-black">Galeri Kehidupan Desa</h2>
+              <a
+                href="#"
+                className="inline-flex items-center gap-1 text-[0.52rem] font-black text-[#2e6b35] dark:text-[#8bc98c]"
+              >
+                Lihat Selengkapnya
+                <ArrowRightIcon className="h-3 w-3" />
+              </a>
+            </div>
+            <FadeIn className="hidden md:block">
             <p className="text-sm font-black text-[#2e6b35] dark:text-[#8bc98c]">Galeri Desa</p>
             <h2 className="mt-4 text-4xl font-black md:text-5xl">
               Kehidupan & Keindahan Desa
             </h2>
             </FadeIn>
-            <StaggerContainer className="mt-8 grid grid-cols-3 gap-3">
+            <StaggerContainer className="mt-3 grid grid-cols-2 gap-3 md:mt-8 md:grid-cols-3">
               {gallery.map((src, index) => (
                 <StaggerItem
                   key={src}
@@ -322,14 +424,31 @@ export default async function VillagePage({
             </StaggerContainer>
             <a
               href="#"
-              className="btn-motion focus-ring mt-8 inline-flex h-11 items-center gap-3 rounded-lg border border-[#2e6b35] px-6 text-sm font-black text-[#2e6b35] transition hover:bg-[#edf3eb] dark:border-[#8bc98c] dark:text-[#8bc98c] dark:hover:bg-white/10"
+              className="btn-motion focus-ring mt-8 hidden h-11 items-center gap-3 rounded-lg border border-[#2e6b35] px-6 text-sm font-black text-[#2e6b35] transition hover:bg-[#edf3eb] md:inline-flex dark:border-[#8bc98c] dark:text-[#8bc98c] dark:hover:bg-white/10"
             >
               Lihat Galeri Selengkapnya
               <ArrowRightIcon className="motion-arrow h-4 w-4" />
             </a>
           </div>
           <div>
-            <FadeIn>
+            <div className="flex items-end justify-between gap-4 md:hidden">
+              <div>
+                <p className="text-[0.55rem] font-black uppercase text-[#2e6b35] dark:text-[#8bc98c]">
+                  Artikel Terbaru
+                </p>
+                <h2 className="mt-2 text-[1.35rem] font-black leading-tight">
+                  Cerita & Inspirasi Desa
+                </h2>
+              </div>
+              <a
+                href="#"
+                className="mb-1 inline-flex shrink-0 items-center gap-1 text-[0.52rem] font-black text-[#2e6b35] dark:text-[#8bc98c]"
+              >
+                Lihat Semua Artikel
+                <ArrowRightIcon className="h-3 w-3" />
+              </a>
+            </div>
+            <FadeIn className="hidden md:block">
             <p className="text-sm font-black uppercase text-[#2e6b35] dark:text-[#8bc98c]">
               Artikel Terbaru
             </p>
@@ -342,11 +461,11 @@ export default async function VillagePage({
             ) : articleResult.data.length === 0 ? (
               <DataMessage message="Belum ada artikel yang tersedia." />
             ) : (
-              <StaggerContainer className="mt-8 space-y-6">
+              <StaggerContainer className="mt-4 space-y-4 md:mt-8 md:space-y-6">
                 {articleResult.data.map((article) => (
                   <StaggerItem
                     key={article.id}
-                    className="article-item-motion grid gap-5 sm:grid-cols-[150px_1fr]"
+                    className="article-item-motion grid grid-cols-[118px_1fr] gap-3 md:grid-cols-[150px_1fr] md:gap-5"
                   >
                     <div className="relative aspect-[1.55] overflow-hidden rounded-lg bg-[#e8ece4] dark:bg-[#172017]">
                       <Image
@@ -362,21 +481,21 @@ export default async function VillagePage({
                         href={article.articleUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-lg font-black leading-6 transition-colors hover:text-[#2e6b35] dark:hover:text-[#8bc98c]"
+                        className="text-[0.64rem] font-black leading-3 transition-colors hover:text-[#2e6b35] md:text-lg md:leading-6 dark:hover:text-[#8bc98c]"
                       >
                         {article.title}
                       </a>
-                      <p className="mt-2 text-xs font-bold text-[#7d8a78] dark:text-[#b2bdae]">
+                      <p className="mt-1 text-[0.48rem] font-bold text-[#7d8a78] md:mt-2 md:text-xs dark:text-[#b2bdae]">
                         {article.date} - {article.village}
                       </p>
-                      <p className="mt-3 text-sm font-medium leading-6 text-[#8a9586] dark:text-[#b2bdae]">
+                      <p className="mt-1 line-clamp-2 text-[0.48rem] font-medium leading-3 text-[#8a9586] md:mt-3 md:text-sm md:leading-6 dark:text-[#b2bdae]">
                         {article.description}
                       </p>
                       <a
                         href={article.articleUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mt-3 inline-flex text-sm font-black text-[#2e6b35] transition hover:underline dark:text-[#8bc98c]"
+                        className="mt-3 hidden text-sm font-black text-[#2e6b35] transition hover:underline md:inline-flex dark:text-[#8bc98c]"
                       >
                         Baca Artikel
                       </a>
@@ -387,7 +506,7 @@ export default async function VillagePage({
             )}
             <a
               href="#"
-              className="btn-motion focus-ring mt-8 inline-flex h-11 items-center gap-3 rounded-lg border border-[#2e6b35] px-6 text-sm font-black text-[#2e6b35] transition hover:bg-[#edf3eb] dark:border-[#8bc98c] dark:text-[#8bc98c] dark:hover:bg-white/10"
+              className="btn-motion focus-ring mt-8 hidden h-11 items-center gap-3 rounded-lg border border-[#2e6b35] px-6 text-sm font-black text-[#2e6b35] transition hover:bg-[#edf3eb] md:inline-flex dark:border-[#8bc98c] dark:text-[#8bc98c] dark:hover:bg-white/10"
             >
               Lihat Semua Artikel
               <ArrowRightIcon className="motion-arrow h-4 w-4" />
@@ -396,32 +515,33 @@ export default async function VillagePage({
         </div>
       </section>
 
-      <section className="relative overflow-hidden bg-[#23672d] py-16 text-white dark:bg-[#1c4d25]">
-        <div className="absolute inset-0 opacity-20 [background-image:radial-gradient(circle_at_20%_20%,#ffffff_0,transparent_24%),radial-gradient(circle_at_80%_70%,#ffffff_0,transparent_22%)]" />
-        <FadeIn className="relative mx-auto grid max-w-4xl items-center gap-10 px-6 md:grid-cols-[1fr_auto] md:px-10">
+      <section className="relative overflow-hidden bg-[#23672d] py-8 text-white md:py-16 dark:bg-[#1c4d25]">
+        <div className="absolute inset-0 opacity-10 [background-image:linear-gradient(135deg,#ffffff_1px,transparent_1px)] [background-size:18px_18px]" />
+        <FadeIn className="relative mx-auto flex max-w-4xl flex-col items-center gap-4 px-6 text-center md:grid md:grid-cols-[1fr_auto] md:gap-10 md:px-10 md:text-left">
           <div>
-            <h2 className="text-4xl font-black leading-[1.05] md:text-5xl">
+            <h2 className="text-[1.65rem] font-black leading-[1.04] md:text-5xl">
               Dapatkan Update
               <br />
               Potensi Terbaru
             </h2>
-            <p className="mt-5 max-w-xl text-base font-semibold leading-7 text-white/82">
+            <p className="mx-auto mt-2 max-w-[300px] text-[0.58rem] font-semibold leading-4 text-white/82 md:mx-0 md:mt-5 md:max-w-xl md:text-base md:leading-7">
               Jadilah yang pertama mengetahui rilis produk UMKM baru, festival
               desa, dan promo khusus langsung di WhatsApp atau Email Anda.
             </p>
           </div>
           <a
             href="#umkm"
-            className="btn-motion focus-ring inline-flex h-14 items-center justify-center gap-3 rounded-lg border border-white px-6 text-sm font-black text-white transition hover:bg-white/10"
+            className="btn-motion focus-ring inline-flex h-10 items-center justify-center gap-2 rounded-full bg-white px-5 text-xs font-black text-[#23672d] shadow-lg shadow-black/16 transition hover:bg-white/90 md:h-14 md:rounded-lg md:border md:border-white md:bg-transparent md:px-6 md:text-sm md:text-white md:shadow-none md:hover:bg-white/10"
           >
-            <ArrowRightIcon className="motion-arrow h-5 w-5" />
-            Lihat Produk Terbaru
+            <WhatsAppIcon className="h-4 w-4 md:hidden" />
+            <ArrowRightIcon className="motion-arrow hidden h-5 w-5 md:block" />
+            Ikuti WhatsApp Channel
           </a>
         </FadeIn>
       </section>
 
       <FadeIn>
-        <Footer />
+        <PublicFooter />
       </FadeIn>
     </main>
   );
@@ -444,29 +564,34 @@ function PreviewSection({
   emptyMessage: string;
   result: DataResult<PreviewItem>;
 }) {
+  const displayData =
+    result.data.length > 0 && result.data.length < 3
+      ? Array.from({ length: 3 }, (_, index) => result.data[index % result.data.length])
+      : result.data;
+
   return (
-    <section id={id} className="bg-white pb-24 transition-colors dark:bg-[#10150f]">
-      <div className="mx-auto max-w-7xl px-6 md:px-10">
-        <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
+    <section id={id} className="bg-white pb-14 transition-colors md:pb-24 dark:bg-[#10150f]">
+      <div className="mx-auto max-w-7xl px-5 md:px-10">
+        <div className="flex items-end justify-between gap-4">
           <FadeIn>
             <div>
-              <p className="text-sm font-black text-[#2e6b35] dark:text-[#8bc98c]">
+              <p className="text-[0.55rem] font-black text-[#2e6b35] md:text-sm dark:text-[#8bc98c]">
                 {eyebrow}
               </p>
-              <h2 className="mt-4 text-4xl font-black md:text-5xl">
+              <h2 className="mt-2 text-[1.45rem] font-black leading-tight md:mt-4 md:text-5xl">
                 {heading}
               </h2>
             </div>
           </FadeIn>
           <a
             href={ctaHref}
-            className="btn-motion focus-ring inline-flex h-11 w-fit items-center gap-3 rounded-lg border border-[#2e6b35] px-6 text-sm font-black text-[#2e6b35] transition hover:bg-[#edf3eb] dark:border-[#8bc98c] dark:text-[#8bc98c] dark:hover:bg-white/10"
+            className="btn-motion focus-ring mb-1 inline-flex h-auto w-fit shrink-0 items-center gap-1 rounded-none border-0 px-0 text-[0.55rem] font-black text-[#2e6b35] transition hover:underline md:h-11 md:gap-3 md:rounded-lg md:border md:border-[#2e6b35] md:px-6 md:text-sm md:hover:bg-[#edf3eb] md:hover:no-underline dark:border-[#8bc98c] dark:text-[#8bc98c] dark:hover:bg-white/10"
           >
             {ctaLabel}
-            <ArrowRightIcon className="motion-arrow h-4 w-4" />
+            <ArrowRightIcon className="motion-arrow h-3 w-3 md:h-4 md:w-4" />
           </a>
         </div>
-        <div className="relative mt-8">
+        <div className="relative mt-4 md:mt-8">
           <button
             aria-label="Produk sebelumnya"
             className="absolute left-[-18px] top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-[#d5ddd1] bg-white text-[#536052] shadow-md lg:grid dark:border-[#3b4a38] dark:bg-[#172017] dark:text-[#d4decf]"
@@ -478,11 +603,20 @@ function PreviewSection({
           ) : result.data.length === 0 ? (
             <DataMessage message={emptyMessage} />
           ) : (
-            <StaggerContainer className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {result.data.map((product) => (
-                <StaggerItem key={product.id}>
+            <>
+            <StaggerContainer className="grid grid-cols-3 gap-3 md:grid-cols-2 md:gap-5 lg:grid-cols-4">
+              {displayData.map((product, index) => (
+                <StaggerItem
+                  key={`${product.id}-${index}`}
+                  className={[
+                    index >= result.data.length ? "md:hidden" : "",
+                    index > 2 ? "hidden lg:block" : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ") || undefined}
+                >
                   <article className="product-card-motion overflow-hidden rounded-lg border border-[#d5ddd1] bg-white shadow-sm transition-colors dark:border-[#334330] dark:bg-[#172017]">
-                    <div className="relative aspect-[1.2] overflow-hidden">
+                    <div className="relative aspect-[1.05] overflow-hidden md:aspect-[1.2]">
                       <Image
                         src={product.image}
                         alt={product.title}
@@ -491,16 +625,16 @@ function PreviewSection({
                         sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                       />
                     </div>
-                    <div className="p-4">
-                      <span className="rounded-md border border-[#dce4d8] px-2 py-1 text-xs font-bold text-[#7d8a78] dark:border-[#3b4a38] dark:text-[#b2bdae]">
+                    <div className="p-2 md:p-4">
+                      <span className="rounded border border-[#dce4d8] px-1.5 py-0.5 text-[0.42rem] font-bold text-[#7d8a78] md:rounded-md md:px-2 md:py-1 md:text-xs dark:border-[#3b4a38] dark:text-[#b2bdae]">
                         {product.category}
                       </span>
-                      <h3 className="mt-3 min-h-12 text-base font-black leading-6">
+                      <h3 className="mt-2 min-h-8 text-[0.62rem] font-black leading-3 md:mt-3 md:min-h-12 md:text-base md:leading-6">
                         {product.title}
                       </h3>
-                      <div className="mt-8 flex items-center justify-between">
-                        <p className="flex items-center gap-1 text-sm font-bold text-[#7d8a78] dark:text-[#b2bdae]">
-                          <PinIcon className="h-4 w-4 text-[#273226] dark:text-[#e6efe3]" />
+                      <div className="mt-4 flex items-center justify-between md:mt-8">
+                        <p className="flex min-w-0 items-center gap-1 truncate text-[0.5rem] font-bold text-[#7d8a78] md:text-sm dark:text-[#b2bdae]">
+                          <PinIcon className="h-3 w-3 shrink-0 text-[#273226] md:h-4 md:w-4 dark:text-[#e6efe3]" />
                           {product.village}
                         </p>
                         {product.whatsappUrl && (
@@ -509,9 +643,9 @@ function PreviewSection({
                             target="_blank"
                             rel="noopener noreferrer"
                             aria-label={`Hubungi penjual ${product.title}`}
-                            className="focus-ring grid h-8 w-8 place-items-center rounded-full bg-[#1dc95b] text-white transition hover:scale-110"
+                            className="focus-ring grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#1dc95b] text-white transition hover:scale-110 md:h-8 md:w-8"
                           >
-                            <WhatsAppIcon className="h-5 w-5" />
+                            <WhatsAppIcon className="h-3.5 w-3.5 md:h-5 md:w-5" />
                           </a>
                         )}
                       </div>
@@ -520,6 +654,12 @@ function PreviewSection({
                 </StaggerItem>
               ))}
             </StaggerContainer>
+            <div className="mt-3 flex justify-center gap-1.5 md:hidden" aria-hidden="true">
+              <span className="h-2 w-2 rounded-full bg-[#2e6b35]" />
+              <span className="h-2 w-2 rounded-full bg-[#d6ddd2]" />
+              <span className="h-2 w-2 rounded-full bg-[#d6ddd2]" />
+            </div>
+            </>
           )}
           <button
             aria-label="Produk berikutnya"
@@ -538,9 +678,10 @@ async function loadUmkmPreview(
 ): Promise<DataResult<PreviewItem>> {
   try {
     const umkm = await getUmkm({ villageSlug, limit: 4 });
+    const data = fillPreviewItems(umkm.map(mapUmkmPreview), fallbackUmkmPreview);
 
     return {
-      data: umkm.map(mapUmkmPreview),
+      data,
       error: null,
     };
   } catch (error) {
@@ -580,9 +721,13 @@ async function loadArticlePreview(
 ): Promise<DataResult<ArticlePreview>> {
   try {
     const articles = await getArticles({ villageSlug, limit: 3 });
+    const data = fillPreviewItems(
+      articles.map(mapArticlePreview),
+      fallbackArticlePreview,
+    );
 
     return {
-      data: articles.map(mapArticlePreview),
+      data,
       error: null,
     };
   } catch (error) {
@@ -600,7 +745,7 @@ function mapUmkmPreview(umkm: Umkm): PreviewItem {
   return {
     id: umkm.id,
     title: umkm.name,
-    category: "Produk Desa",
+    category: "Makanan & Minuman",
     description: umkm.description,
     village: `Desa ${umkm.villages?.name ?? "Mangli"}`,
     image: getVillageAssetUrl(umkm.photo_path) ?? "/images/chips.jpg",
@@ -631,6 +776,14 @@ function mapArticlePreview(article: Article): ArticlePreview {
   };
 }
 
+function fillPreviewItems<T>(items: T[], fallback: T[], minimum = 3): T[] {
+  if (items.length >= minimum) {
+    return items;
+  }
+
+  return [...items, ...fallback].slice(0, minimum);
+}
+
 function formatDate(value: string): string {
   return new Intl.DateTimeFormat("id-ID", {
     day: "2-digit",
@@ -644,182 +797,6 @@ function DataMessage({ message }: { message: string }) {
     <div className="rounded-lg border border-[#d5ddd1] bg-[#f7f8f4] px-6 py-8 text-center text-base font-bold leading-7 text-[#536052] dark:border-[#344233] dark:bg-[#172017] dark:text-[#d4decf]">
       {message}
     </div>
-  );
-}
-
-function Header({ village }: Required<VillagePageProps>) {
-  const isAll = village === "all";
-  const isMangli = village === "mangli";
-
-  return (
-    <AnimatedHeader>
-      <div className="mx-auto flex h-24 items-center justify-between gap-6 px-6 md:px-10">
-        <Logo />
-        {isAll ? (
-          <nav className="hidden flex-1 items-center justify-center gap-6 md:flex">
-            <Link
-              href="/mangli"
-              className="rounded-lg border border-[#2e6b35] px-7 py-2 text-sm font-black text-[#2e6b35] transition hover:bg-[#edf3eb] dark:border-[#8bc98c] dark:text-[#8bc98c] dark:hover:bg-white/10"
-            >
-              Mangli
-            </Link>
-            <Link
-              href="/munggangsari"
-              className="rounded-lg border border-[#2e6b35] px-7 py-2 text-sm font-black text-[#2e6b35] transition hover:bg-[#edf3eb] dark:border-[#8bc98c] dark:text-[#8bc98c] dark:hover:bg-white/10"
-            >
-              Munggangsari
-            </Link>
-          </nav>
-        ) : (
-          <nav className="hidden items-center gap-10 lg:flex">
-            <a
-              href="#beranda"
-              className="text-base font-black text-[#2e6b35] underline-offset-8 transition hover:underline dark:text-[#a9d8aa]"
-            >
-              Beranda
-            </a>
-            <Link
-              href={isMangli ? "/mangli/umkm" : "/munggangsari/warung"}
-              className="text-base font-black text-[#2e6b35] underline-offset-8 transition hover:underline dark:text-[#a9d8aa]"
-            >
-              {isMangli ? "UMKM" : "Warung"}
-            </Link>
-            <a
-              href="#artikel"
-              className="text-base font-black text-[#2e6b35] underline-offset-8 transition hover:underline dark:text-[#a9d8aa]"
-            >
-              Artikel
-            </a>
-            <a
-              href="#potensi"
-              className="text-base font-black text-[#2e6b35] underline-offset-8 transition hover:underline dark:text-[#a9d8aa]"
-            >
-              Potensi
-            </a>
-          </nav>
-        )}
-        <div className="flex items-center gap-3">
-          {!isAll && (
-            <>
-              <Link
-                href="/mangli"
-                className={`hidden rounded-lg px-6 py-2 text-sm font-black transition md:inline-flex ${
-                  isMangli
-                    ? "bg-[#2e6b35] text-white hover:bg-[#25572b] dark:bg-[#8bc98c] dark:text-[#10150f]"
-                    : "border border-[#2e6b35] text-[#2e6b35] hover:bg-[#edf3eb] dark:border-[#8bc98c] dark:text-[#8bc98c] dark:hover:bg-white/10"
-                }`}
-              >
-                Mangli
-              </Link>
-              <Link
-                href="/munggangsari"
-                className={`hidden rounded-lg px-6 py-2 text-sm font-black transition md:inline-flex ${
-                  isMangli
-                    ? "border border-[#2e6b35] text-[#2e6b35] hover:bg-[#edf3eb] dark:border-[#8bc98c] dark:text-[#8bc98c] dark:hover:bg-white/10"
-                    : "bg-[#2e6b35] text-white hover:bg-[#25572b] dark:bg-[#8bc98c] dark:text-[#10150f]"
-                }`}
-              >
-                Munggangsari
-              </Link>
-            </>
-          )}
-          <Link
-            href="/admin/sign-in"
-            className="inline-flex rounded-lg border border-[#ef8b00] px-4 py-2 text-sm font-black text-[#ef8b00] transition hover:bg-[#fff4e4] dark:hover:bg-white/10 md:px-5"
-          >
-            Sign In
-          </Link>
-          <ThemeToggle />
-        </div>
-      </div>
-    </AnimatedHeader>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className="bg-white pt-12 transition-colors dark:bg-[#10150f]">
-      <div className="mx-auto grid max-w-7xl gap-10 px-6 pb-16 md:grid-cols-[1.4fr_0.65fr_0.7fr_1fr] md:px-10">
-        <div>
-          <Logo />
-          <p className="mt-6 max-w-sm text-base font-semibold leading-7 text-[#334135] dark:text-[#d4decf]">
-            Portal resmi katalog potensi Desa Mangli & Munggangsari.
-            Menghubungkan tradisi dengan inovasi digital.
-          </p>
-          <div className="mt-6 flex gap-4 text-[#20b15a]">
-            <InstagramIcon className="social-motion h-5 w-5" />
-            <FacebookIcon className="social-motion h-5 w-5" />
-            <YoutubeIcon className="social-motion h-5 w-5" />
-            <WhatsAppIcon className="social-motion h-5 w-5" />
-          </div>
-        </div>
-        <div>
-          <h3 className="text-xl font-black text-[#2e6b35] dark:text-[#8bc98c]">Tautan Cepat</h3>
-          <ul className="mt-5 space-y-3 text-sm font-bold text-[#2e6b35] dark:text-[#a9d8aa]">
-            <li>
-              <a href="#potensi" className="footer-link">Tentang Kami</a>
-            </li>
-            <li>
-              <a href="#umkm" className="footer-link">Kontak</a>
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h3 className="text-xl font-black text-[#2e6b35] dark:text-[#8bc98c]">Informasi</h3>
-          <ul className="mt-5 space-y-3 text-sm font-bold text-[#2e6b35] dark:text-[#a9d8aa]">
-            <li>
-              <a href="#" className="footer-link">Kebijakan Privasi</a>
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h3 className="text-xl font-black text-[#2e6b35] dark:text-[#8bc98c]">Lokasi Kantor</h3>
-          <div className="mt-5 space-y-7 text-sm font-semibold leading-6 text-[#9aa39a] dark:text-[#b2bdae]">
-            <div>
-              <p className="font-black text-[#2e6b35] dark:text-[#8bc98c]">Balai Desa Munggangsari</p>
-              <p>
-                H464+R3H, Kwayuhan, Munggangsari, Kec. Kaliangkrik, Kabupaten
-                Magelang, Jawa Tengah 56153
-              </p>
-            </div>
-            <div>
-              <p className="font-black text-[#2e6b35] dark:text-[#8bc98c]">Balai Desa Mangli</p>
-              <p>
-                HQG3+666, Mangli, Kec. Kaliangkrik, Kabupaten Magelang, Jawa
-                Tengah 56153
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="border-t border-[#edf0eb] py-6 text-center text-xs font-bold text-[#2e6b35] dark:border-[#273425] dark:text-[#8bc98c]">
-        Dikembangkan oleh Tim KKN-PPM UGM Kaliangkrik 2026
-      </div>
-    </footer>
-  );
-}
-
-function Logo() {
-  return (
-    <Link href="/" className="flex shrink-0 items-center gap-3">
-      <Image
-        src="/images/kabupaten.png"
-        alt="Logo Kabupaten Magelang"
-        width={42}
-        height={56}
-        className="h-12 w-auto"
-      />
-      <div className="leading-none">
-        <p className="text-xl font-black text-[#2e6b35] dark:text-[#a9d8aa]">
-          Mangli
-          <br />
-          Munggangsari
-        </p>
-        <p className="mt-1 text-[11px] font-black text-[#ef8b00]">
-          Katalog Potensi Desa
-        </p>
-      </div>
-    </Link>
   );
 }
 
@@ -924,32 +901,6 @@ function WhatsAppIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
       <path d="M12.04 2C6.56 2 2.1 6.41 2.1 11.84c0 1.73.46 3.41 1.33 4.89L2 22l5.4-1.4a10.1 10.1 0 0 0 4.64 1.15c5.48 0 9.94-4.41 9.94-9.84C21.98 6.41 17.52 2 12.04 2Zm0 18.05a8.4 8.4 0 0 1-4.27-1.17l-.31-.18-3.2.83.86-3.08-.2-.32a8.05 8.05 0 0 1-1.24-4.29c0-4.48 3.75-8.14 8.36-8.14 4.61 0 8.36 3.66 8.36 8.14 0 4.56-3.75 8.21-8.36 8.21Zm4.58-6.15c-.25-.12-1.48-.72-1.71-.8-.23-.08-.4-.12-.57.12-.17.25-.66.8-.81.97-.15.16-.3.18-.55.06-.25-.12-1.06-.38-2.02-1.21-.75-.65-1.25-1.45-1.4-1.7-.15-.24-.02-.37.11-.49.12-.11.25-.29.38-.43.13-.15.17-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.57-1.35-.78-1.84-.2-.47-.41-.41-.57-.42h-.48c-.17 0-.43.06-.66.31-.23.25-.87.84-.87 2.04s.89 2.36 1.02 2.53c.13.16 1.76 2.65 4.27 3.72.6.25 1.06.4 1.43.52.6.19 1.14.16 1.57.1.48-.07 1.48-.59 1.69-1.16.21-.57.21-1.06.15-1.16-.06-.11-.23-.17-.48-.29Z" />
-    </svg>
-  );
-}
-
-function InstagramIcon({ className }: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
-      <rect x="4" y="4" width="16" height="16" rx="4" />
-      <circle cx="12" cy="12" r="3.5" />
-      <path d="M17 7.2h.01" />
-    </svg>
-  );
-}
-
-function FacebookIcon({ className }: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-      <path d="M14 8h2V5h-2.4C10.95 5 10 6.83 10 8.6V11H8v3h2v7h3v-7h2.45L16 11h-3V8.85c0-.58.22-.85 1-.85Z" />
-    </svg>
-  );
-}
-
-function YoutubeIcon({ className }: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-      <path d="M21.6 7.2a3 3 0 0 0-2.1-2.1C17.65 4.6 12 4.6 12 4.6s-5.65 0-7.5.5a3 3 0 0 0-2.1 2.1A31 31 0 0 0 1.9 12a31 31 0 0 0 .5 4.8 3 3 0 0 0 2.1 2.1c1.85.5 7.5.5 7.5.5s5.65 0 7.5-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8ZM10 15.2V8.8l5.4 3.2L10 15.2Z" />
     </svg>
   );
 }

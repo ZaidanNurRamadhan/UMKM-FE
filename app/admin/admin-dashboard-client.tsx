@@ -36,7 +36,19 @@ export function AdminDashboardClient({
 }: AdminDashboardClientProps) {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const manageHref = `/admin/${village}/${config.manageSegment}`;
-  const usesUmkmPanel = config.manageSegment === "umkm";
+  const sidebarItems = [
+    {
+      href: `/admin/${village}`,
+      label: "Dashboard",
+      icon: <DashboardIcon className="h-5 w-5" />,
+      active: true,
+    },
+    {
+      href: manageHref,
+      label: config.manageLabel,
+      icon: <StoreIcon className="h-5 w-5" />,
+    },
+  ];
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -54,6 +66,10 @@ export function AdminDashboardClient({
     setIsPanelOpen(true);
   }
 
+  function openAddDataFlow() {
+    openPanel();
+  }
+
   function closePanel() {
     setIsPanelOpen(false);
   }
@@ -61,35 +77,7 @@ export function AdminDashboardClient({
   return (
     <main className="min-h-screen bg-white text-[#111111]">
       <div className="lg:grid lg:min-h-screen lg:grid-cols-[325px_1fr]">
-        <AdminSidebar
-          village={village}
-          items={[
-            {
-              href: `/admin/${village}`,
-              label: "Dashboard",
-              icon: <DashboardIcon className="h-5 w-5" />,
-              active: true,
-            },
-            {
-              href: manageHref,
-              label: config.manageLabel,
-              icon: <StoreIcon className="h-5 w-5" />,
-            },
-          ]}
-          primaryAction={
-            usesUmkmPanel
-              ? {
-                  label: config.addLabel,
-                  icon: <PlusIcon className="h-5 w-5" />,
-                  onClick: openPanel,
-                }
-              : {
-                  href: `${manageHref}/tambah`,
-                  label: config.addLabel,
-                  icon: <PlusIcon className="h-5 w-5" />,
-                }
-          }
-        />
+        <AdminSidebar village={village} items={sidebarItems} />
 
         <div>
           <AdminHeader village={village} />
@@ -121,10 +109,18 @@ export function AdminDashboardClient({
               id="kelola"
               className="mt-14 overflow-hidden rounded-lg border border-[#111]"
             >
-              <div className="px-6 py-5">
+              <div className="flex flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
                 <h2 className="text-base font-black uppercase">
                   Aktivitas Terkini
                 </h2>
+                <button
+                  type="button"
+                  onClick={openAddDataFlow}
+                  className="inline-flex h-11 w-fit items-center justify-center gap-2 rounded-lg bg-[#33a4ff] px-5 text-sm font-black text-white transition hover:bg-[#198de9]"
+                >
+                  <PlusIcon className="h-5 w-5" />
+                  Tambah Data
+                </button>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[720px] border-collapse text-left">
@@ -183,7 +179,7 @@ export function AdminDashboardClient({
         </div>
       </div>
 
-      {usesUmkmPanel && (
+      {isPanelOpen && (
         <>
           <div
             aria-hidden={!isPanelOpen}
@@ -195,7 +191,7 @@ export function AdminDashboardClient({
             onClick={closePanel}
           />
           <aside
-            aria-label="Tambah UMKM"
+            aria-label={getPanelTitle(config.manageSegment)}
             className={`fixed right-0 top-0 z-50 flex h-screen w-full max-w-none flex-col bg-white shadow-[-22px_0_50px_rgb(15_23_42/0.2)] transition-transform duration-300 ease-out sm:w-[75vw] ${
               isPanelOpen ? "translate-x-0" : "translate-x-full"
             }`}
@@ -203,10 +199,10 @@ export function AdminDashboardClient({
             <div className="flex items-start justify-between border-b border-[#dfe6df] px-5 py-5 sm:px-7">
               <div>
                 <h2 className="text-2xl font-black text-[#202a37]">
-                  Tambah UMKM
+                  {getPanelTitle(config.manageSegment)}
                 </h2>
                 <p className="mt-1 text-sm font-medium text-[#667085]">
-                  Lengkapi data UMKM tanpa berpindah halaman.
+                  {getPanelDescription(config.manageSegment)}
                 </p>
               </div>
               <button
@@ -218,10 +214,10 @@ export function AdminDashboardClient({
                 <CloseIcon className="h-5 w-5" />
               </button>
             </div>
-            <div className="min-h-0 flex-1 overflow-y-auto">
+            <div className="min-h-0 flex-1 overflow-y-auto lg:overflow-hidden">
               {isPanelOpen && (
                 <CatalogAdminForm
-                  kind="umkm"
+                  kind={config.manageSegment}
                   mode="create"
                   village={village}
                   variant="panel"
@@ -235,6 +231,22 @@ export function AdminDashboardClient({
       )}
     </main>
   );
+}
+
+function getPanelTitle(kind: "umkm" | "warung"): string {
+  if (kind === "warung") {
+    return "Tambah Warung";
+  }
+
+  return "Tambah UMKM";
+}
+
+function getPanelDescription(kind: "umkm" | "warung"): string {
+  if (kind === "warung") {
+    return "Lengkapi data warung tanpa berpindah halaman.";
+  }
+
+  return "Lengkapi data UMKM tanpa berpindah halaman.";
 }
 
 function StatCard({

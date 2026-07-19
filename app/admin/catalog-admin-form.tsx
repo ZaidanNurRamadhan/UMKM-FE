@@ -20,16 +20,13 @@ import { focusFirstFieldError } from "@/lib/errors/validation-error";
 import { emptyStringToNull } from "@/lib/utils/string";
 import { normalizeWhatsAppNumber } from "@/lib/utils/whatsapp";
 import { useImagePreview } from "@/hooks/use-image-preview";
-import { createArticle, updateArticle } from "@/services/article.service";
 import { signOutAdmin } from "@/services/auth.service";
 import { deletePhoto, getVillageAssetUrl, uploadPhoto } from "@/services/storage.service";
 import { createUmkm, updateUmkm } from "@/services/umkm.service";
 import { getVillageBySlug } from "@/services/village.service";
 import { createWarung, updateWarung } from "@/services/warung.service";
 import type { CatalogFormMode, CatalogKind } from "@/types/catalog";
-import type { Article, Umkm, VillageSlug, Warung } from "@/types/database";
-import type { ArticleFormValues } from "@/validations/article.schema";
-import { articleFormSchema } from "@/validations/article.schema";
+import type { Umkm, VillageSlug, Warung } from "@/types/database";
 import type { UmkmFormValues } from "@/validations/umkm.schema";
 import { umkmFormSchema } from "@/validations/umkm.schema";
 import type { WarungFormValues } from "@/validations/warung.schema";
@@ -39,7 +36,7 @@ type CatalogAdminFormProps = {
   kind: CatalogKind;
   mode: CatalogFormMode;
   village: VillageSlug;
-  initialData?: Umkm | Warung | Article | null;
+  initialData?: Umkm | Warung | null;
   variant?: "page" | "panel";
   onCancel?: () => void;
   onSaved?: () => void;
@@ -100,23 +97,12 @@ export function CatalogAdminForm({
   onCancel,
   onSaved,
 }: CatalogAdminFormProps) {
-  if (kind === "article") {
-    return (
-      <ArticleAdminForm
-        mode={mode}
-        village={village}
-        initialData={initialData && "article_url" in initialData ? initialData : null}
-        onCancel={onCancel}
-        onSaved={onSaved}
-      />
-    );
-  }
-
   if (kind === "warung") {
     return (
       <WarungAdminForm
         mode={mode}
         village={village}
+        variant={variant}
         initialData={initialData && "owner_name" in initialData ? initialData : null}
         onCancel={onCancel}
         onSaved={onSaved}
@@ -130,9 +116,7 @@ export function CatalogAdminForm({
       village={village}
       variant={variant}
       initialData={
-        initialData && "description" in initialData && !("article_url" in initialData)
-          ? initialData
-          : null
+        initialData && "description" in initialData ? initialData : null
       }
       onCancel={onCancel}
       onSaved={onSaved}
@@ -291,20 +275,44 @@ function UmkmAdminForm({
 
   const fieldGridClass =
     variant === "panel"
-      ? "mt-6 grid gap-y-7"
+      ? "mt-4 grid gap-y-5 lg:grid-cols-2 lg:gap-x-5 lg:gap-y-3"
       : "mt-6 grid gap-x-8 gap-y-7 lg:grid-cols-2";
+  const compactControlClass =
+    variant === "panel" ? "lg:h-10 lg:text-sm" : "";
+  const compactTextareaClass =
+    variant === "panel"
+      ? "lg:min-h-[112px] lg:py-2 lg:pb-8 lg:text-sm lg:leading-5"
+      : "";
+  const helperTextClass = `mt-3 text-sm font-medium text-[#667085] ${
+    variant === "panel" ? "lg:hidden" : ""
+  }`;
+  const photoLabelClass = `mt-7 block border-t border-[#e3e8e1] pt-6 ${
+    variant === "panel" ? "lg:mt-3 lg:pt-3" : ""
+  }`;
+  const photoTitleClass = `text-xl font-black text-[#202a37] ${
+    variant === "panel" ? "lg:text-base" : ""
+  }`;
+  const uploadBoxClass = `mt-6 grid min-h-[164px] cursor-pointer place-items-center rounded-xl border-2 border-dashed bg-[#fbfcfd] text-[#202a37] transition hover:border-[#168333] hover:bg-[#f6fbf3] ${
+    variant === "panel" ? "lg:mt-3 lg:min-h-[82px]" : ""
+  }`;
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit, onInvalid)}
       className={
         variant === "panel"
-          ? "overflow-hidden bg-white"
+          ? "flex h-full flex-col overflow-hidden bg-white"
           : "mt-2 overflow-hidden rounded-xl border border-[#dfe6df] bg-white shadow-[0_22px_60px_rgb(15_23_42/0.08)]"
       }
       noValidate
     >
-      <div className={variant === "panel" ? "px-5 py-6 sm:px-7" : "px-6 py-7 md:px-8 lg:px-8"}>
+      <div
+        className={
+          variant === "panel"
+            ? "min-h-0 flex-1 overflow-y-auto px-5 py-6 sm:px-7 lg:overflow-hidden lg:px-6 lg:py-4"
+            : "px-6 py-7 md:px-8 lg:px-8"
+        }
+      >
         <div className="flex items-start gap-3">
           <InfoIcon className="mt-0.5 h-6 w-6 shrink-0 text-[#0f7a2b]" />
           <div>
@@ -327,10 +335,10 @@ function UmkmAdminForm({
               placeholder="Contoh: Keripik Pisang Mangli"
               aria-invalid={Boolean(errors.name)}
               aria-describedby={errors.name ? errorId("name") : undefined}
-              className={inputClass(Boolean(errors.name))}
+              className={`${inputClass(Boolean(errors.name))} ${compactControlClass}`}
               {...register("name")}
             />
-            <p className="mt-3 text-sm font-medium text-[#667085]">
+            <p className={helperTextClass}>
               Masukkan nama usaha Anda.
             </p>
             <FieldError id={errorId("name")} message={errors.name?.message} />
@@ -351,11 +359,11 @@ function UmkmAdminForm({
                     ? errorId("whatsapp_number")
                     : undefined
                 }
-                className={`${inputClass(Boolean(errors.whatsapp_number))} pl-12`}
+                className={`${inputClass(Boolean(errors.whatsapp_number))} pl-12 ${compactControlClass}`}
                 {...register("whatsapp_number")}
               />
             </div>
-            <p className="mt-3 text-sm font-medium text-[#667085]">
+            <p className={helperTextClass}>
               Nomor ini akan ditampilkan ke publik.
             </p>
             <FieldError
@@ -377,14 +385,14 @@ function UmkmAdminForm({
                 aria-describedby={
                   errors.description ? errorId("description") : undefined
                 }
-                className={`${textareaClass(Boolean(errors.description))} min-h-[190px] pb-10`}
+                className={`${textareaClass(Boolean(errors.description))} min-h-[190px] pb-10 ${compactTextareaClass}`}
                 {...register("description")}
               />
               <span className="pointer-events-none absolute bottom-4 right-4 text-sm font-medium text-[#687286]">
                 {Math.min(descriptionValue.length, 500)}/500
               </span>
             </div>
-            <p className="mt-3 text-sm font-medium text-[#667085]">
+            <p className={helperTextClass}>
               Deskripsi membantu pelanggan memahami usaha Anda.
             </p>
             <FieldError
@@ -406,14 +414,14 @@ function UmkmAdminForm({
                 aria-describedby={
                   errors.address ? errorId("address") : undefined
                 }
-                className={`${textareaClass(Boolean(errors.address))} min-h-[190px] pb-10`}
+                className={`${textareaClass(Boolean(errors.address))} min-h-[190px] pb-10 ${compactTextareaClass}`}
                 {...register("address")}
               />
               <span className="pointer-events-none absolute bottom-4 right-4 text-sm font-medium text-[#687286]">
                 {Math.min(addressValue.length, 300)}/300
               </span>
             </div>
-            <p className="mt-3 text-sm font-medium text-[#667085]">
+            <p className={helperTextClass}>
               Alamat akan digunakan pelanggan untuk menemukan lokasi Anda.
             </p>
             <FieldError
@@ -423,23 +431,23 @@ function UmkmAdminForm({
           </label>
         </div>
 
-        <label className="mt-7 block border-t border-[#e3e8e1] pt-6">
+        <label className={photoLabelClass}>
           <span className="flex items-center gap-3">
             <ImageIcon className="h-6 w-6 text-[#0f7a2b]" />
             <span>
-              <span className="text-xl font-black text-[#202a37]">
+              <span className={photoTitleClass}>
                 Foto UMKM
               </span>{" "}
               <span className="text-sm font-semibold text-[#667085]">
                 (Opsional)
               </span>
-              <span className="mt-1 block text-sm font-medium text-[#667085]">
+              <span className={helperTextClass}>
                 Foto yang menarik dapat meningkatkan kepercayaan pelanggan
               </span>
             </span>
           </span>
           <div
-            className={`mt-6 grid min-h-[164px] cursor-pointer place-items-center rounded-xl border-2 border-dashed bg-[#fbfcfd] text-[#202a37] transition hover:border-[#168333] hover:bg-[#f6fbf3] ${
+            className={`${uploadBoxClass} ${
               errors.photo ? "border-[#d92d20]" : "border-[#d5dbe5]"
             }`}
             style={
@@ -455,9 +463,15 @@ function UmkmAdminForm({
             onDrop={handlePhotoDrop}
           >
             <div className="px-4 text-center">
-              <UploadCloudIcon className="mx-auto h-11 w-11 text-[#0f7a2b]" />
+              <UploadCloudIcon
+                className={`mx-auto h-11 w-11 text-[#0f7a2b] ${
+                  variant === "panel" ? "lg:h-7 lg:w-7" : ""
+                }`}
+              />
               <p
                 className={`mt-3 text-sm font-black ${
+                  variant === "panel" ? "lg:mt-1 lg:text-xs" : ""
+                } ${
                   previewUrl || existingPhotoUrl ? "text-white" : "text-[#202a37]"
                 }`}
               >
@@ -467,6 +481,8 @@ function UmkmAdminForm({
               </p>
               <p
                 className={`mt-2 text-sm font-medium ${
+                  variant === "panel" ? "lg:hidden" : ""
+                } ${
                   previewUrl || existingPhotoUrl
                     ? "text-white/90"
                     : "text-[#667085]"
@@ -491,6 +507,7 @@ function UmkmAdminForm({
         isSubmitting={isSubmitting}
         listHref={listHref}
         onCancel={onCancel}
+        variant={variant}
         submitLabel={mode === "edit" ? "Simpan Perubahan" : "Simpan UMKM"}
       />
     </form>
@@ -500,12 +517,14 @@ function UmkmAdminForm({
 function WarungAdminForm({
   mode,
   village,
+  variant,
   initialData,
   onCancel,
   onSaved,
 }: {
   mode: CatalogFormMode;
   village: VillageSlug;
+  variant: "page" | "panel";
   initialData: Warung | null;
   onCancel?: () => void;
   onSaved?: () => void;
@@ -650,119 +669,181 @@ function WarungAdminForm({
     focusFirstFieldError(fieldErrors, setFocus);
   }
 
+  const fieldGridClass =
+    variant === "panel"
+      ? "mt-4 grid gap-y-5 lg:grid-cols-2 lg:gap-5"
+      : "grid gap-7 lg:grid-cols-2";
+  const compactControlClass =
+    variant === "panel" ? "lg:h-10 lg:text-sm" : "";
+  const compactTextareaClass =
+    variant === "panel" ? "lg:min-h-[112px] lg:py-2 lg:text-sm lg:leading-5" : "";
+  const photoBoxClass = `mt-2 grid min-h-[220px] cursor-pointer place-items-center border bg-[#e5e5e5] text-[#454c48] ${
+    variant === "panel" ? "lg:min-h-[112px]" : ""
+  }`;
+
   return (
     <form
       onSubmit={handleSubmit(onSubmit, onInvalid)}
-      className="mt-10 border border-[#9ee09e] px-6 py-7 md:px-10"
+      className={
+        variant === "panel"
+          ? "flex h-full flex-col overflow-hidden bg-white"
+          : "mt-10 border border-[#9ee09e] px-6 py-7 md:px-10"
+      }
       noValidate
     >
-      <div className="grid gap-7 lg:grid-cols-2">
-        <div className="space-y-6">
-          <label className="block">
-            <span className="text-xs font-medium uppercase">Nama Warung</span>
-            <input
-              type="text"
-              placeholder="Input teks..."
-              aria-invalid={Boolean(errors.name)}
-              aria-describedby={errors.name ? errorId("name") : undefined}
-              className={inputClass(Boolean(errors.name))}
-              {...register("name")}
-            />
-            <FieldError id={errorId("name")} message={errors.name?.message} />
-          </label>
-
-          <label className="block">
-            <span className="text-xs font-medium uppercase">Nama Pemilik</span>
-            <input
-              type="text"
-              placeholder="Input nama pemilik..."
-              aria-invalid={Boolean(errors.owner_name)}
-              aria-describedby={
-                errors.owner_name ? errorId("owner_name") : undefined
-              }
-              className={inputClass(Boolean(errors.owner_name))}
-              {...register("owner_name")}
-            />
-            <FieldError
-              id={errorId("owner_name")}
-              message={errors.owner_name?.message}
-            />
-          </label>
-
-          <label className="block">
-            <span className="text-xs font-medium uppercase">Nomor WhatsApp</span>
-            <input
-              type="tel"
-              placeholder="08..."
-              aria-invalid={Boolean(errors.whatsapp_number)}
-              aria-describedby={
-                errors.whatsapp_number ? errorId("whatsapp_number") : undefined
-              }
-              className={inputClass(Boolean(errors.whatsapp_number))}
-              {...register("whatsapp_number")}
-            />
-            <FieldError
-              id={errorId("whatsapp_number")}
-              message={errors.whatsapp_number?.message}
-            />
-          </label>
-        </div>
-
-        <div className="space-y-6">
-          <label className="block">
-            <span className="text-xs font-medium uppercase">Foto Warung</span>
-            <div
-              className={`mt-2 grid min-h-[220px] cursor-pointer place-items-center border bg-[#e5e5e5] text-[#454c48] ${
-                errors.photo ? "border-[#b32323]" : "border-[#7f877f]"
-              }`}
-              style={
-                previewUrl || existingPhotoUrl
-                  ? {
-                      backgroundImage: `url(${previewUrl ?? existingPhotoUrl})`,
-                      backgroundPosition: "center",
-                      backgroundSize: "cover",
-                    }
-                  : undefined
-              }
-            >
-              {!previewUrl && !existingPhotoUrl && (
-                <div className="text-center">
-                  <CameraIcon className="mx-auto h-10 w-10" />
-                  <p className="mt-2 text-xs font-medium uppercase">
-                    Unggah Foto
-                  </p>
-                </div>
-              )}
+      <div
+        className={
+          variant === "panel"
+            ? "min-h-0 flex-1 overflow-y-auto px-5 py-6 sm:px-7 lg:overflow-hidden lg:px-6 lg:py-4"
+            : undefined
+        }
+      >
+        {variant === "panel" && (
+          <div className="flex items-start gap-3">
+            <InfoIcon className="mt-0.5 h-6 w-6 shrink-0 text-[#0f7a2b]" />
+            <div>
+              <h3 className="text-xl font-black text-[#0f7a2b]">
+                Informasi Warung
+              </h3>
+              <p className="mt-1 text-sm font-medium text-[#6a7280]">
+                Lengkapi detail warung dan kuliner lokal desa.
+              </p>
             </div>
-            <input
-              type="file"
-              accept={PHOTO_ACCEPT_ATTRIBUTE}
-              className="sr-only"
-              aria-invalid={Boolean(errors.photo)}
-              aria-describedby={errors.photo ? errorId("photo") : undefined}
-              onChange={(event) => updatePhoto(event.target.files?.[0] ?? null)}
-            />
-            <span className="mt-2 block text-xs italic text-[#555]">
-              *Format: JPG, PNG, WebP (Max 2MB)
-            </span>
-            <FieldError id={errorId("photo")} message={errors.photo?.message} />
-          </label>
+          </div>
+        )}
 
-          <label className="block">
-            <span className="text-xs font-medium uppercase">Alamat</span>
-            <textarea
-              placeholder="Input alamat lengkap..."
-              rows={4}
-              aria-invalid={Boolean(errors.address)}
-              aria-describedby={errors.address ? errorId("address") : undefined}
-              className={textareaClass(Boolean(errors.address))}
-              {...register("address")}
-            />
-            <FieldError
-              id={errorId("address")}
-              message={errors.address?.message}
-            />
-          </label>
+        <div className={fieldGridClass}>
+          <div className="space-y-6 lg:space-y-3">
+            <label className="block">
+              <span className="text-xs font-medium uppercase">Nama Warung</span>
+              <input
+                type="text"
+                placeholder="Input teks..."
+                aria-invalid={Boolean(errors.name)}
+                aria-describedby={errors.name ? errorId("name") : undefined}
+                className={`${inputClass(Boolean(errors.name))} ${compactControlClass}`}
+                {...register("name")}
+              />
+              <FieldError
+                id={errorId("name")}
+                message={errors.name?.message}
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-xs font-medium uppercase">
+                Nama Pemilik
+              </span>
+              <input
+                type="text"
+                placeholder="Input nama pemilik..."
+                aria-invalid={Boolean(errors.owner_name)}
+                aria-describedby={
+                  errors.owner_name ? errorId("owner_name") : undefined
+                }
+                className={`${inputClass(Boolean(errors.owner_name))} ${compactControlClass}`}
+                {...register("owner_name")}
+              />
+              <FieldError
+                id={errorId("owner_name")}
+                message={errors.owner_name?.message}
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-xs font-medium uppercase">
+                Nomor WhatsApp
+              </span>
+              <input
+                type="tel"
+                placeholder="08..."
+                aria-invalid={Boolean(errors.whatsapp_number)}
+                aria-describedby={
+                  errors.whatsapp_number
+                    ? errorId("whatsapp_number")
+                    : undefined
+                }
+                className={`${inputClass(Boolean(errors.whatsapp_number))} ${compactControlClass}`}
+                {...register("whatsapp_number")}
+              />
+              <FieldError
+                id={errorId("whatsapp_number")}
+                message={errors.whatsapp_number?.message}
+              />
+            </label>
+          </div>
+
+          <div className="space-y-6 lg:space-y-3">
+            <label className="block">
+              <span className="text-xs font-medium uppercase">Foto Warung</span>
+              <div
+                className={`${photoBoxClass} ${
+                  errors.photo ? "border-[#b32323]" : "border-[#7f877f]"
+                }`}
+                style={
+                  previewUrl || existingPhotoUrl
+                    ? {
+                        backgroundImage: `url(${previewUrl ?? existingPhotoUrl})`,
+                        backgroundPosition: "center",
+                        backgroundSize: "cover",
+                      }
+                    : undefined
+                }
+              >
+                {!previewUrl && !existingPhotoUrl && (
+                  <div className="text-center">
+                    <CameraIcon
+                      className={`mx-auto h-10 w-10 ${
+                        variant === "panel" ? "lg:h-7 lg:w-7" : ""
+                      }`}
+                    />
+                    <p className="mt-2 text-xs font-medium uppercase">
+                      Unggah Foto
+                    </p>
+                  </div>
+                )}
+              </div>
+              <input
+                type="file"
+                accept={PHOTO_ACCEPT_ATTRIBUTE}
+                className="sr-only"
+                aria-invalid={Boolean(errors.photo)}
+                aria-describedby={errors.photo ? errorId("photo") : undefined}
+                onChange={(event) =>
+                  updatePhoto(event.target.files?.[0] ?? null)
+                }
+              />
+              <span
+                className={`mt-2 block text-xs italic text-[#555] ${
+                  variant === "panel" ? "lg:hidden" : ""
+                }`}
+              >
+                *Format: JPG, PNG, WebP (Max 2MB)
+              </span>
+              <FieldError
+                id={errorId("photo")}
+                message={errors.photo?.message}
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-xs font-medium uppercase">Alamat</span>
+              <textarea
+                placeholder="Input alamat lengkap..."
+                rows={4}
+                aria-invalid={Boolean(errors.address)}
+                aria-describedby={
+                  errors.address ? errorId("address") : undefined
+                }
+                className={`${textareaClass(Boolean(errors.address))} ${compactTextareaClass}`}
+                {...register("address")}
+              />
+              <FieldError
+                id={errorId("address")}
+                message={errors.address?.message}
+              />
+            </label>
+          </div>
         </div>
       </div>
 
@@ -770,168 +851,8 @@ function WarungAdminForm({
         isSubmitting={isSubmitting}
         listHref={listHref}
         onCancel={onCancel}
-      />
-    </form>
-  );
-}
-
-function ArticleAdminForm({
-  mode,
-  village,
-  initialData,
-  onCancel,
-  onSaved,
-}: {
-  mode: CatalogFormMode;
-  village: VillageSlug;
-  initialData: Article | null;
-  onCancel?: () => void;
-  onSaved?: () => void;
-}) {
-  const router = useRouter();
-  const listHref = getListHref(village, "article");
-  const {
-    register,
-    handleSubmit,
-    setFocus,
-    reset,
-    formState: { errors, isSubmitting },
-  } = useForm<ArticleFormValues>({
-    resolver: zodResolver(articleFormSchema),
-    mode: "onChange",
-    defaultValues: {
-      title: initialData?.title ?? "",
-      description: initialData?.description ?? "",
-      article_url: initialData?.article_url ?? "",
-    },
-  });
-
-  async function onSubmit(values: ArticleFormValues) {
-    const villageResult = await getVillageBySlug(village);
-
-    if (!villageResult.success) {
-      toast.error(villageResult.message);
-      await handleSessionExpired(villageResult.message, router);
-      return;
-    }
-
-    if (mode === "edit" && initialData) {
-      const updateResult = await updateArticle({
-        id: initialData.id,
-        village_id: villageResult.data.id,
-        title: values.title,
-        description: values.description,
-        article_url: values.article_url,
-      });
-
-      if (!updateResult.success) {
-        toast.error(updateResult.message);
-        await handleSessionExpired(updateResult.message, router);
-        return;
-      }
-
-      toast.success(
-        updateResult.message || CATALOG_CONFIG.article.successUpdate,
-      );
-      onSaved?.();
-      if (!onSaved) {
-        router.push(listHref);
-      }
-      router.refresh();
-      return;
-    }
-
-    const createResult = await createArticle({
-      village_id: villageResult.data.id,
-      title: values.title,
-      description: values.description,
-      article_url: values.article_url,
-    });
-
-    if (!createResult.success) {
-      toast.error(createResult.message);
-      await handleSessionExpired(createResult.message, router);
-      return;
-    }
-
-    toast.success(
-      createResult.message || CATALOG_CONFIG.article.successCreate,
-    );
-    reset();
-    onSaved?.();
-    if (!onSaved) {
-      router.push(listHref);
-    }
-    router.refresh();
-  }
-
-  function onInvalid(fieldErrors: FieldErrors<ArticleFormValues>) {
-    focusFirstFieldError(fieldErrors, setFocus);
-  }
-
-  return (
-    <form
-      onSubmit={handleSubmit(onSubmit, onInvalid)}
-      className="mt-10 border border-[#9ee09e] px-6 py-7 md:px-10"
-      noValidate
-    >
-      <div className="grid gap-7 lg:grid-cols-2">
-        <div className="space-y-6">
-          <label className="block">
-            <span className="text-xs font-medium uppercase">Judul Artikel</span>
-            <input
-              type="text"
-              placeholder="Input judul artikel..."
-              aria-invalid={Boolean(errors.title)}
-              aria-describedby={errors.title ? errorId("title") : undefined}
-              className={inputClass(Boolean(errors.title))}
-              {...register("title")}
-            />
-            <FieldError id={errorId("title")} message={errors.title?.message} />
-          </label>
-
-          <label className="block">
-            <span className="text-xs font-medium uppercase">Link Artikel</span>
-            <input
-              type="url"
-              placeholder="https://medium.com/..."
-              aria-invalid={Boolean(errors.article_url)}
-              aria-describedby={
-                errors.article_url ? errorId("article_url") : undefined
-              }
-              className={inputClass(Boolean(errors.article_url))}
-              {...register("article_url")}
-            />
-            <FieldError
-              id={errorId("article_url")}
-              message={errors.article_url?.message}
-            />
-          </label>
-        </div>
-
-        <label className="block">
-          <span className="text-xs font-medium uppercase">Deskripsi</span>
-          <textarea
-            placeholder="Input deskripsi panjang..."
-            rows={8}
-            aria-invalid={Boolean(errors.description)}
-            aria-describedby={
-              errors.description ? errorId("description") : undefined
-            }
-            className={textareaClass(Boolean(errors.description))}
-            {...register("description")}
-          />
-          <FieldError
-            id={errorId("description")}
-            message={errors.description?.message}
-          />
-        </label>
-      </div>
-
-      <SubmitActions
-        isSubmitting={isSubmitting}
-        listHref={listHref}
-        onCancel={onCancel}
+        variant={variant}
+        submitLabel={mode === "edit" ? "Simpan Perubahan" : "Simpan Warung"}
       />
     </form>
   );
@@ -942,27 +863,40 @@ function SubmitActions({
   listHref,
   onCancel,
   submitLabel = "Simpan",
+  variant = "page",
 }: {
   isSubmitting: boolean;
   listHref: string;
   onCancel?: () => void;
   submitLabel?: string;
+  variant?: "page" | "panel";
 }) {
+  const actionClass =
+    variant === "panel"
+      ? "border-t border-[#e3e8e1] bg-white px-5 py-4 sm:px-7 lg:px-6 lg:py-3"
+      : "border-t border-[#e3e8e1] bg-white px-6 py-6 md:px-8";
+  const cancelClass =
+    "inline-flex h-14 min-w-[136px] items-center justify-center rounded-md border border-[#cfd6df] bg-white px-9 text-base font-black text-[#ff1f1f] transition hover:border-[#ffb5b5] hover:bg-[#fff5f5]" +
+    (variant === "panel" ? " lg:h-10 lg:px-6 lg:text-sm" : "");
+  const submitClass =
+    "inline-flex h-14 min-w-[212px] items-center justify-center gap-3 rounded-md bg-[#0f7a2b] px-9 text-base font-black text-white shadow-[0_16px_30px_rgb(15_122_43/0.18)] transition hover:bg-[#0a6822] disabled:cursor-not-allowed disabled:opacity-60" +
+    (variant === "panel" ? " lg:h-10 lg:min-w-[180px] lg:px-6 lg:text-sm" : "");
+
   return (
-    <div className="border-t border-[#e3e8e1] bg-white px-6 py-6 md:px-8">
+    <div className={actionClass}>
       <div className="flex flex-col gap-4 sm:flex-row sm:justify-end">
         {onCancel ? (
           <button
             type="button"
             onClick={onCancel}
-            className="inline-flex h-14 min-w-[136px] items-center justify-center rounded-md border border-[#cfd6df] bg-white px-9 text-base font-black text-[#ff1f1f] transition hover:border-[#ffb5b5] hover:bg-[#fff5f5]"
+            className={cancelClass}
           >
             Batal
           </button>
         ) : (
           <Link
             href={listHref}
-            className="inline-flex h-14 min-w-[136px] items-center justify-center rounded-md border border-[#cfd6df] bg-white px-9 text-base font-black text-[#ff1f1f] transition hover:border-[#ffb5b5] hover:bg-[#fff5f5]"
+            className={cancelClass}
           >
             Batal
           </Link>
@@ -970,7 +904,7 @@ function SubmitActions({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="inline-flex h-14 min-w-[212px] items-center justify-center gap-3 rounded-md bg-[#0f7a2b] px-9 text-base font-black text-white shadow-[0_16px_30px_rgb(15_122_43/0.18)] transition hover:bg-[#0a6822] disabled:cursor-not-allowed disabled:opacity-60"
+          className={submitClass}
         >
           <SaveIcon className="h-5 w-5" />
           {isSubmitting ? "Menyimpan..." : submitLabel}

@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { deleteArticle } from "@/services/article.service";
 import { signOutAdmin } from "@/services/auth.service";
 import { deleteUmkm } from "@/services/umkm.service";
 import { deleteWarung } from "@/services/warung.service";
@@ -16,10 +15,6 @@ type DeleteCatalogButtonProps = {
 };
 
 async function deleteByKind(kind: CatalogKind, id: string) {
-  if (kind === "article") {
-    return deleteArticle(id);
-  }
-
   if (kind === "warung") {
     return deleteWarung(id);
   }

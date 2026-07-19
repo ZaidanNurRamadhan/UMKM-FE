@@ -4,13 +4,13 @@ import { AdminHeader } from "@/components/layout/admin-header";
 import { AdminSidebar } from "@/components/layout/admin-sidebar";
 import { CatalogAdminForm } from "./catalog-admin-form";
 import type { CatalogFormMode, CatalogKind } from "@/types/catalog";
-import type { Article, Umkm, VillageSlug, Warung } from "@/types/database";
+import type { Umkm, VillageSlug, Warung } from "@/types/database";
 
 type CatalogFormPageProps = {
   village: VillageSlug;
   kind?: CatalogKind;
   mode?: CatalogFormMode;
-  initialData?: Umkm | Warung | Article | null;
+  initialData?: Umkm | Warung | null;
 };
 
 export default function CatalogFormPage({
@@ -22,6 +22,29 @@ export default function CatalogFormPage({
   const copy = CATALOG_CONFIG[kind];
   const listHref = `/admin/${village}/${copy.segment}`;
   const pageTitle = mode === "edit" ? copy.titleEdit : copy.titleCreate;
+  const sidebarItems = [
+    {
+      href: `/admin/${village}`,
+      label: "Dashboard",
+      icon: <DashboardIcon className="h-5 w-5" />,
+    },
+    {
+      href: `/admin/${village}/umkm`,
+      label: "Kelola UMKM",
+      icon: <StoreIcon className="h-5 w-5" />,
+      active: kind === "umkm",
+    },
+    ...(kind === "warung"
+      ? [
+          {
+            href: listHref,
+            label: copy.manageLabel,
+            icon: <StoreIcon className="h-5 w-5" />,
+            active: true,
+          },
+        ]
+      : []),
+  ];
 
   return (
     <main className="min-h-screen bg-[#f7faf4] text-[#1f2937]">
@@ -29,29 +52,7 @@ export default function CatalogFormPage({
         <AdminSidebar
           village={village}
           variant="form"
-          items={[
-            {
-              href: `/admin/${village}`,
-              label: "Dashboard",
-              icon: <DashboardIcon className="h-5 w-5" />,
-            },
-            {
-              href: `/admin/${village}/umkm`,
-              label: "Kelola UMKM",
-              icon: <StoreIcon className="h-5 w-5" />,
-              active: kind === "umkm",
-            },
-            ...(kind !== "umkm"
-              ? [
-                  {
-                    href: listHref,
-                    label: copy.manageLabel,
-                    icon: <StoreIcon className="h-5 w-5" />,
-                    active: true,
-                  },
-                ]
-              : []),
-          ]}
+          items={sidebarItems}
         />
 
         <div className="min-w-0">
