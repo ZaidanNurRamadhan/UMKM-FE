@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ADMIN_NAMES } from "@/constants/villages";
-import { LogOutIcon } from "@/components/icons/admin-icons";
+import { MenuIcon } from "@/components/icons/admin-icons";
+import { AdminLogoutButton } from "@/components/layout/admin-logout-button";
 import { VillageLogo } from "@/components/layout/village-logo";
 import type { VillageSlug } from "@/types/database";
 
@@ -34,16 +35,22 @@ export function AdminSidebar({
 }: AdminSidebarProps) {
   const isForm = variant === "form";
   const asideClass = isForm
-    ? "flex border-b border-[#e3e8e1] bg-white px-6 py-6 shadow-[10px_0_30px_rgb(15_23_42/0.03)] lg:sticky lg:top-0 lg:min-h-screen lg:flex-col lg:border-b-0 lg:border-r"
-    : "flex border-b border-[#111] bg-white px-6 py-6 lg:min-h-screen lg:flex-col lg:border-b-0 lg:border-r";
+    ? "relative flex border-b border-[#e3e8e1] bg-white px-6 py-6 shadow-[10px_0_30px_rgb(15_23_42/0.03)] lg:sticky lg:top-0 lg:min-h-screen lg:flex-col lg:border-b-0 lg:border-r"
+    : "relative flex border-b border-[#111] bg-white px-6 py-6 lg:min-h-screen lg:flex-col lg:border-b-0 lg:border-r";
+  const mobileMenuButtonClass = isForm
+    ? "grid h-11 w-11 cursor-pointer place-items-center rounded-lg border border-[#d7dfd7] text-[#116b27] transition hover:bg-[#f3f8ef]"
+    : "grid h-11 w-11 cursor-pointer place-items-center rounded-lg border border-[#d0d0d0] text-[#2e6230] transition hover:bg-[#f3f8ef]";
+  const mobileMenuPanelClass = isForm
+    ? "absolute right-0 top-[calc(100%+0.75rem)] z-30 w-72 max-w-[calc(100vw-3rem)] rounded-lg border border-[#d7dfd7] bg-white p-4 shadow-[0_18px_48px_rgb(15_23_42/0.18)]"
+    : "absolute right-0 top-[calc(100%+0.75rem)] z-30 w-72 max-w-[calc(100vw-3rem)] rounded-lg border border-[#111] bg-white p-4 shadow-[0_18px_48px_rgb(15_23_42/0.18)]";
   const mobileLogoutClass = isForm
-    ? "inline-flex items-center gap-2 rounded-lg border border-[#d7dfd7] px-4 py-3 text-sm font-black text-[#116b27] transition hover:bg-[#f3f8ef] lg:hidden"
-    : "inline-flex items-center gap-2 rounded-lg border border-[#d0d0d0] px-4 py-3 text-sm font-black text-[#2e6230] transition hover:bg-[#f3f8ef] lg:hidden";
+    ? "flex h-12 w-full items-center justify-center gap-3 rounded-lg bg-[#fff0f0] text-sm font-black text-[#ef1b1b] transition hover:bg-[#ffe2e2]"
+    : "flex h-12 w-full items-center justify-center gap-3 rounded-lg bg-[#ffc9cf] text-sm font-black text-[#111] transition hover:bg-[#ffb9c1]";
   const navClass = isForm
     ? "hidden space-y-4 lg:block" : "hidden space-y-4 lg:block pt-10";
   const logoutClass = isForm
-    ? "flex h-12 items-center justify-center gap-4 rounded-lg bg-[#fff0f0] text-base font-black text-[#ef1b1b] transition hover:bg-[#ffe2e2]"
-    : "flex h-12 items-center justify-center gap-4 rounded-lg bg-[#ffc9cf] text-base font-black text-[#111] transition hover:bg-[#ffb9c1]";
+    ? "flex h-12 w-full items-center justify-center gap-4 rounded-lg bg-[#fff0f0] text-base font-black text-[#ef1b1b] transition hover:bg-[#ffe2e2]"
+    : "flex h-12 w-full items-center justify-center gap-4 rounded-lg bg-[#ffc9cf] text-base font-black text-[#111] transition hover:bg-[#ffb9c1]";
 
   return (
     <aside className={asideClass}>
@@ -56,10 +63,36 @@ export function AdminSidebar({
             </p>
           )}
         </div>
-        <Link href="/admin/sign-in" className={mobileLogoutClass}>
-          <LogOutIcon className="h-5 w-5" />
-          Keluar
-        </Link>
+        <details className="relative lg:hidden">
+          <summary
+            aria-label="Buka menu admin"
+            className={`${mobileMenuButtonClass} list-none [&::-webkit-details-marker]:hidden`}
+            title="Menu admin"
+          >
+            <MenuIcon className="h-6 w-6" />
+          </summary>
+          <div className={mobileMenuPanelClass}>
+            <nav className="space-y-3" aria-label="Menu admin">
+              {items.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={getItemClass(variant, Boolean(item.active))}
+                >
+                  {item.icon}
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+            <div className="mt-4 border-t border-[#e3e8e1] pt-4">
+              <AdminLogoutButton
+                className={mobileLogoutClass}
+                iconClassName="h-5 w-5"
+                label="Keluar"
+              />
+            </div>
+          </div>
+        </details>
       </div>
 
       <nav className={navClass}>
@@ -76,10 +109,11 @@ export function AdminSidebar({
       </nav>
 
       <div className={`mt-auto hidden space-y-5 ${isForm ? "pb-7" : "pb-10"} lg:block`}>
-        <Link href="/admin/sign-in" className={logoutClass}>
-          <LogOutIcon className="h-6 w-6" />
-          Log Out
-        </Link>
+        <AdminLogoutButton
+          className={logoutClass}
+          iconClassName="h-6 w-6"
+          label="Log Out"
+        />
       </div>
     </aside>
   );
