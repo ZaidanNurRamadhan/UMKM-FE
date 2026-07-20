@@ -36,17 +36,6 @@ export interface Warung {
   villages: VillageSummary | null;
 }
 
-export interface Article {
-  id: string;
-  village_id: string;
-  title: string;
-  description: string;
-  article_url: string;
-  created_at: string;
-  updated_at: string;
-  villages: VillageSummary | null;
-}
-
 export interface Profile {
   id: string;
   username: string | null;
@@ -77,16 +66,5 @@ export type CreateWarungInput = {
 };
 
 export type UpdateWarungInput = Partial<CreateWarungInput> & {
-  id: string;
-};
-
-export type CreateArticleInput = {
-  village_id: string;
-  title: string;
-  description: string;
-  article_url: string;
-};
-
-export type UpdateArticleInput = Partial<CreateArticleInput> & {
   id: string;
 };

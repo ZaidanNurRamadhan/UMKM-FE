@@ -28,15 +28,21 @@ export function CategoryBadge({ category }: { category: string }) {
 export function PaginationButton({
   ariaLabel,
   children,
+  disabled = false,
+  onClick,
 }: {
   ariaLabel: string;
   children: React.ReactNode;
+  disabled?: boolean;
+  onClick?: () => void;
 }) {
   return (
     <button
       type="button"
       aria-label={ariaLabel}
-      className="grid h-8 w-8 place-items-center rounded border border-white/90 transition hover:bg-white/10"
+      disabled={disabled}
+      onClick={onClick}
+      className="grid h-8 w-8 place-items-center rounded border border-white/90 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-transparent"
     >
       {children}
     </button>

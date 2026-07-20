@@ -175,11 +175,7 @@ export async function deleteWarung(
     const deletedData = data as { id: string; photo_path: string | null };
 
     if (deletedData.photo_path) {
-      const photoResult = await deletePhoto(deletedData.photo_path);
-
-      if (!photoResult.success && process.env.NODE_ENV === "development") {
-        console.error(photoResult);
-      }
+      await deletePhoto(deletedData.photo_path);
     }
 
     return {

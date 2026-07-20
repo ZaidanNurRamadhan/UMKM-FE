@@ -1,8 +1,7 @@
-import { getArticles } from "@/services/article.service";
 import { getUmkm } from "@/services/umkm.service";
 import { getWarungs } from "@/services/warung.service";
 import type { DashboardActivity, DashboardData } from "@/types/admin-dashboard";
-import type { Article, Umkm, VillageSlug, Warung } from "@/types/database";
+import type { Umkm, VillageSlug, Warung } from "@/types/database";
 import { AdminDashboardClient } from "./admin-dashboard-client";
 
 type AdminDashboardProps = {
@@ -47,34 +46,28 @@ export default async function AdminDashboard({ village }: AdminDashboardProps) {
 
 async function loadDashboardData(village: VillageSlug): Promise<DashboardData> {
   try {
-    const [umkm, warungs, articles] = await Promise.all([
+    const [umkm, warungs] = await Promise.all([
       getUmkm({ villageSlug: village }),
       getWarungs({ villageSlug: village }),
-      getArticles({ villageSlug: village }),
     ]);
     const primaryItems =
       village === "mangli"
         ? umkm.map((item) => mapUmkmActivity(item))
         : warungs.map((item) => mapWarungActivity(item));
-    const articleItems = articles.map(mapArticleActivity);
-    const activities = [...primaryItems, ...articleItems]
-      .sort(
-        (first, second) =>
-          new Date(second.createdAt).getTime() -
-          new Date(first.createdAt).getTime(),
-      )
-      .slice(0, 5);
+    const activities = primaryItems.sort(
+      (first, second) =>
+        new Date(second.createdAt).getTime() -
+        new Date(first.createdAt).getTime(),
+    );
 
     return {
       primaryCount: village === "mangli" ? umkm.length : warungs.length,
-      articleCount: articles.length,
       activities,
       error: null,
     };
   } catch (error) {
     return {
       primaryCount: 0,
-      articleCount: 0,
       activities: [],
       error:
         error instanceof Error
@@ -100,16 +93,6 @@ function mapWarungActivity(item: Warung): DashboardActivity {
     name: item.name,
     category: "Warung",
     status: "AKTIF",
-    createdAt: item.created_at,
-  };
-}
-
-function mapArticleActivity(item: Article): DashboardActivity {
-  return {
-    id: `artikel-${item.id}`,
-    name: item.title,
-    category: "Artikel",
-    status: "DRAFT",
     createdAt: item.created_at,
   };
 }

@@ -10,11 +10,10 @@ import {
   VillageSwitch,
 } from "@/components/layout/public-site-shell";
 import { getWhatsAppUrl } from "@/lib/utils/whatsapp";
-import { getArticles } from "@/services/article.service";
 import { getVillageAssetUrl } from "@/services/storage.service";
 import { getUmkm } from "@/services/umkm.service";
 import { getWarungs } from "@/services/warung.service";
-import type { Article, Umkm, VillageSlug, Warung } from "@/types/database";
+import type { Umkm, VillageSlug, Warung } from "@/types/database";
 
 const stats = [
   { value: "120+", label: "UMKM Terdaftar", icon: StoreIcon, color: "#2e6b35" },
@@ -159,7 +158,7 @@ export default async function VillagePage({
     shouldShowWarungs
       ? loadWarungPreview(villageSlug)
       : Promise.resolve({ data: [], error: null }),
-    loadArticlePreview(villageSlug),
+    loadArticlePreview(),
   ]);
 
   return (
@@ -725,29 +724,11 @@ async function loadWarungPreview(
   }
 }
 
-async function loadArticlePreview(
-  villageSlug?: VillageSlug,
-): Promise<DataResult<ArticlePreview>> {
-  try {
-    const articles = await getArticles({ villageSlug, limit: 3 });
-    const data = fillPreviewItems(
-      articles.map(mapArticlePreview),
-      fallbackArticlePreview,
-    );
-
-    return {
-      data,
-      error: null,
-    };
-  } catch (error) {
-    return {
-      data: [],
-      error:
-        error instanceof Error
-          ? error.message
-          : "Data artikel belum dapat dimuat saat ini.",
-    };
-  }
+async function loadArticlePreview(): Promise<DataResult<ArticlePreview>> {
+  return {
+    data: fallbackArticlePreview,
+    error: null,
+  };
 }
 
 function mapUmkmPreview(umkm: Umkm): PreviewItem {
@@ -774,31 +755,12 @@ function mapWarungPreview(warung: Warung): PreviewItem {
   };
 }
 
-function mapArticlePreview(article: Article): ArticlePreview {
-  return {
-    id: article.id,
-    title: article.title,
-    description: article.description,
-    articleUrl: article.article_url,
-    date: formatDate(article.created_at),
-    village: `Desa ${article.villages?.name ?? "Mangli"}`,
-  };
-}
-
 function fillPreviewItems<T>(items: T[], fallback: T[], minimum = 3): T[] {
   if (items.length >= minimum) {
     return items;
   }
 
   return [...items, ...fallback].slice(0, minimum);
-}
-
-function formatDate(value: string): string {
-  return new Intl.DateTimeFormat("id-ID", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  }).format(new Date(value));
 }
 
 function DataMessage({ message }: { message: string }) {

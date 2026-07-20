@@ -67,10 +67,6 @@ export async function debugCurrentSession(
     userError: userError?.message ?? null,
   };
 
-  if (process.env.NODE_ENV === "development") {
-    console.log("Supabase session debug", debugData);
-  }
-
   return debugData;
 }
 

@@ -162,10 +162,6 @@ export function mapSupabaseError<T>(
 ): ServiceResult<T> {
   const normalizedError = readError(error);
 
-  if (process.env.NODE_ENV === "development") {
-    console.error(error);
-  }
-
   return {
     success: false,
     data: null,

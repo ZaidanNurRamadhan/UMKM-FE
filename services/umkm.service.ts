@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase/client";
 import { getSupabaseErrorMessage, mapSupabaseError } from "@/lib/errors/supabase-error";
-import { getCurrentMangliAdminProfile, toProfileDebug } from "@/services/profile.service";
+import { getCurrentMangliAdminProfile } from "@/services/profile.service";
 import { deletePhoto } from "@/services/storage.service";
 import type {
   CreateUmkmInput,
@@ -83,14 +83,6 @@ export async function createUmkm(
       .single();
 
     if (error) {
-      logUmkmMutationDebug("insert", {
-        userId: adminProfile.data.userId,
-        profile: adminProfile.data.profile,
-        village: adminProfile.data.village,
-        payload,
-        error,
-      });
-
       return mapSupabaseError(error, "Data gagal disimpan.");
     }
 
@@ -132,14 +124,6 @@ export async function updateUmkm(
       .single();
 
     if (error) {
-      logUmkmMutationDebug("update", {
-        userId: adminProfile.data.userId,
-        profile: adminProfile.data.profile,
-        village: adminProfile.data.village,
-        payload: { id, ...values },
-        error,
-      });
-
       return mapSupabaseError(error, "Data gagal diperbarui.");
     }
 
@@ -179,14 +163,6 @@ export async function deleteUmkm(
       .single();
 
     if (error) {
-      logUmkmMutationDebug("delete", {
-        userId: adminProfile.data.userId,
-        profile: adminProfile.data.profile,
-        village: adminProfile.data.village,
-        payload: { id },
-        error,
-      });
-
       return mapSupabaseError(error, "Data gagal dihapus.");
     }
 
@@ -201,11 +177,7 @@ export async function deleteUmkm(
     const deletedData = data as { id: string; photo_path: string | null };
 
     if (deletedData.photo_path) {
-      const photoResult = await deletePhoto(deletedData.photo_path);
-
-      if (!photoResult.success && process.env.NODE_ENV === "development") {
-        console.error(photoResult);
-      }
+      await deletePhoto(deletedData.photo_path);
     }
 
     return {
@@ -223,50 +195,4 @@ function normalizeUmkmRow(row: UmkmQueryRow): Umkm {
     ...row,
     villages: normalizeVillageRelation(row.villages),
   };
-}
-
-type UmkmDebugPayload = Record<string, string | null | undefined>;
-
-function readDebugError(error: unknown) {
-  if (typeof error !== "object" || error === null) {
-    return null;
-  }
-
-  const record = error as Record<string, unknown>;
-
-  return {
-    code: typeof record.code === "string" ? record.code : undefined,
-    message: typeof record.message === "string" ? record.message : undefined,
-    details: typeof record.details === "string" ? record.details : undefined,
-    hint: typeof record.hint === "string" ? record.hint : undefined,
-  };
-}
-
-function logUmkmMutationDebug(
-  operation: "insert" | "update" | "delete",
-  context: {
-    userId: string;
-    profile: {
-      id: string;
-      role: string;
-      village_id: string | null;
-    };
-    village: {
-      id: string;
-      slug: VillageSlug;
-    };
-    payload: UmkmDebugPayload;
-    error?: unknown;
-  },
-): void {
-  if (process.env.NODE_ENV !== "development") {
-    return;
-  }
-
-  console.error(`UMKM ${operation} debug`, {
-    userId: context.userId,
-    ...toProfileDebug(context.profile, context.village),
-    payload: context.payload,
-    error: context.error ? readDebugError(context.error) : undefined,
-  });
 }

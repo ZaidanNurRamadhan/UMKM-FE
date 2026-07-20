@@ -275,7 +275,7 @@ function Logo({ compact = false }: { compact?: boolean } = {}) {
         alt="Logo Kabupaten Magelang"
         width={38}
         height={48}
-        className={compact ? "h-10 w-[34px] lg:h-12 lg:w-auto" : "h-12 w-auto"}
+        className={compact ? "h-auto w-[34px] lg:w-[38px]" : "h-auto w-[38px]"}
       />
       <div className="leading-none">
         <p className={`${compact ? "text-[0.7rem] lg:text-sm" : "text-xl"} font-black text-[#2e6b35] dark:text-[#a9d8aa]`}>

@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import {
-  ArticleIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
   CloseIcon,
   DashboardIcon,
   PlusIcon,
@@ -29,13 +30,34 @@ type AdminDashboardClientProps = {
   };
 };
 
+const DASHBOARD_ACTIVITY_PAGE_SIZE = 5;
+
 export function AdminDashboardClient({
   village,
   dashboardData,
   config,
 }: AdminDashboardClientProps) {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [activityPage, setActivityPage] = useState(1);
   const manageHref = `/admin/${village}/${config.manageSegment}`;
+  const totalActivities = dashboardData.activities.length;
+  const totalActivityPages = Math.max(
+    1,
+    Math.ceil(totalActivities / DASHBOARD_ACTIVITY_PAGE_SIZE),
+  );
+  const currentActivityPage = Math.min(activityPage, totalActivityPages);
+  const firstActivityIndex =
+    (currentActivityPage - 1) * DASHBOARD_ACTIVITY_PAGE_SIZE;
+  const visibleActivities = dashboardData.activities.slice(
+    firstActivityIndex,
+    firstActivityIndex + DASHBOARD_ACTIVITY_PAGE_SIZE,
+  );
+  const activityRangeStart =
+    totalActivities === 0 ? 0 : firstActivityIndex + 1;
+  const activityRangeEnd = Math.min(
+    firstActivityIndex + DASHBOARD_ACTIVITY_PAGE_SIZE,
+    totalActivities,
+  );
   const sidebarItems = [
     {
       href: `/admin/${village}`,
@@ -98,11 +120,6 @@ export function AdminDashboardClient({
                 label={config.primaryLabel}
                 value={dashboardData.primaryCount}
               />
-              <StatCard
-                icon={<ArticleIcon className="h-11 w-11" />}
-                label="Total Artikel Potensi"
-                value={dashboardData.articleCount}
-              />
             </div>
 
             <section
@@ -142,7 +159,7 @@ export function AdminDashboardClient({
                   </thead>
                   <tbody>
                     {dashboardData.activities.length > 0 ? (
-                      dashboardData.activities.map((activity) => (
+                      visibleActivities.map((activity) => (
                         <tr
                           key={activity.id}
                           className="border-b border-[#a5a5a5] last:border-b-0"
@@ -174,6 +191,46 @@ export function AdminDashboardClient({
                   </tbody>
                 </table>
               </div>
+              {totalActivities > DASHBOARD_ACTIVITY_PAGE_SIZE && (
+                <div className="flex flex-col gap-3 border-t border-[#d0d0d0] px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-sm font-bold text-[#666]">
+                    Menampilkan {activityRangeStart}-{activityRangeEnd} dari{" "}
+                    {totalActivities} data
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      aria-label="Halaman sebelumnya"
+                      onClick={() =>
+                        setActivityPage(Math.max(1, currentActivityPage - 1))
+                      }
+                      disabled={currentActivityPage === 1}
+                      className="grid h-10 w-10 place-items-center rounded-lg border border-[#d0d0d0] text-[#2e6230] transition hover:bg-[#f3f8ef] disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-transparent"
+                    >
+                      <ChevronLeftIcon className="h-5 w-5" />
+                    </button>
+                    <span className="min-w-[112px] text-center text-sm font-black text-[#2e6230]">
+                      {currentActivityPage} / {totalActivityPages}
+                    </span>
+                    <button
+                      type="button"
+                      aria-label="Halaman berikutnya"
+                      onClick={() =>
+                        setActivityPage(
+                          Math.min(
+                            totalActivityPages,
+                            currentActivityPage + 1,
+                          ),
+                        )
+                      }
+                      disabled={currentActivityPage === totalActivityPages}
+                      className="grid h-10 w-10 place-items-center rounded-lg border border-[#d0d0d0] text-[#2e6230] transition hover:bg-[#f3f8ef] disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-transparent"
+                    >
+                      <ChevronRightIcon className="h-5 w-5" />
+                    </button>
+                  </div>
+                </div>
+              )}
             </section>
           </section>
         </div>

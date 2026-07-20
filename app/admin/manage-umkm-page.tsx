@@ -1,14 +1,6 @@
 import Link from "next/link";
 import {
-  CategoryBadge,
-  PaginationButton,
-  PhotoCell,
-} from "@/components/admin/catalog-table-parts";
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
   DashboardIcon,
-  EditIcon,
   PlusCircleIcon,
   PlusIcon,
   StoreIcon,
@@ -16,7 +8,7 @@ import {
 import { CATALOG_CONFIG } from "@/constants/catalog";
 import { AdminHeader } from "@/components/layout/admin-header";
 import { AdminSidebar } from "@/components/layout/admin-sidebar";
-import { DeleteCatalogButton } from "./delete-catalog-button";
+import { ManageCatalogTable } from "./manage-catalog-table";
 import { ManageUmkmPanelPage } from "./manage-umkm-panel-page";
 import { RetryButton } from "./retry-button";
 import { getVillageAssetUrl } from "@/services/storage.service";
@@ -137,114 +129,14 @@ export default async function ManageUmkmPage({
               </div>
             )}
 
-            <section className="mt-8 overflow-hidden rounded-lg border border-[#bfc8bf]">
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[860px] border-collapse text-left">
-                  <thead className="bg-[#2f662d] text-white">
-                    <tr>
-                      <th className="w-16 px-6 py-4 text-sm font-black">
-                        No
-                      </th>
-                      <th className="w-24 px-6 py-4 text-sm font-black">
-                        Foto
-                      </th>
-                      <th className="px-6 py-4 text-sm font-black">
-                        {copy.nameHeader}
-                      </th>
-                      <th className="w-36 px-6 py-4 text-sm font-black">
-                        Kategori
-                      </th>
-                      <th className="w-44 px-6 py-4 text-sm font-black">
-                        WhatsApp
-                      </th>
-                      <th className="w-28 px-6 py-4 text-right text-sm font-black">
-                        Aksi
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {result.items.length > 0 ? (
-                      result.items.map((item, index) => (
-                        <tr
-                          key={item.id}
-                          className="border-b border-[#e1e5e1] last:border-b-0"
-                        >
-                          <td className="px-6 py-4 text-sm text-[#465366]">
-                            {index + 1}
-                          </td>
-                          <td className="px-6 py-4">
-                            <PhotoCell src={item.photoUrl} alt={item.name} />
-                          </td>
-                          <td className="px-6 py-4 text-base font-black text-[#1e2533]">
-                            {item.name}
-                          </td>
-                          <td className="px-6 py-4">
-                            <CategoryBadge category={item.category} />
-                          </td>
-                          <td className="px-6 py-4 text-sm text-[#465366]">
-                            {item.whatsappNumber ?? "-"}
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex justify-end gap-5 text-[#4c5868]">
-                              <Link
-                                href={`${listHref}/${item.id}/edit`}
-                                aria-label={`Edit ${item.name}`}
-                                className="transition hover:text-[#2e6230]"
-                              >
-                                <EditIcon className="h-5 w-5" />
-                              </Link>
-                              <DeleteCatalogButton
-                                kind={kind}
-                                id={item.id}
-                                name={item.name}
-                              />
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td
-                          colSpan={6}
-                          className="px-6 py-16 text-center text-sm font-bold text-[#777]"
-                        >
-                          {copy.empty}
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-              <div className="flex flex-col gap-4 bg-[#2f662d] px-6 py-4 text-white sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-sm font-medium">
-                  Menampilkan {result.items.length > 0 ? "1" : "0"}-
-                  {result.items.length} dari {result.total} {copy.totalLabel}
-                </p>
-                <div className="flex items-center gap-2">
-                  <PaginationButton ariaLabel="Halaman sebelumnya">
-                    <ChevronLeftIcon className="h-4 w-4" />
-                  </PaginationButton>
-                  <span className="grid h-8 min-w-8 place-items-center rounded-md bg-[#d67a00] px-3 text-sm font-black">
-                    1
-                  </span>
-                  <span className="grid h-8 min-w-8 place-items-center px-3 text-sm">
-                    2
-                  </span>
-                  <span className="grid h-8 min-w-8 place-items-center px-3 text-sm">
-                    3
-                  </span>
-                  <span className="grid h-8 min-w-8 place-items-center px-3 text-sm">
-                    ...
-                  </span>
-                  <span className="grid h-8 min-w-8 place-items-center px-3 text-sm">
-                    9
-                  </span>
-                  <PaginationButton ariaLabel="Halaman berikutnya">
-                    <ChevronRightIcon className="h-4 w-4" />
-                  </PaginationButton>
-                </div>
-              </div>
-            </section>
+            <ManageCatalogTable
+              kind={kind}
+              items={result.items}
+              listHref={listHref}
+              nameHeader={copy.nameHeader}
+              empty={copy.empty}
+              totalLabel={copy.totalLabel}
+            />
           </section>
         </div>
       </div>
@@ -257,7 +149,7 @@ async function loadUmkmPanelRows(village: VillageSlug): Promise<UmkmPanelData> {
     const umkm = await getUmkm({ villageSlug: village });
 
     return {
-      items: umkm.slice(0, 5).map(mapUmkmPanelRow),
+      items: umkm.map(mapUmkmPanelRow),
       total: umkm.length,
       error: null,
     };
@@ -282,7 +174,7 @@ async function loadCatalogRows(
       const warungs = await getWarungs({ villageSlug: village });
 
       return {
-        items: warungs.slice(0, 5).map(mapWarungRow),
+        items: warungs.map(mapWarungRow),
         total: warungs.length,
         error: null,
       };
@@ -291,7 +183,7 @@ async function loadCatalogRows(
     const umkm = await getUmkm({ villageSlug: village });
 
     return {
-      items: umkm.slice(0, 5).map(mapUmkmRow),
+      items: umkm.map(mapUmkmRow),
       total: umkm.length,
       error: null,
     };

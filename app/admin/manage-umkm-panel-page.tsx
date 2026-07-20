@@ -39,6 +39,8 @@ type ManageUmkmPanelPageProps = {
   error: string | null;
 };
 
+const PAGE_SIZE = 10;
+
 export function ManageUmkmPanelPage({
   village,
   items,
@@ -48,6 +50,25 @@ export function ManageUmkmPanelPage({
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [panelMode, setPanelMode] = useState<CatalogFormMode>("create");
   const [selectedItem, setSelectedItem] = useState<Umkm | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(1);
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+  const filteredItems =
+    normalizedSearch.length === 0
+      ? items
+      : items.filter((item) =>
+          [item.name, item.category, item.whatsappNumber ?? ""]
+            .join(" ")
+            .toLowerCase()
+            .includes(normalizedSearch),
+        );
+  const totalPages = Math.max(1, Math.ceil(filteredItems.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const firstIndex = (currentPage - 1) * PAGE_SIZE;
+  const visibleItems = filteredItems.slice(firstIndex, firstIndex + PAGE_SIZE);
+  const rangeStart = filteredItems.length === 0 ? 0 : firstIndex + 1;
+  const rangeEnd = Math.min(firstIndex + PAGE_SIZE, filteredItems.length);
+  const footerTotal = normalizedSearch.length === 0 ? total : filteredItems.length;
   const sidebarItems = [
     {
       href: `/admin/${village}`,
@@ -90,6 +111,11 @@ export function ManageUmkmPanelPage({
     setIsPanelOpen(false);
   }
 
+  function handleSearchChange(value: string) {
+    setSearchTerm(value);
+    setPage(1);
+  }
+
   return (
     <main className="min-h-screen bg-white text-[#111111]">
       <div className="lg:grid lg:min-h-screen lg:grid-cols-[325px_1fr]">
@@ -130,6 +156,16 @@ export function ManageUmkmPanelPage({
             )}
 
             <section className="mt-8 overflow-hidden rounded-lg border border-[#bfc8bf]">
+              <div className="border-b border-[#dfe6df] bg-white px-6 py-4">
+                <input
+                  id="umkm-search"
+                  type="search"
+                  value={searchTerm}
+                  onChange={(event) => handleSearchChange(event.target.value)}
+                  placeholder="Cari UMKM..."
+                  className="h-11 w-full rounded-lg border border-[#cfd8cf] px-4 text-sm font-semibold text-[#1e2533] outline-none transition placeholder:text-[#8a938a] focus:border-[#2f662d] focus:ring-2 focus:ring-[#2f662d]/15"
+                />
+              </div>
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[860px] border-collapse text-left">
                   <thead className="bg-[#2f662d] text-white">
@@ -155,14 +191,14 @@ export function ManageUmkmPanelPage({
                     </tr>
                   </thead>
                   <tbody>
-                    {items.length > 0 ? (
-                      items.map((item, index) => (
+                    {visibleItems.length > 0 ? (
+                      visibleItems.map((item, index) => (
                         <tr
                           key={item.id}
                           className="border-b border-[#e1e5e1] last:border-b-0"
                         >
                           <td className="px-6 py-4 text-sm text-[#465366]">
-                            {index + 1}
+                            {firstIndex + index + 1}
                           </td>
                           <td className="px-6 py-4">
                             <PhotoCell src={item.photoUrl} alt={item.name} />
@@ -201,7 +237,9 @@ export function ManageUmkmPanelPage({
                           colSpan={6}
                           className="px-6 py-16 text-center text-sm font-bold text-[#777]"
                         >
-                          Belum ada data UMKM.
+                          {items.length === 0
+                            ? "Belum ada data UMKM."
+                            : "Data tidak ditemukan."}
                         </td>
                       </tr>
                     )}
@@ -210,29 +248,24 @@ export function ManageUmkmPanelPage({
               </div>
               <div className="flex flex-col gap-4 bg-[#2f662d] px-6 py-4 text-white sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-sm font-medium">
-                  Menampilkan {items.length > 0 ? "1" : "0"}-{items.length}{" "}
-                  dari {total} UMKM
+                  Menampilkan {rangeStart}-{rangeEnd} dari {footerTotal} UMKM
                 </p>
                 <div className="flex items-center gap-2">
-                  <PaginationButton ariaLabel="Halaman sebelumnya">
+                  <PaginationButton
+                    ariaLabel="Halaman sebelumnya"
+                    disabled={currentPage === 1}
+                    onClick={() => setPage(Math.max(1, currentPage - 1))}
+                  >
                     <ChevronLeftIcon className="h-4 w-4" />
                   </PaginationButton>
-                  <span className="grid h-8 min-w-8 place-items-center rounded-md bg-[#d67a00] px-3 text-sm font-black">
-                    1
+                  <span className="grid h-8 min-w-[72px] place-items-center rounded-md bg-[#d67a00] px-3 text-sm font-black">
+                    {currentPage} / {totalPages}
                   </span>
-                  <span className="grid h-8 min-w-8 place-items-center px-3 text-sm">
-                    2
-                  </span>
-                  <span className="grid h-8 min-w-8 place-items-center px-3 text-sm">
-                    3
-                  </span>
-                  <span className="grid h-8 min-w-8 place-items-center px-3 text-sm">
-                    ...
-                  </span>
-                  <span className="grid h-8 min-w-8 place-items-center px-3 text-sm">
-                    9
-                  </span>
-                  <PaginationButton ariaLabel="Halaman berikutnya">
+                  <PaginationButton
+                    ariaLabel="Halaman berikutnya"
+                    disabled={currentPage === totalPages}
+                    onClick={() => setPage(Math.min(totalPages, currentPage + 1))}
+                  >
                     <ChevronRightIcon className="h-4 w-4" />
                   </PaginationButton>
                 </div>

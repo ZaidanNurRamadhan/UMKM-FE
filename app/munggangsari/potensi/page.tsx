@@ -7,8 +7,6 @@ import {
   PublicHeader,
   VillageSwitch,
 } from "@/components/layout/public-site-shell";
-import { getArticles } from "@/services/article.service";
-import type { Article } from "@/types/database";
 
 export const dynamic = "force-dynamic";
 
@@ -72,7 +70,7 @@ const fallbackArticles: PotensiArticle[] = [
 ];
 
 export default async function MunggangsariPotensiPage() {
-  const articleResult = await loadPotensiArticles();
+  const articleResult = loadPotensiArticles();
 
   return (
     <main className="min-h-screen overflow-x-hidden bg-white text-[#111711] transition-colors dark:bg-[#10150f] dark:text-[#f5f7f2]">
@@ -178,42 +176,11 @@ export default async function MunggangsariPotensiPage() {
   );
 }
 
-async function loadPotensiArticles(): Promise<ArticleResult> {
-  try {
-    const articles = await getArticles({ villageSlug: "munggangsari", limit: 4 });
-
-    return {
-      data: fillArticles(articles.map(mapArticle)),
-      error: null,
-    };
-  } catch (error) {
-    return {
-      data: fallbackArticles,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Data artikel belum dapat dimuat saat ini.",
-    };
-  }
-}
-
-function mapArticle(article: Article): PotensiArticle {
+function loadPotensiArticles(): ArticleResult {
   return {
-    id: article.id,
-    title: article.title,
-    description: article.description,
-    articleUrl: article.article_url,
-    image: heroImage,
-    category: "Kuliner Lokal",
+    data: fallbackArticles,
+    error: null,
   };
-}
-
-function fillArticles(articles: PotensiArticle[]): PotensiArticle[] {
-  if (articles.length >= 4) {
-    return articles;
-  }
-
-  return [...articles, ...fallbackArticles].slice(0, 4);
 }
 
 function DataMessage({ message }: { message: string }) {
