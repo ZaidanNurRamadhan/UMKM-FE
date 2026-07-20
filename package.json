@@ -2,6 +2,9 @@
   "name": "fe-umkm",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -19,6 +22,9 @@
     "react-hook-form": "^7.81.0",
     "sonner": "^2.0.7",
     "zod": "^4.4.3"
+  },
+  "overrides": {
+    "postcss": "^8.5.17"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

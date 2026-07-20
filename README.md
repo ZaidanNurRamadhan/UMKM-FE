@@ -1,6 +1,6 @@
 # Katalog Potensi Desa Mangli & Munggangsari
 
-Website katalog potensi desa untuk publik dan admin desa. Aplikasi memuat halaman publik, dashboard admin, autentikasi Supabase, CRUD UMKM, warung, artikel, upload gambar, dan integrasi tombol WhatsApp.
+Website katalog potensi desa untuk publik dan admin desa. Aplikasi memuat halaman publik, dashboard admin, autentikasi Supabase, CRUD UMKM dan warung, upload gambar, dan integrasi tombol WhatsApp.
 
 ## Teknologi
 
@@ -51,10 +51,30 @@ Buat `.env` lokal berisi konfigurasi Supabase:
 
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 ```
 
 Jangan menyimpan service role key di frontend.
+
+## Deploy Vercel
+
+Project siap dideploy sebagai aplikasi Next.js di Vercel.
+
+1. Import repository ke Vercel.
+2. Pastikan Node.js menggunakan versi `20.19.0` atau lebih baru.
+3. Tambahkan Environment Variables berikut di Vercel Project Settings:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+```
+
+4. Gunakan command bawaan Vercel:
+
+```bash
+npm install
+npm run build
+```
 
 ## Lokasi Fitur Utama
 
@@ -71,13 +91,11 @@ Jangan menyimpan service role key di frontend.
 | Side panel tambah UMKM dari dashboard | `app/admin/admin-dashboard-client.tsx` |
 | CRUD UMKM | `services/umkm.service.ts` |
 | CRUD Warung | `services/warung.service.ts` |
-| CRUD Artikel | `services/article.service.ts` |
 | Upload gambar | `services/storage.service.ts` |
 | Supabase client | `lib/supabase/client.ts` |
 | Metadata situs | `config/site.ts` |
 | Validasi UMKM | `validations/umkm.schema.ts` |
 | Validasi Warung | `validations/warung.schema.ts` |
-| Validasi Artikel | `validations/article.schema.ts` |
 | Konfigurasi katalog | `constants/catalog.ts` |
 | Konfigurasi desa | `constants/villages.ts` |
 | Konfigurasi storage | `constants/storage.ts` |
@@ -96,11 +114,9 @@ Jangan menyimpan service role key di frontend.
 | `/admin/mangli` | `app/admin/mangli/page.tsx` |
 | `/admin/mangli/umkm` | `app/admin/mangli/umkm/page.tsx` |
 | `/admin/mangli/warung` | `app/admin/mangli/warung/page.tsx` |
-| `/admin/mangli/artikel` | `app/admin/mangli/artikel/page.tsx` |
 | `/admin/munggangsari` | `app/admin/munggangsari/page.tsx` |
 | `/admin/munggangsari/umkm` | `app/admin/munggangsari/umkm/page.tsx` |
 | `/admin/munggangsari/warung` | `app/admin/munggangsari/warung/page.tsx` |
-| `/admin/munggangsari/artikel` | `app/admin/munggangsari/artikel/page.tsx` |
 
 ## Menambah Halaman Baru
 
