@@ -92,7 +92,7 @@ export default async function MunggangsariPotensiPage() {
         <div className="absolute left-0 right-0 top-3 z-10 flex justify-center px-6 md:hidden">
           <VillageSwitch village="munggangsari" />
         </div>
-        <div className="relative mx-auto flex min-h-[420px] max-w-7xl flex-col justify-center px-6 pt-12 md:min-h-[620px] md:px-10 md:pt-0">
+        <div className="relative flex min-h-[420px] flex-col justify-center px-6 pt-12 md:min-h-[620px] md:px-[40px] md:pt-0">
           <FadeIn className="max-w-[330px] md:max-w-3xl">
             <h1 className="text-[2.25rem] font-black leading-[0.98] md:text-6xl lg:text-7xl">
               Potensi & Cerita
@@ -108,7 +108,7 @@ export default async function MunggangsariPotensiPage() {
       </section>
 
       <section className="bg-white py-14 md:py-20 dark:bg-[#10150f]">
-        <div className="mx-auto max-w-6xl px-5 md:px-10">
+        <div className="px-5 md:px-[40px]">
           {articleResult.error ? (
             <DataMessage message={articleResult.error} />
           ) : (

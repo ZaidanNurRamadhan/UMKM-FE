@@ -181,7 +181,7 @@ export default async function VillagePage({
         <div className="absolute left-0 right-0 top-3 z-10 flex justify-center px-6 md:hidden">
           <VillageSwitch village={village} />
         </div>
-        <div className="relative mx-auto flex min-h-[560px] max-w-7xl flex-col justify-center px-6 pb-16 pt-24 md:min-h-[680px] md:px-10 md:py-28">
+        <div className="relative flex min-h-[560px] flex-col justify-center px-6 pb-16 pt-24 md:min-h-[680px] md:px-[40px] md:py-28">
           <StaggerContainer className="mx-auto max-w-[310px] md:mx-0 md:max-w-3xl">
             <StaggerItem>
             <h1 className="max-w-full text-[2.05rem] font-black leading-[0.98] md:text-7xl">
@@ -254,15 +254,15 @@ export default async function VillagePage({
         </svg>
       </section>
 
-      <section id="potensi" className="bg-white pt-16 pb-14 transition-colors md:bg-[#f0f1ee] md:py-32 dark:bg-[#10150f] md:dark:bg-[#151c14]">
-        <div className="mx-auto grid max-w-7xl items-center gap-7 px-6 md:grid-cols-[1fr_0.92fr] md:gap-16 md:px-10">
+      <section id="potensi" className="bg-white pb-12 pt-10 transition-colors min-[1025px]:bg-[#f0f1ee] min-[1025px]:py-32 dark:bg-[#10150f] min-[1025px]:dark:bg-[#151c14]">
+        <div className="grid gap-7 px-6 md:px-[40px] min-[1025px]:grid-cols-[1fr_0.92fr] min-[1025px]:items-center min-[1025px]:gap-16">
           <FadeIn direction="left">
-            <h2 className="max-w-2xl text-[1.72rem] font-black leading-[1.02] md:text-5xl">
+            <h2 className="max-w-2xl text-[1.72rem] font-black leading-[1.02] md:max-w-none md:text-center min-[1025px]:max-w-2xl min-[1025px]:text-left min-[1025px]:text-5xl">
               Gerbang Digital
-              <br />
+              <br className="md:hidden min-[1025px]:block" />
               Untuk <span className="text-[#2e6b35] dark:text-[#8bc98c]">Masa Depan Desa</span>
             </h2>
-            <div className="mt-4 max-w-2xl space-y-3 text-[0.72rem] font-medium leading-5 text-[#334135] md:mt-8 md:space-y-5 md:text-base md:leading-7 dark:text-[#d4decf]">
+            <div className="mt-3 max-w-2xl space-y-2 text-[0.72rem] font-medium leading-5 text-[#334135] min-[1025px]:mt-8 min-[1025px]:space-y-5 min-[1025px]:text-base min-[1025px]:leading-7 dark:text-[#d4decf]">
               <p>
                 Inisiatif Desa Digital merupakan langkah strategis untuk
                 menghubungkan potensi unik {isAll ? "Desa Mangli dan Munggangsari" : `Desa ${titleVillage}`} dengan pasar yang
@@ -278,9 +278,9 @@ export default async function VillagePage({
                 akses ekonomi.
               </p>
             </div>
-            <StaggerContainer className="mt-10 hidden max-w-2xl gap-6 sm:grid-cols-3 sm:divide-x sm:divide-[#bbc7b9] md:grid sm:dark:divide-[#41523f]">
+            <StaggerContainer className="mt-10 hidden max-w-2xl gap-6 divide-x divide-[#bbc7b9] min-[1025px]:grid min-[1025px]:grid-cols-3 dark:divide-[#41523f]">
               {values.map(({ title, text, icon: Icon }) => (
-                <StaggerItem key={title} className="feature-motion sm:px-4 sm:first:pl-0">
+                <StaggerItem key={title} className="feature-motion px-4 first:pl-0">
                   <Icon className="mb-3 h-7 w-7 text-[#2e6b35] dark:text-[#8bc98c]" />
                   <h3 className="text-2xl font-black leading-6">{title}</h3>
                   <p className="mt-1 text-xs font-semibold text-[#536052] dark:text-[#b2bdae]">
@@ -290,7 +290,16 @@ export default async function VillagePage({
               ))}
             </StaggerContainer>
           </FadeIn>
-          <FadeIn direction="right" className="relative aspect-[1.35] overflow-hidden rounded-xl md:rounded-lg">
+          <FadeIn direction="right" className="relative mx-auto aspect-[0.86] w-full max-w-[560px] overflow-hidden rounded-[18px] min-[1025px]:hidden">
+            <Image
+              src="/images/digital.png"
+              alt="Tim desa digital"
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) calc(100vw - 80px), 560px"
+            />
+          </FadeIn>
+          <FadeIn direction="right" className="relative hidden aspect-[1.35] overflow-hidden rounded-lg min-[1025px]:block">
             <Image
               src="/images/community.jpg"
               alt="Kegiatan budaya masyarakat desa"
@@ -299,12 +308,12 @@ export default async function VillagePage({
               sizes="(min-width: 768px) 42vw, 100vw"
             />
           </FadeIn>
-          <StaggerContainer className="grid grid-cols-3 gap-2 pt-1 text-center md:hidden">
+          <StaggerContainer className="grid grid-cols-3 divide-x divide-[#dfe7dc] pt-1 text-center min-[1025px]:hidden dark:divide-[#344233]">
             {values.map(({ title, text, icon: Icon }) => (
-              <StaggerItem key={title} className="feature-motion px-1">
-                <Icon className="mx-auto mb-2 h-5 w-5 text-[#2e6b35] dark:text-[#8bc98c]" />
+              <StaggerItem key={title} className="feature-motion px-2">
+                <Icon className="mx-auto mb-1.5 h-5 w-5 text-[#2e6b35] dark:text-[#8bc98c]" />
                 <h3 className="text-[0.74rem] font-black leading-4">{title}</h3>
-                <p className="mt-1 text-[0.48rem] font-semibold leading-3 text-[#536052] dark:text-[#b2bdae]">
+                <p className="mt-0.5 text-[0.48rem] font-semibold leading-3 text-[#536052] dark:text-[#b2bdae]">
                   {text}
                 </p>
               </StaggerItem>
@@ -314,7 +323,7 @@ export default async function VillagePage({
       </section>
 
       <section id="jelajahi" className="bg-white pb-14 pt-2 transition-colors md:py-24 dark:bg-[#10150f]">
-        <div className="mx-auto max-w-7xl px-5 md:px-10">
+        <div className="px-5 md:px-[40px]">
           <FadeIn>
           <p className="text-[0.66rem] font-black text-[#2e6b35] md:text-sm dark:text-[#8bc98c]">Jelajahi Desa</p>
           <h2 className="mt-2 text-[1.45rem] font-black leading-tight md:mt-4 md:text-5xl">
@@ -388,7 +397,7 @@ export default async function VillagePage({
       )}
 
       <section id="artikel" className="bg-white pb-14 transition-colors md:pb-24 dark:bg-[#10150f]">
-        <div className="mx-auto grid max-w-7xl gap-12 px-5 md:grid-cols-[1fr_0.84fr] md:px-10">
+        <div className="grid gap-12 px-5 md:grid-cols-[1fr_0.84fr] md:px-[40px]">
           <div className="md:border-r md:border-[#899483] md:pr-10 md:dark:border-[#4d5e49]">
             <div className="flex items-center justify-between md:hidden">
               <h2 className="text-sm font-black">Galeri Kehidupan Desa</h2>
@@ -571,7 +580,7 @@ function PreviewSection({
 
   return (
     <section id={id} className="bg-white pb-14 transition-colors md:pb-24 dark:bg-[#10150f]">
-      <div className="mx-auto max-w-7xl px-5 md:px-10">
+      <div className="px-5 md:px-[40px]">
         <div className="flex items-end justify-between gap-4">
           <FadeIn>
             <div>

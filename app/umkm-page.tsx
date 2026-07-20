@@ -98,7 +98,7 @@ export default async function UmkmPage({
         <div className="absolute left-0 right-0 top-3 z-10 flex justify-center px-6 md:hidden">
           <VillageSwitch village={village} />
         </div>
-        <div className="relative mx-auto max-w-7xl px-6 pt-10 md:px-10 md:pt-0">
+        <div className="relative px-6 pt-10 md:px-[40px] md:pt-0">
           <FadeIn className="max-w-[330px] md:max-w-4xl">
             <h1 className="text-[2.05rem] font-black leading-[0.98] md:text-6xl md:leading-tight">
               Katalog {copy.title} Desa {villageName}
@@ -113,7 +113,7 @@ export default async function UmkmPage({
       </section>
 
       <section className="py-14 md:py-20">
-        <div className="mx-auto max-w-7xl px-5 md:px-10">
+        <div className="px-5 md:px-[40px]">
           <FadeIn>
             <p className="text-[0.55rem] font-black text-[#2e6b35] md:text-lg dark:text-[#8bc98c]">
               {copy.eyebrow}

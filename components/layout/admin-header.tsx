@@ -20,7 +20,7 @@ export function AdminHeader({ village, variant = "default" }: AdminHeaderProps) 
           <p className="hidden text-base font-black sm:block">
             {ADMIN_NAMES[village]}
           </p>
-          <span className="grid h-11 w-11 place-items-center rounded-full bg-[#d8edcf]">
+          <span className="hidden h-11 w-11 place-items-center rounded-full bg-[#d8edcf] sm:grid">
             <UserIcon className="h-7 w-7 text-[#118331]" />
           </span>
         </div>
@@ -39,7 +39,7 @@ export function AdminHeader({ village, variant = "default" }: AdminHeaderProps) 
         <p className="hidden text-xl font-black sm:block">
           {ADMIN_NAMES[village]}
         </p>
-        <UserIcon className="h-10 w-10 text-[#95ac00]" />
+        <UserIcon className="hidden h-10 w-10 text-[#95ac00] sm:block" />
       </div>
     </header>
   );

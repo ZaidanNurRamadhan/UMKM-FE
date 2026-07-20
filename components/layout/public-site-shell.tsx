@@ -1,4 +1,3 @@
-import type { ComponentType } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatedHeader } from "@/components/animations/AnimatedHeader";
@@ -31,41 +30,54 @@ export function PublicHeader({
   const catalogLabel = catalogKind === "warung" ? "Warung" : "UMKM";
   const isSubPage = isCatalogPage || isPotensiPage;
   const hasPotensiPage = !isAll;
-  const homeHref = isSubPage ? route : "#beranda";
+  const homeHref = "/";
   const articleHref = isSubPage ? `${route}#artikel` : "#artikel";
   const potensiHref = hasPotensiPage ? `${route}/potensi` : "#potensi";
+  const showMobileMenuLinks = !isAll || isSubPage;
 
   return (
     <AnimatedHeader>
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 md:h-24 md:gap-6 md:px-10">
-        <Logo compact />
+      <div className="flex h-16 items-center justify-between gap-3 px-4 md:px-[40px] lg:h-24 lg:gap-6">
+        <div className="relative shrink-0">
+          <Logo compact />
+          <ThemeToggle variant="pull-cord" />
+        </div>
         <nav className="ml-auto flex items-center gap-2 md:hidden">
-          <MobileNavLink href={homeHref} label="Beranda" icon={HomeIcon} />
-          <MobileNavLink href={catalogHref} label={catalogLabel} icon={StoreIcon} />
-          {hasPotensiPage ? (
-            <MobileNavLink href={potensiHref} label="Potensi" icon={CompassIcon} />
-          ) : (
-            <MobileNavLink href={articleHref} label="Artikel" icon={ArticleIcon} />
+          {showMobileMenuLinks && (
+            <>
+              <MobileNavLink href={homeHref} label="Beranda"/>
+              <MobileNavLink href={catalogHref} label={catalogLabel}/>
+              {hasPotensiPage ? (
+                <MobileNavLink href={potensiHref} label="Potensi"/>
+              ) : (
+                <MobileNavLink href={articleHref} label="Artikel"/>
+              )}
+            </>
           )}
-          <ThemeToggle />
+          <Link
+            href="/admin/sign-in"
+            className="inline-flex h-8 shrink-0 items-center justify-center rounded-lg border border-[#ef8b00] px-2.5 text-[0.58rem] font-black leading-none text-[#ef8b00] transition hover:bg-[#fff4e4] dark:hover:bg-white/10"
+          >
+            Login
+          </Link>
         </nav>
         {isAll && !isCatalogPage ? (
-          <nav className="hidden flex-1 items-center justify-center gap-6 md:flex">
+          <nav className="hidden flex-1 items-center justify-center gap-3 md:flex lg:gap-6">
             <Link
               href="/mangli"
-              className="rounded-lg border border-[#2e6b35] px-7 py-2 text-sm font-black text-[#2e6b35] transition hover:bg-[#edf3eb] dark:border-[#8bc98c] dark:text-[#8bc98c] dark:hover:bg-white/10"
+              className="inline-flex h-9 items-center rounded-lg border border-[#2e6b35] px-4 text-[0.7rem] font-black text-[#2e6b35] transition hover:bg-[#edf3eb] lg:px-7 lg:text-sm dark:border-[#8bc98c] dark:text-[#8bc98c] dark:hover:bg-white/10"
             >
               Mangli
             </Link>
             <Link
               href="/munggangsari"
-              className="rounded-lg border border-[#2e6b35] px-7 py-2 text-sm font-black text-[#2e6b35] transition hover:bg-[#edf3eb] dark:border-[#8bc98c] dark:text-[#8bc98c] dark:hover:bg-white/10"
+              className="inline-flex h-9 items-center rounded-lg border border-[#2e6b35] px-4 text-[0.7rem] font-black text-[#2e6b35] transition hover:bg-[#edf3eb] lg:px-7 lg:text-sm dark:border-[#8bc98c] dark:text-[#8bc98c] dark:hover:bg-white/10"
             >
               Munggangsari
             </Link>
           </nav>
         ) : (
-          <nav className="hidden items-center gap-10 lg:flex">
+          <nav className="hidden items-center gap-4 md:flex lg:gap-10">
             <Link
               href={homeHref}
               className={navLinkClass(!isCatalogPage && !isPotensiPage)}
@@ -94,12 +106,12 @@ export function PublicHeader({
             </Link>
           </nav>
         )}
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-3">
           {!isAll && (
             <>
               <Link
                 href="/mangli"
-                className={`hidden rounded-lg px-6 py-2 text-sm font-black transition md:inline-flex ${
+                className={`hidden h-9 items-center rounded-lg px-3 text-[0.7rem] font-black transition md:inline-flex lg:px-6 lg:text-sm ${
                   isMangli
                     ? "bg-[#2e6b35] text-white hover:bg-[#25572b] dark:bg-[#8bc98c] dark:text-[#10150f]"
                     : "border border-[#2e6b35] text-[#2e6b35] hover:bg-[#edf3eb] dark:border-[#8bc98c] dark:text-[#8bc98c] dark:hover:bg-white/10"
@@ -109,7 +121,7 @@ export function PublicHeader({
               </Link>
               <Link
                 href="/munggangsari"
-                className={`hidden rounded-lg px-6 py-2 text-sm font-black transition md:inline-flex ${
+                className={`hidden h-9 items-center rounded-lg px-3 text-[0.7rem] font-black transition md:inline-flex lg:px-6 lg:text-sm ${
                   isMangli
                     ? "border border-[#2e6b35] text-[#2e6b35] hover:bg-[#edf3eb] dark:border-[#8bc98c] dark:text-[#8bc98c] dark:hover:bg-white/10"
                     : "bg-[#2e6b35] text-white hover:bg-[#25572b] dark:bg-[#8bc98c] dark:text-[#10150f]"
@@ -121,9 +133,9 @@ export function PublicHeader({
           )}
           <Link
             href="/admin/sign-in"
-            className="hidden rounded-lg border border-[#ef8b00] px-4 py-2 text-sm font-black text-[#ef8b00] transition hover:bg-[#fff4e4] md:inline-flex md:px-5 dark:hover:bg-white/10"
+            className="hidden h-9 items-center rounded-lg border border-[#ef8b00] px-3 text-[0.1rem] font-black text-[#ef8b00] transition hover:bg-[#fff4e4] md:inline-flex lg:px-5 lg:text-sm dark:hover:bg-white/10"
           >
-            Sign In
+            Login
           </Link>
           <div className="hidden md:block">
             <ThemeToggle />
@@ -135,7 +147,7 @@ export function PublicHeader({
 }
 
 export function VillageSwitch({ village }: { village: PublicVillage }) {
-  const activeVillage = village === "munggangsari" ? "munggangsari" : "mangli";
+  const activeVillage = village === "all" ? null : village;
 
   return (
     <nav className="grid h-8 w-[236px] grid-cols-2 overflow-hidden rounded-full bg-white text-[0.52rem] font-black shadow-lg shadow-black/20">
@@ -169,7 +181,7 @@ export function PublicFooter({ route }: { route?: string }) {
 
   return (
     <footer className="bg-white pt-7 transition-colors md:pt-12 dark:bg-[#10150f]">
-      <div className="mx-auto grid max-w-7xl divide-y divide-[#b8c0b5] px-6 pb-8 md:grid-cols-[1.4fr_0.65fr_0.7fr_1fr] md:gap-10 md:divide-y-0 md:px-10 md:pb-16">
+      <div className="grid divide-y divide-[#b8c0b5] px-4 pb-8 md:grid-cols-[1.4fr_0.65fr_0.7fr_1fr] md:gap-10 md:divide-y-0 md:px-[40px] md:pb-16">
         <div className="pb-7 md:pb-0">
           <Logo />
           <p className="mt-5 max-w-sm text-sm font-semibold leading-5 text-[#334135] md:mt-6 md:text-base md:leading-7 dark:text-[#d4decf]">
@@ -231,7 +243,7 @@ export function PublicFooter({ route }: { route?: string }) {
 
 function navLinkClass(active: boolean) {
   return [
-    "text-base font-black text-[#2e6b35] underline-offset-8 transition hover:underline dark:text-[#a9d8aa]",
+    "inline-flex h-9 items-center text-[0.7rem] font-black text-[#2e6b35] underline-offset-8 transition hover:underline lg:text-base dark:text-[#a9d8aa]",
     active ? "underline decoration-2" : "",
   ]
     .filter(Boolean)
@@ -240,19 +252,16 @@ function navLinkClass(active: boolean) {
 
 function MobileNavLink({
   href,
-  label,
-  icon: Icon,
+  label
 }: {
   href: string;
   label: string;
-  icon: ComponentType<IconProps>;
 }) {
   return (
     <Link
       href={href}
       className="flex min-w-[38px] flex-col items-center gap-1 text-[0.48rem] font-black leading-none text-[#2e6b35] dark:text-[#a9d8aa]"
     >
-      <Icon className="h-5 w-5" />
       <span>{label}</span>
     </Link>
   );
@@ -264,62 +273,21 @@ function Logo({ compact = false }: { compact?: boolean } = {}) {
       <Image
         src="/images/kabupaten.png"
         alt="Logo Kabupaten Magelang"
-        width={42}
-        height={56}
-        className={compact ? "h-9 w-auto md:h-12" : "h-12 w-auto"}
+        width={38}
+        height={48}
+        className={compact ? "h-10 w-[34px] lg:h-12 lg:w-auto" : "h-12 w-auto"}
       />
       <div className="leading-none">
-        <p className={`${compact ? "text-xs md:text-sm" : "text-xl"} font-black text-[#2e6b35] dark:text-[#a9d8aa]`}>
+        <p className={`${compact ? "text-[0.7rem] lg:text-sm" : "text-xl"} font-black text-[#2e6b35] dark:text-[#a9d8aa]`}>
           Mangli
           <br />
           Munggangsari
         </p>
-        <p className={`${compact ? "text-[0.45rem] md:text-[10px]" : "text-[11px]"} mt-1 font-black text-[#ef8b00]`}>
+        <p className={`${compact ? "text-[0.42rem] lg:text-[10px]" : "text-[11px]"} mt-1 font-black text-[#ef8b00]`}>
           Katalog Potensi Desa
         </p>
       </div>
     </Link>
-  );
-}
-
-function HomeIcon({ className }: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
-      <path d="m3 11 9-8 9 8" />
-      <path d="M5 10v10h14V10" />
-      <path d="M10 20v-6h4v6" />
-    </svg>
-  );
-}
-
-function StoreIcon({ className }: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
-      <path d="M4 10h16l-1.2-5.5H5.2L4 10Z" />
-      <path d="M6 10v9h12v-9" />
-      <path d="M9 19v-5h6v5" />
-      <path d="M4 10a2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0" />
-    </svg>
-  );
-}
-
-function ArticleIcon({ className }: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
-      <path d="M5 4h14v16H5z" />
-      <path d="M8 8h8" />
-      <path d="M8 12h8" />
-      <path d="M8 16h5" />
-    </svg>
-  );
-}
-
-function CompassIcon({ className }: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
-      <circle cx="12" cy="12" r="9" />
-      <path d="m15.5 8.5-2.2 4.8-4.8 2.2 2.2-4.8 4.8-2.2Z" />
-    </svg>
   );
 }
 

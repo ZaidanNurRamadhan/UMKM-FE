@@ -57,7 +57,7 @@ export function AdminSidebar({
       <div className="flex w-full items-center justify-between gap-6 lg:block">
         <div>
           <VillageLogo />
-          {showAdminName && village && (
+          {showAdminName && village && village !== "mangli" && (
             <p className="mt-5 text-base font-black text-[#2e6230]">
               {ADMIN_NAMES[village]}
             </p>
