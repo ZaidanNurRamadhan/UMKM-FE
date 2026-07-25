@@ -62,12 +62,14 @@ async function loadDashboardData(village: VillageSlug): Promise<DashboardData> {
 
     return {
       primaryCount: village === "mangli" ? umkm.length : warungs.length,
+      lastUpdatedAt: activities[0]?.createdAt ?? null,
       activities,
       error: null,
     };
   } catch (error) {
     return {
       primaryCount: 0,
+      lastUpdatedAt: null,
       activities: [],
       error:
         error instanceof Error

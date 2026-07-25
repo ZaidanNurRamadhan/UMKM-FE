@@ -17,11 +17,25 @@ export function getVillageAssetUrl(photoPath: string | null): string | null {
     return null;
   }
 
+  if (isPublicUrl(normalizedPath)) {
+    return normalizedPath;
+  }
+
   const { data } = supabase.storage
     .from(VILLAGE_ASSETS_BUCKET)
     .getPublicUrl(normalizedPath);
 
   return data.publicUrl || null;
+}
+
+function isPublicUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
 }
 
 export async function uploadPhoto(
@@ -76,9 +90,8 @@ export async function deletePhoto(
   photoPath: string,
 ): Promise<ServiceResult<{ path: string }>> {
   try {
-    const { data, error } = await supabase.storage
-      .from(VILLAGE_ASSETS_BUCKET)
-      .remove([photoPath]);
+    const storage = supabase.storage.from(VILLAGE_ASSETS_BUCKET);
+    const { data, error } = await storage.remove([photoPath]);
 
     if (error) {
       return mapSupabaseError(error, "Foto gagal dihapus.");
@@ -90,6 +103,26 @@ export async function deletePhoto(
         data: null,
         message: "Foto gagal dihapus.",
       };
+    }
+
+    const { data: photoStillExists, error: verificationError } =
+      await storage.exists(photoPath);
+
+    if (photoStillExists) {
+      return {
+        success: false,
+        data: null,
+        message: "Foto gagal dihapus dari penyimpanan.",
+        code: "PHOTO_DELETE_FAILED",
+        details: "File masih tersedia di Supabase Storage setelah proses hapus.",
+      };
+    }
+
+    if (verificationError && photoStillExists !== false) {
+      return mapSupabaseError(
+        verificationError,
+        "Status penghapusan foto tidak dapat diverifikasi.",
+      );
     }
 
     return {

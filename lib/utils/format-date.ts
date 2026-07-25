@@ -17,3 +17,27 @@ export function formatRelativeTime(value: string): string {
 
   return `${diffDays} hari lalu`;
 }
+
+const dashboardDateTimeFormatter = new Intl.DateTimeFormat("id-ID", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+  timeZone: "Asia/Jakarta",
+});
+
+export function formatDashboardDateTime(value: string | null): string {
+  if (!value) {
+    return "Belum ada data";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Belum ada data";
+  }
+
+  return dashboardDateTimeFormatter.format(date).replace(".", ":");
+}

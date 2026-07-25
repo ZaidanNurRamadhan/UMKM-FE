@@ -66,6 +66,20 @@ export async function getWarungs(
   return ((data ?? []) as unknown as WarungQueryRow[]).map(normalizeWarungRow);
 }
 
+export async function getWarungCount(): Promise<number> {
+  const { count, error } = await supabase
+    .from("warungs")
+    .select("id", { count: "exact", head: true });
+
+  if (error) {
+    throw new Error(
+      getSupabaseErrorMessage(error, "Data tidak dapat dimuat. Silakan coba lagi."),
+    );
+  }
+
+  return count ?? 0;
+}
+
 export async function getWarungById(id: string): Promise<Warung | null> {
   const { data, error } = await supabase
     .from("warungs")
@@ -175,7 +189,18 @@ export async function deleteWarung(
     const deletedData = data as { id: string; photo_path: string | null };
 
     if (deletedData.photo_path) {
-      await deletePhoto(deletedData.photo_path);
+      const deletePhotoResult = await deletePhoto(deletedData.photo_path);
+
+      if (!deletePhotoResult.success) {
+        return {
+          success: false,
+          data: null,
+          message:
+            "Data warung berhasil dihapus, tetapi foto gagal dihapus dari penyimpanan.",
+          code: "PHOTO_DELETE_FAILED",
+          details: deletePhotoResult.message,
+        };
+      }
     }
 
     return {

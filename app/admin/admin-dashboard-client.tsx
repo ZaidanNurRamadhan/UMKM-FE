@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
+  ClockIcon,
   CloseIcon,
   DashboardIcon,
   PlusIcon,
@@ -11,7 +12,10 @@ import {
 } from "@/components/icons/admin-icons";
 import { AdminHeader } from "@/components/layout/admin-header";
 import { AdminSidebar } from "@/components/layout/admin-sidebar";
-import { formatRelativeTime } from "@/lib/utils/format-date";
+import {
+  formatDashboardDateTime,
+  formatRelativeTime,
+} from "@/lib/utils/format-date";
 import type {
   DashboardActivity,
   DashboardData,
@@ -119,6 +123,12 @@ export function AdminDashboardClient({
                 icon={<StoreIcon className="h-11 w-11" />}
                 label={config.primaryLabel}
                 value={dashboardData.primaryCount}
+              />
+              <StatCard
+                icon={<ClockIcon className="h-11 w-11" />}
+                label="terakhir diperbarui"
+                value={formatDashboardDateTime(dashboardData.lastUpdatedAt)}
+                compactValue
               />
             </div>
 
@@ -310,16 +320,22 @@ function StatCard({
   icon,
   label,
   value,
+  compactValue = false,
 }: {
   icon: React.ReactNode;
   label: string;
-  value: number;
+  value: React.ReactNode;
+  compactValue?: boolean;
 }) {
   return (
     <article className="rounded-lg border border-[#111] px-6 py-8">
       <div className="text-[#2e6230]">{icon}</div>
       <h2 className="mt-7 text-2xl font-black">{label}</h2>
-      <p className="mt-6 text-7xl font-black leading-none text-[#d47300]">
+      <p
+        className={`mt-6 font-black leading-none text-[#d47300] ${
+          compactValue ? "text-3xl" : "text-7xl"
+        }`}
+      >
         {value}
       </p>
     </article>

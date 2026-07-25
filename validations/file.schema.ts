@@ -21,7 +21,7 @@ export const optionalPhotoFileSchema = z
   )
   .refine(
     (file) => file === null || file.size <= MAX_PHOTO_SIZE_BYTES,
-    "Ukuran foto maksimal 2 MB.",
+    "Ukuran foto maksimal 500 KB.",
   );
 
 export const requiredPhotoFileSchema = optionalPhotoFileSchema.refine(

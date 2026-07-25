@@ -33,6 +33,13 @@ export function DeleteCatalogButton({ kind, id, name }: DeleteCatalogButtonProps
     setIsDeleting(false);
 
     if (!result.success) {
+      if (result.code === "PHOTO_DELETE_FAILED") {
+        toast.warning(result.message);
+        setIsOpen(false);
+        router.refresh();
+        return;
+      }
+
       toast.error(result.message);
 
       if (

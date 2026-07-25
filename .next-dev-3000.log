@@ -1,0 +1,23 @@
+
+> fe-umkm@0.1.0 dev
+> next dev -p 3000
+
+▲ Next.js 16.2.10 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.29.44.54:3000
+- Environments: .env
+✓ Ready in 1075ms
+Creating turbopack project { dir: 'D:\\zaidan penting\\kkn\\fe-umkm', testMode: true }
+
+ GET /admin/mangli/umkm 200 in 1593ms (next.js: 31ms, application-code: 1562ms)
+ GET /mangli/umkm 200 in 2.7s (next.js: 263ms, application-code: 2.4s)
+ GET / 200 in 1629ms (next.js: 97ms, application-code: 1532ms)
+ GET /admin/sign-in 200 in 61ms (next.js: 34ms, application-code: 27ms)
+ GET /admin/mangli 200 in 1165ms (next.js: 3ms, application-code: 1162ms)
+ GET /admin/mangli 200 in 1304ms (next.js: 73ms, application-code: 1230ms)
+ GET /admin/mangli/umkm 200 in 626ms (next.js: 6ms, application-code: 620ms)
+ GET / 200 in 1523ms (next.js: 23ms, application-code: 1500ms)
+ GET /admin/sign-in 200 in 90ms (next.js: 8ms, application-code: 83ms)
+ GET /admin/mangli 200 in 882ms (next.js: 8ms, application-code: 874ms)
+ GET /admin/mangli 200 in 805ms (next.js: 9ms, application-code: 795ms)
+ GET /admin/mangli/umkm 200 in 305ms (next.js: 8ms, application-code: 297ms)

@@ -66,6 +66,36 @@ export async function getUmkm(options: ListOptions = {}): Promise<Umkm[]> {
   return ((data ?? []) as unknown as UmkmQueryRow[]).map(normalizeUmkmRow);
 }
 
+export async function getUmkmCount(): Promise<number> {
+  const { count, error } = await supabase
+    .from("umkm")
+    .select("id", { count: "exact", head: true });
+
+  if (error) {
+    throw new Error(
+      getSupabaseErrorMessage(error, "Data tidak dapat dimuat. Silakan coba lagi."),
+    );
+  }
+
+  return count ?? 0;
+}
+
+export async function getUmkmById(id: string): Promise<Umkm | null> {
+  const { data, error } = await supabase
+    .from("umkm")
+    .select(UMKM_SELECT)
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(
+      getSupabaseErrorMessage(error, "Data tidak dapat dimuat. Silakan coba lagi."),
+    );
+  }
+
+  return data ? normalizeUmkmRow(data as unknown as UmkmQueryRow) : null;
+}
+
 export async function createUmkm(
   payload: CreateUmkmInput,
 ): Promise<ServiceResult<Umkm>> {
@@ -177,7 +207,18 @@ export async function deleteUmkm(
     const deletedData = data as { id: string; photo_path: string | null };
 
     if (deletedData.photo_path) {
-      await deletePhoto(deletedData.photo_path);
+      const deletePhotoResult = await deletePhoto(deletedData.photo_path);
+
+      if (!deletePhotoResult.success) {
+        return {
+          success: false,
+          data: null,
+          message:
+            "Data UMKM berhasil dihapus, tetapi foto gagal dihapus dari penyimpanan.",
+          code: "PHOTO_DELETE_FAILED",
+          details: deletePhotoResult.message,
+        };
+      }
     }
 
     return {

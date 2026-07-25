@@ -8,6 +8,7 @@ export type DashboardActivity = {
 
 export type DashboardData = {
   primaryCount: number;
+  lastUpdatedAt: string | null;
   activities: DashboardActivity[];
   error: string | null;
 };

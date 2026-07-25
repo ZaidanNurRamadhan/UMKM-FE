@@ -13,6 +13,15 @@ export function DashboardIcon({ className }: IconProps) {
   );
 }
 
+export function ClockIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className={className}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 7.5V12l3.2 2.2" />
+    </svg>
+  );
+}
+
 export function StoreIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
@@ -134,6 +143,27 @@ export function InfoIcon({ className }: IconProps) {
       <circle cx="12" cy="12" r="9" />
       <path d="M12 10v6" />
       <path d="M12 7h.01" />
+    </svg>
+  );
+}
+
+export function LocateIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className={className}>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 3v3" />
+      <path d="M12 18v3" />
+      <path d="M3 12h3" />
+      <path d="M18 12h3" />
+    </svg>
+  );
+}
+
+export function MapPinIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className={className}>
+      <path d="M12 21s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12Z" />
+      <circle cx="12" cy="9" r="2.4" />
     </svg>
   );
 }

@@ -3,13 +3,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, type DragEvent } from "react";
+import { useMemo, useState, type DragEvent } from "react";
 import { useForm, useWatch, type FieldErrors } from "react-hook-form";
 import { toast } from "sonner";
 import {
   CameraIcon,
   ImageIcon,
   InfoIcon,
+  LocateIcon,
+  MapPinIcon,
   SaveIcon,
   UploadCloudIcon,
   WhatsAppIcon,
@@ -17,6 +19,10 @@ import {
 import { CATALOG_CONFIG } from "@/constants/catalog";
 import { PHOTO_ACCEPT_ATTRIBUTE } from "@/constants/storage";
 import { focusFirstFieldError } from "@/lib/errors/validation-error";
+import {
+  formatCurrentLocationAddress,
+  getGoogleMapsUrlFromAddress,
+} from "@/lib/utils/location";
 import { emptyStringToNull } from "@/lib/utils/string";
 import { normalizeWhatsAppNumber } from "@/lib/utils/whatsapp";
 import { useImagePreview } from "@/hooks/use-image-preview";
@@ -76,6 +82,109 @@ function FieldError({ id, message }: { id: string; message?: string }) {
 
 function RequiredMark() {
   return <span className="text-[#ff1f1f]">*</span>;
+}
+
+function getVillageLocationQuery(village: VillageSlug): string {
+  return village === "mangli"
+    ? "Desa Mangli, Kaliangkrik, Magelang"
+    : "Desa Munggangsari, Kaliangkrik, Magelang";
+}
+
+function getGeolocationErrorMessage(error: GeolocationPositionError): string {
+  if (error.code === error.PERMISSION_DENIED) {
+    return "Izin lokasi ditolak. Aktifkan izin lokasi browser lalu coba lagi.";
+  }
+
+  if (error.code === error.POSITION_UNAVAILABLE) {
+    return "Lokasi saat ini belum dapat ditemukan.";
+  }
+
+  if (error.code === error.TIMEOUT) {
+    return "Pengambilan lokasi memerlukan waktu terlalu lama.";
+  }
+
+  return "Lokasi saat ini belum dapat digunakan.";
+}
+
+function AddressLocationTools({
+  address,
+  compact = false,
+  onAddressChange,
+  village,
+}: {
+  address: string;
+  compact?: boolean;
+  onAddressChange: (address: string) => void;
+  village: VillageSlug;
+}) {
+  const [isLocating, setIsLocating] = useState(false);
+  const locationButtonClass = `inline-flex items-center justify-center gap-2 rounded-md border border-[#cfd6df] bg-white px-3 text-sm font-black text-[#2e6230] transition hover:border-[#168333] hover:bg-[#f3f8ef] disabled:cursor-not-allowed disabled:opacity-60 ${
+    compact ? "h-9 text-xs" : "h-10"
+  }`;
+
+  function openMaps() {
+    const mapsUrl =
+      getGoogleMapsUrlFromAddress(address) ??
+      getGoogleMapsUrlFromAddress(getVillageLocationQuery(village));
+
+    if (!mapsUrl) {
+      return;
+    }
+
+    window.open(mapsUrl, "_blank", "noopener,noreferrer");
+  }
+
+  function useCurrentLocation() {
+    if (!("geolocation" in navigator)) {
+      toast.error("Browser tidak mendukung akses lokasi.");
+      return;
+    }
+
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        onAddressChange(
+          formatCurrentLocationAddress(
+            position.coords.latitude,
+            position.coords.longitude,
+          ),
+        );
+        setIsLocating(false);
+        toast.success("Lokasi saat ini berhasil ditambahkan.");
+      },
+      (error) => {
+        setIsLocating(false);
+        toast.error(getGeolocationErrorMessage(error));
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 60_000,
+        timeout: 15_000,
+      },
+    );
+  }
+
+  return (
+    <div className="mt-3 flex flex-wrap gap-2">
+      <button
+        type="button"
+        disabled={isLocating}
+        onClick={useCurrentLocation}
+        className={locationButtonClass}
+      >
+        <LocateIcon className="h-4 w-4" />
+        {isLocating ? "Mencari..." : "Lokasi saya"}
+      </button>
+      <button
+        type="button"
+        onClick={openMaps}
+        className={locationButtonClass}
+      >
+        <MapPinIcon className="h-4 w-4" />
+        Maps
+      </button>
+    </div>
+  );
 }
 
 async function handleSessionExpired(message: string, router: ReturnType<typeof useRouter>) {
@@ -171,6 +280,10 @@ function UmkmAdminForm({
   function updatePhoto(file: File | null) {
     setValue("photo", file, { shouldDirty: true, shouldValidate: true });
     setPreviewFile(file);
+  }
+
+  function updateAddress(address: string) {
+    setValue("address", address, { shouldDirty: true, shouldValidate: true });
   }
 
   function handlePhotoDrop(event: DragEvent<HTMLDivElement>) {
@@ -401,12 +514,16 @@ function UmkmAdminForm({
             />
           </label>
 
-          <label className="block">
-            <span className="text-sm font-black text-[#202a37]">
+          <div className="block">
+            <label
+              htmlFor="umkm-address"
+              className="text-sm font-black text-[#202a37]"
+            >
               Alamat Lengkap <RequiredMark />
-            </span>
+            </label>
             <div className="relative">
               <textarea
+                id="umkm-address"
                 placeholder="Masukkan alamat lengkap usaha Anda..."
                 rows={6}
                 maxLength={300}
@@ -421,6 +538,12 @@ function UmkmAdminForm({
                 {Math.min(addressValue.length, 300)}/300
               </span>
             </div>
+            <AddressLocationTools
+              address={addressValue}
+              compact={variant === "panel"}
+              onAddressChange={updateAddress}
+              village={village}
+            />
             <p className={helperTextClass}>
               Alamat akan digunakan pelanggan untuk menemukan lokasi Anda.
             </p>
@@ -428,7 +551,7 @@ function UmkmAdminForm({
               id={errorId("address")}
               message={errors.address?.message}
             />
-          </label>
+          </div>
         </div>
 
         <label className={photoLabelClass}>
@@ -488,7 +611,7 @@ function UmkmAdminForm({
                     : "text-[#667085]"
                 }`}
               >
-                Format: JPG, PNG, WebP (Max 2MB)
+                Format: JPG, PNG, WebP (Max 500KB)
               </p>
             </div>
           </div>
@@ -542,6 +665,7 @@ function WarungAdminForm({
     setFocus,
     setValue,
     reset,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<WarungFormValues>({
     resolver: zodResolver(warungFormSchema),
@@ -554,10 +678,15 @@ function WarungAdminForm({
       photo: null,
     },
   });
+  const addressValue = useWatch({ control, name: "address" }) ?? "";
 
   function updatePhoto(file: File | null) {
     setValue("photo", file, { shouldDirty: true, shouldValidate: true });
     setPreviewFile(file);
+  }
+
+  function updateAddress(address: string) {
+    setValue("address", address, { shouldDirty: true, shouldValidate: true });
   }
 
   async function onSubmit(values: WarungFormValues) {
@@ -818,7 +947,7 @@ function WarungAdminForm({
                   variant === "panel" ? "lg:hidden" : ""
                 }`}
               >
-                *Format: JPG, PNG, WebP (Max 2MB)
+                *Format: JPG, PNG, WebP (Max 500KB)
               </span>
               <FieldError
                 id={errorId("photo")}
@@ -826,11 +955,18 @@ function WarungAdminForm({
               />
             </label>
 
-            <label className="block">
-              <span className="text-xs font-medium uppercase">Alamat</span>
+            <div className="block">
+              <label
+                htmlFor="warung-address"
+                className="text-xs font-medium uppercase"
+              >
+                Alamat
+              </label>
               <textarea
+                id="warung-address"
                 placeholder="Input alamat lengkap..."
                 rows={4}
+                maxLength={500}
                 aria-invalid={Boolean(errors.address)}
                 aria-describedby={
                   errors.address ? errorId("address") : undefined
@@ -838,11 +974,17 @@ function WarungAdminForm({
                 className={`${textareaClass(Boolean(errors.address))} ${compactTextareaClass}`}
                 {...register("address")}
               />
+              <AddressLocationTools
+                address={addressValue}
+                compact={variant === "panel"}
+                onAddressChange={updateAddress}
+                village={village}
+              />
               <FieldError
                 id={errorId("address")}
                 message={errors.address?.message}
               />
-            </label>
+            </div>
           </div>
         </div>
       </div>

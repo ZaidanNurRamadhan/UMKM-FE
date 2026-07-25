@@ -141,7 +141,7 @@ function getFriendlyMessage(error: ErrorLike, fallbackMessage?: string): string 
     sourceMessage.includes("too large") ||
     status === 413
   ) {
-    return "Ukuran foto melebihi batas maksimal 2 MB.";
+    return "Ukuran foto melebihi batas maksimal 500 KB.";
   }
 
   if (

@@ -28,44 +28,35 @@ type ArticleResult = {
   error: string | null;
 };
 
-const heroImage = "/images/mangli-potensi.png";
+const heroImage = "/images/mangli-potensi-thumb.webp";
 
 const fallbackArticles: PotensiArticle[] = [
   {
     id: "fallback-terasering-sawah-1",
     title: "Menjelajahi Pesona Terasering Sawah Mangli: Warisan Abadi Sang Petani",
     description:
-      "Desa Mangli dikenal dengan bentang alamnya yang memukau. Terasering sawah di sini bukan sekadar pemandangan indah, melainkan bukti ketangguhan sistem irigasi tradisional yang telah diwariskan turun-temurun.",
+      "Usaha Mikro, Kecil, dan Menengah (UMKM) merupakan salah satu sektor yang berperan penting dalam meningkatkan perekonomian masyarakat, khususnya di wilayah pedesaan. Artikel ini bertujuan untuk memperkenalkan potensi UMKM yang berkembang di Desa Mangli, Kecamatan Kaliangkrik, Kabupaten Magelang, serta mengidentifikasi tantangan yang dihadapi dalam pengembangannya. Penulisan artikel dilakukan menggunakan pendekatan deskriptif kualitatif melalui observasi lapangan dan wawancara dengan pelaku UMKM. Hasil pembahasan menunjukkan bahwa Desa Mangli memiliki tiga UMKM unggulan, yaitu Taburica, Teh Mangli, dan Krisang Melte Banana Nano. Produk-produk tersebut memanfaatkan hasil pertanian lokal sebagai bahan baku utama dan sebagian besar berkembang melalui pelatihan yang diselenggarakan oleh Dinas Perindustrian dan Perdagangan Kabupaten Magelang, sementara sebagian lainnya tumbuh dari inisiatif masyarakat. Meskipun memiliki potensi yang besar, para pelaku UMKM masih menghadapi berbagai kendala, seperti keterbatasan pemasaran, rendahnya pemanfaatan teknologi digital, keterbatasan bahan baku, biaya distribusi, serta kondisi masyarakat yang lebih memprioritaskan sektor pertanian sebagai mata pencaharian utama. Namun demikian, UMKM Desa Mangli tetap mampu menghasilkan produk berkualitas yang mencerminkan potensi lokal dan kearifan masyarakat setempat. Oleh karena itu, diperlukan dukungan berkelanjutan dari berbagai pihak, baik pemerintah maupun masyarakat, untuk memperluas pemasaran, meningkatkan kapasitas pelaku usaha, serta menjaga keberlanjutan UMKM sebagai salah satu penggerak ekonomi dan identitas Desa Mangli.",
     articleUrl: "#",
-    image: heroImage,
-    category: "Agrowisata",
+    image: "/images/mangli-article/UMKM.jpeg",
+    category: "UMKM",
   },
   {
     id: "fallback-terasering-sawah-2",
     title: "Menjelajahi Pesona Terasering Sawah Mangli: Warisan Abadi Sang Petani",
     description:
-      "Desa Mangli dikenal dengan bentang alamnya yang memukau. Terasering sawah di sini bukan sekadar pemandangan indah, melainkan bukti ketangguhan sistem irigasi tradisional yang telah diwariskan turun-temurun.",
+      "Budaya bertani merupakan bagian dari kehidupan masyarakat agraris yang mencerminkan perpaduan antara pengetahuan, kebiasaan, nilai, dan kearifan lokal yang diwariskan secara turun-temurun. Artikel ini bertujuan untuk memperkenalkan budaya bertani masyarakat Desa Mangli, Kecamatan Kaliangkrik, Kabupaten Magelang, serta menggambarkan keterkaitan antara aktivitas pertanian dengan tradisi yang masih dilestarikan. Penulisan artikel menggunakan pendekatan deskriptif kualitatif melalui observasi lapangan dan wawancara dengan masyarakat setempat. Hasil pembahasan menunjukkan bahwa sebagian besar masyarakat Desa Mangli menggantungkan mata pencaharian pada sektor pertanian hortikultura yang didukung oleh kondisi alam lereng Gunung Sumbing yang subur dan beriklim sejuk. Aktivitas pertanian dilakukan secara manual dengan memanfaatkan pengetahuan yang diwariskan antargenerasi, mulai dari pembibitan, pemeliharaan, hingga panen. Di samping itu, masyarakat masih mempertahankan berbagai tradisi pertanian, seperti pembuatan jenang merah putih sebelum masa tanam dan pemberian sesajen menjelang panen sebagai bentuk rasa syukur, penghormatan kepada leluhur, serta penghormatan terhadap Dewi Sri sebagai simbol kesuburan. Meskipun menghadapi berbagai tantangan, seperti gangguan satwa liar dan keterbatasan dalam pengelolaan pertanian, masyarakat tetap menjaga praktik pertanian yang selaras dengan lingkungan dan nilai budaya setempat. Budaya bertani di Desa Mangli menunjukkan bahwa pertanian tidak hanya berperan sebagai sumber penghidupan, tetapi juga menjadi identitas budaya yang mengandung nilai sosial, spiritual, dan kearifan lokal yang perlu dilestarikan.",
     articleUrl: "#",
-    image: heroImage,
-    category: "Agrowisata",
+    image: "/images/mangli-article/Pertanian.jpeg",
+    category: "Pertanian",
   },
   {
     id: "fallback-terasering-sawah-3",
     title: "Menjelajahi Pesona Terasering Sawah Mangli: Warisan Abadi Sang Petani",
     description:
-      "Desa Mangli dikenal dengan bentang alamnya yang memukau. Terasering sawah di sini bukan sekadar pemandangan indah, melainkan bukti ketangguhan sistem irigasi tradisional yang telah diwariskan turun-temurun.",
+      "Desa Mangli, Kecamatan Kaliangkrik, Kabupaten Magelang, tidak hanya dikenal karena keindahan alam dan potensi pertaniannya, tetapi juga memiliki kekayaan tradisi dan kesenian yang masih dilestarikan oleh masyarakat hingga saat ini. Artikel ini bertujuan untuk mendokumentasikan serta memperkenalkan berbagai tradisi dan kesenian yang menjadi identitas budaya masyarakat Desa Mangli sebagai bagian dari upaya pelestarian warisan budaya lokal. Metode yang digunakan dalam penyusunan artikel ini meliputi observasi lapangan, wawancara dengan masyarakat dan tokoh desa, serta studi literatur yang relevan. Hasil dokumentasi menunjukkan bahwa masyarakat Desa Mangli masih secara konsisten melaksanakan berbagai tradisi, seperti Kenduren, Merti Dusun, dan Wedus Kendit, yang mengandung nilai religius, gotong royong, rasa syukur, serta solidaritas sosial. Selain itu, berbagai kesenian tradisional, seperti Tari Angguk, Topeng Ireng, Jaranan, Kubro Siswo, dan Sandulan, juga masih aktif dipentaskan dalam berbagai kegiatan desa sebagai bentuk pelestarian budaya sekaligus media pewarisan nilai-nilai kepada generasi muda. Keberlangsungan tradisi dan kesenian tersebut menunjukkan tingginya kesadaran masyarakat dalam menjaga identitas budaya di tengah perkembangan zaman. Oleh karena itu, dokumentasi dan publikasi mengenai kekayaan budaya Desa Mangli diharapkan dapat meningkatkan apresiasi masyarakat terhadap warisan budaya lokal serta menjadi salah satu upaya untuk mendukung pelestarian budaya yang berkelanjutan.",
     articleUrl: "#",
-    image: heroImage,
-    category: "Agrowisata",
-  },
-  {
-    id: "fallback-terasering-sawah-4",
-    title: "Menjelajahi Pesona Terasering Sawah Mangli: Warisan Abadi Sang Petani",
-    description:
-      "Desa Mangli dikenal dengan bentang alamnya yang memukau. Terasering sawah di sini bukan sekadar pemandangan indah, melainkan bukti ketangguhan sistem irigasi tradisional yang telah diwariskan turun-temurun.",
-    articleUrl: "#",
-    image: heroImage,
-    category: "Agrowisata",
+    image: "/images/mangli-article/Tradisi.jpeg",
+    category: "Tradisi",
   },
 ];
 
@@ -82,6 +73,7 @@ export default async function MangliPotensiPage() {
           alt="Pemandangan potensi wisata Desa Mangli"
           fill
           priority
+          unoptimized
           className="object-cover"
           sizes="100vw"
         />
@@ -119,6 +111,7 @@ export default async function MangliPotensiPage() {
                         src={article.image}
                         alt={article.title}
                         fill
+                        unoptimized
                         className="object-cover"
                         sizes="(min-width: 768px) 42vw, 100vw"
                       />
@@ -127,9 +120,6 @@ export default async function MangliPotensiPage() {
                       <span className="w-fit rounded-full bg-[#bdeec0] px-3 py-1 text-[0.62rem] font-black uppercase text-[#2e6b35] md:text-xs">
                         {article.category}
                       </span>
-                      <h2 className="mt-3 text-lg font-black uppercase leading-tight text-[#2e6b35] md:text-2xl lg:text-3xl dark:text-[#8bc98c]">
-                        {article.title}
-                      </h2>
                       <p className="mt-3 line-clamp-4 text-sm font-semibold leading-6 text-[#6f7b70] md:max-w-2xl md:text-base md:leading-7 dark:text-[#c5d0c1]">
                         {article.description}
                       </p>
@@ -139,7 +129,7 @@ export default async function MangliPotensiPage() {
                         rel={article.articleUrl === "#" ? undefined : "noopener noreferrer"}
                         className="btn-motion focus-ring mt-5 inline-flex h-9 w-fit items-center gap-3 rounded-lg bg-[#2e6b35] px-6 text-xs font-black text-white transition hover:bg-[#25572b]"
                       >
-                        Lihat Semua Artikel
+                        Baca Artikel
                         <ArrowRightIcon className="motion-arrow h-4 w-4" />
                       </a>
                     </div>
@@ -148,7 +138,6 @@ export default async function MangliPotensiPage() {
               ))}
             </StaggerContainer>
           )}
-          <Pagination />
         </div>
       </section>
 
@@ -191,48 +180,11 @@ function DataMessage({ message }: { message: string }) {
   );
 }
 
-function Pagination() {
-  return (
-    <nav
-      className="mt-8 flex items-center justify-center gap-2 text-sm font-bold text-[#2e6b35]"
-      aria-label="Navigasi halaman potensi"
-    >
-      <button className="grid h-9 w-9 place-items-center rounded-lg border border-[#d5ddd1] bg-white shadow-sm" aria-label="Halaman sebelumnya">
-        <ChevronLeftIcon className="h-5 w-5" />
-      </button>
-      <button className="grid h-9 w-9 place-items-center rounded-lg bg-[#2e6b35] text-white">1</button>
-      <button className="grid h-9 w-9 place-items-center rounded-lg border border-[#d5ddd1] bg-white shadow-sm">2</button>
-      <button className="grid h-9 w-9 place-items-center rounded-lg border border-[#d5ddd1] bg-white shadow-sm">3</button>
-      <span className="px-1 text-[#7d8a78]">...</span>
-      <button className="grid h-9 w-9 place-items-center rounded-lg border border-[#d5ddd1] bg-white shadow-sm">10</button>
-      <button className="grid h-9 w-9 place-items-center rounded-lg border border-[#d5ddd1] bg-white shadow-sm" aria-label="Halaman berikutnya">
-        <ChevronRightIcon className="h-5 w-5" />
-      </button>
-    </nav>
-  );
-}
-
 function ArrowRightIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" className={className}>
       <path d="M5 12h14" />
       <path d="m13 6 6 6-6 6" />
-    </svg>
-  );
-}
-
-function ChevronLeftIcon({ className }: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" className={className}>
-      <path d="m15 18-6-6 6-6" />
-    </svg>
-  );
-}
-
-function ChevronRightIcon({ className }: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" className={className}>
-      <path d="m9 18 6-6-6-6" />
     </svg>
   );
 }

@@ -9,17 +9,14 @@ import {
   PublicHeader,
   VillageSwitch,
 } from "@/components/layout/public-site-shell";
+import { getGoogleMapsUrlFromAddress } from "@/lib/utils/location";
 import { getWhatsAppUrl } from "@/lib/utils/whatsapp";
 import { getVillageAssetUrl } from "@/services/storage.service";
-import { getUmkm } from "@/services/umkm.service";
-import { getWarungs } from "@/services/warung.service";
+import { getUmkm, getUmkmCount } from "@/services/umkm.service";
+import { getWarungCount, getWarungs } from "@/services/warung.service";
 import type { Umkm, VillageSlug, Warung } from "@/types/database";
 
-const stats = [
-  { value: "120+", label: "UMKM Terdaftar", icon: StoreIcon, color: "#2e6b35" },
-  { value: "15", label: "Wisata Menarik", icon: CompassIcon, color: "#ef8b00" },
-  { value: "2", label: "Desa Bersatu", icon: HomeIcon, color: "#2e6b35" },
-];
+const VILLAGE_COUNT = 2;
 
 const values = [
   { title: "Transparan", text: "Informasi jelas & terbuka", icon: ChartIcon },
@@ -29,7 +26,7 @@ const values = [
 
 const villageCards = [
   {
-    title: "Pusat UMKM & Kerajinan",
+    title: "Jelajahi UMKM Mangli",
     copy: "Temukan berbagai produk unggulan dari tangan terampil warga Mangli, mulai dari kerajinan anyaman hingga camilan tradisional yang sudah bersertifikat halal.",
     image: "/images/mangli.jpg",
     button: "Jelajahi Mangli",
@@ -38,7 +35,7 @@ const villageCards = [
     href: "/mangli",
   },
   {
-    title: "Wisata Kuliner & Warung",
+    title: "Wisata & Warung",
     copy: "Nikmati keramahan warga Munggangsari melalui deretan warung kuliner autentik yang menyajikan hidangan khas pedesaan dengan pemandangan alam yang asri.",
     image: "/images/culinary.jpg",
     button: "Jelajahi Munggangsari",
@@ -48,72 +45,69 @@ const villageCards = [
   },
 ];
 
-const gallery = [
-  "/images/mangli.jpg",
-  "/images/culinary.jpg",
-  "/images/chips.jpg",
-  "/images/village.jpg",
-  "/images/hero.jpg",
-  "/images/forest.jpg",
-];
-
-const fallbackUmkmPreview: PreviewItem[] = [
+const mangliPotensiArticlePreview: ArticlePreview[] = [
   {
-    id: "fallback-umkm-keripik-talas-1",
-    title: "Keripik Talas",
-    category: "Makanan & Minuman",
-    description: "Camilan lokal desa.",
+    id: "mangli-potensi-umkm",
+    title: "Menjelajahi Pesona Terasering Sawah Mangli: Warisan Abadi Sang Petani",
+    description:
+      "Usaha Mikro, Kecil, dan Menengah (UMKM) merupakan salah satu sektor yang berperan penting dalam meningkatkan perekonomian masyarakat, khususnya di wilayah pedesaan. Artikel ini bertujuan untuk memperkenalkan potensi UMKM yang berkembang di Desa Mangli, Kecamatan Kaliangkrik, Kabupaten Magelang, serta mengidentifikasi tantangan yang dihadapi dalam pengembangannya. Penulisan artikel dilakukan menggunakan pendekatan deskriptif kualitatif melalui observasi lapangan dan wawancara dengan pelaku UMKM. Hasil pembahasan menunjukkan bahwa Desa Mangli memiliki tiga UMKM unggulan, yaitu Taburica, Teh Mangli, dan Krisang Melte Banana Nano. Produk-produk tersebut memanfaatkan hasil pertanian lokal sebagai bahan baku utama dan sebagian besar berkembang melalui pelatihan yang diselenggarakan oleh Dinas Perindustrian dan Perdagangan Kabupaten Magelang, sementara sebagian lainnya tumbuh dari inisiatif masyarakat. Meskipun memiliki potensi yang besar, para pelaku UMKM masih menghadapi berbagai kendala, seperti keterbatasan pemasaran, rendahnya pemanfaatan teknologi digital, keterbatasan bahan baku, biaya distribusi, serta kondisi masyarakat yang lebih memprioritaskan sektor pertanian sebagai mata pencaharian utama. Namun demikian, UMKM Desa Mangli tetap mampu menghasilkan produk berkualitas yang mencerminkan potensi lokal dan kearifan masyarakat setempat. Oleh karena itu, diperlukan dukungan berkelanjutan dari berbagai pihak, baik pemerintah maupun masyarakat, untuk memperluas pemasaran, meningkatkan kapasitas pelaku usaha, serta menjaga keberlanjutan UMKM sebagai salah satu penggerak ekonomi dan identitas Desa Mangli.",
+    articleUrl: "/mangli/potensi",
+    category: "UMKM",
+    image: "/images/mangli-article/UMKM.jpeg",
     village: "Desa Mangli",
-    image: "/images/chips.jpg",
-    whatsappUrl: null,
   },
   {
-    id: "fallback-umkm-keripik-talas-2",
-    title: "Keripik Talas",
-    category: "Makanan & Minuman",
-    description: "Camilan lokal desa.",
+    id: "mangli-potensi-pertanian",
+    title: "Menjelajahi Pesona Terasering Sawah Mangli: Warisan Abadi Sang Petani",
+    description:
+      "Budaya bertani merupakan bagian dari kehidupan masyarakat agraris yang mencerminkan perpaduan antara pengetahuan, kebiasaan, nilai, dan kearifan lokal yang diwariskan secara turun-temurun. Artikel ini bertujuan untuk memperkenalkan budaya bertani masyarakat Desa Mangli, Kecamatan Kaliangkrik, Kabupaten Magelang, serta menggambarkan keterkaitan antara aktivitas pertanian dengan tradisi yang masih dilestarikan. Penulisan artikel menggunakan pendekatan deskriptif kualitatif melalui observasi lapangan dan wawancara dengan masyarakat setempat. Hasil pembahasan menunjukkan bahwa sebagian besar masyarakat Desa Mangli menggantungkan mata pencaharian pada sektor pertanian hortikultura yang didukung oleh kondisi alam lereng Gunung Sumbing yang subur dan beriklim sejuk. Aktivitas pertanian dilakukan secara manual dengan memanfaatkan pengetahuan yang diwariskan antargenerasi, mulai dari pembibitan, pemeliharaan, hingga panen. Di samping itu, masyarakat masih mempertahankan berbagai tradisi pertanian, seperti pembuatan jenang merah putih sebelum masa tanam dan pemberian sesajen menjelang panen sebagai bentuk rasa syukur, penghormatan kepada leluhur, serta penghormatan terhadap Dewi Sri sebagai simbol kesuburan. Meskipun menghadapi berbagai tantangan, seperti gangguan satwa liar dan keterbatasan dalam pengelolaan pertanian, masyarakat tetap menjaga praktik pertanian yang selaras dengan lingkungan dan nilai budaya setempat. Budaya bertani di Desa Mangli menunjukkan bahwa pertanian tidak hanya berperan sebagai sumber penghidupan, tetapi juga menjadi identitas budaya yang mengandung nilai sosial, spiritual, dan kearifan lokal yang perlu dilestarikan.",
+    articleUrl: "/mangli/potensi",
+    category: "Pertanian",
+    image: "/images/mangli-article/Pertanian.jpeg",
     village: "Desa Mangli",
-    image: "/images/chips.jpg",
-    whatsappUrl: null,
   },
   {
-    id: "fallback-umkm-keripik-talas-3",
-    title: "Keripik Talas",
-    category: "Makanan & Minuman",
-    description: "Camilan lokal desa.",
+    id: "mangli-potensi-tradisi",
+    title: "Menjelajahi Pesona Terasering Sawah Mangli: Warisan Abadi Sang Petani",
+    description:
+      "Desa Mangli, Kecamatan Kaliangkrik, Kabupaten Magelang, tidak hanya dikenal karena keindahan alam dan potensi pertaniannya, tetapi juga memiliki kekayaan tradisi dan kesenian yang masih dilestarikan oleh masyarakat hingga saat ini. Artikel ini bertujuan untuk mendokumentasikan serta memperkenalkan berbagai tradisi dan kesenian yang menjadi identitas budaya masyarakat Desa Mangli sebagai bagian dari upaya pelestarian warisan budaya lokal. Metode yang digunakan dalam penyusunan artikel ini meliputi observasi lapangan, wawancara dengan masyarakat dan tokoh desa, serta studi literatur yang relevan. Hasil dokumentasi menunjukkan bahwa masyarakat Desa Mangli masih secara konsisten melaksanakan berbagai tradisi, seperti Kenduren, Merti Dusun, dan Wedus Kendit, yang mengandung nilai religius, gotong royong, rasa syukur, serta solidaritas sosial. Selain itu, berbagai kesenian tradisional, seperti Tari Angguk, Topeng Ireng, Jaranan, Kubro Siswo, dan Sandulan, juga masih aktif dipentaskan dalam berbagai kegiatan desa sebagai bentuk pelestarian budaya sekaligus media pewarisan nilai-nilai kepada generasi muda. Keberlangsungan tradisi dan kesenian tersebut menunjukkan tingginya kesadaran masyarakat dalam menjaga identitas budaya di tengah perkembangan zaman. Oleh karena itu, dokumentasi dan publikasi mengenai kekayaan budaya Desa Mangli diharapkan dapat meningkatkan apresiasi masyarakat terhadap warisan budaya lokal serta menjadi salah satu upaya untuk mendukung pelestarian budaya yang berkelanjutan.",
+    articleUrl: "/mangli/potensi",
+    category: "Tradisi",
+    image: "/images/mangli-article/Tradisi.jpeg",
     village: "Desa Mangli",
-    image: "/images/chips.jpg",
-    whatsappUrl: null,
   },
 ];
 
-const fallbackArticlePreview: ArticlePreview[] = [
+const munggangsariPotensiArticlePreview: ArticlePreview[] = [
   {
-    id: "fallback-article-gula-aren-1",
-    title: "Cara Pembuatan Gula Aren Berkualitas Tinggi",
+    id: "munggangsari-potensi-air-terjun",
+    title: "Potensi Alam Air Terjun di Desa Munggangsari",
     description:
-      "Pembuatan Gula Aren Berkualitas melalui proses yang sudah turun temurun dilakukan di desa kami.",
-    articleUrl: "#",
-    date: "12 Mei 2026",
-    village: "Desa Mangli",
+      "Desa Munggangsari berada di ketinggian lebih dari 1200 mdpl di lereng Gunung Sumbing dengan tanah subur, udara sejuk, dan kekayaan alam yang menonjol. Dusun Munggangsari menyimpan sembilan potensi alam berupa enam air terjun, dua goa, dan satu sumber mata air Gunung Sumbing. Potensi ini menjadi karunia besar bagi masyarakat karena tidak hanya menghadirkan keindahan alam, tetapi juga dapat dikembangkan sebagai sarana pendongkrak perekonomian desa.",
+    articleUrl: "/munggangsari/potensi",
+    category: "Wisata Alam",
+    image: "/images/munggangsari-waterfall/air-terjun-munggangsari-01.webp",
+    village: "Desa Munggangsari",
   },
   {
-    id: "fallback-article-gula-aren-2",
-    title: "Cara Pembuatan Gula Aren Berkualitas Tinggi",
+    id: "munggangsari-potensi-ragam-curug",
+    title: "Macam-Macam Air Terjun dan Goa di Desa Munggangsari",
     description:
-      "Pembuatan Gula Aren Berkualitas melalui proses yang sudah turun temurun dilakukan di desa kami.",
-    articleUrl: "#",
-    date: "12 Mei 2026",
-    village: "Desa Mangli",
+      "Potensi alam Dusun Munggangsari terdiri dari Curug Si Gentong, Curug Waton, Curug Si Prengus, Curug Si Kembang, Curug Silawe, Curug Sriwedari, Goa Sriti, Goa Jaran, serta sumber mata air Gunung Sumbing. Setiap curug dan goa memiliki kisah yang hidup di masyarakat, mulai dari bentuk air yang menyerupai bunga, retakan tebing yang mirip angka 25, hingga mata air yang dipercaya membawa manfaat bagi kesehatan.",
+    articleUrl: "/munggangsari/potensi",
+    category: "Arsip Potensi",
+    image: "/images/munggangsari-waterfall/air-terjun-munggangsari-09.webp",
+    village: "Desa Munggangsari",
   },
   {
-    id: "fallback-article-gula-aren-3",
-    title: "Cara Pembuatan Gula Aren Berkualitas Tinggi",
+    id: "munggangsari-potensi-revitalisasi",
+    title: "Problematika dan Rekomendasi Pengembangan Wisata",
     description:
-      "Pembuatan Gula Aren Berkualitas melalui proses yang sudah turun temurun dilakukan di desa kami.",
-    articleUrl: "#",
-    date: "12 Mei 2026",
-    village: "Desa Mangli",
+      "Air terjun Munggangsari pernah dikembangkan sebagai objek wisata dan sempat ramai dikunjungi. Kini pengembangannya menghadapi masalah akses yang rusak, kelompok pengelola yang tidak aktif, debit air yang berkurang, serta pencemaran sampah di aliran sungai. Pengembangan kembali wisata perlu dimulai dari pengelolaan sampah, revitalisasi alam, pembentukan kelompok sadar wisata, dan dukungan lintas pihak agar potensi air terjun dapat hidup kembali.",
+    articleUrl: "/munggangsari/potensi",
+    category: "Revitalisasi",
+    image: "/images/munggangsari-waterfall/air-terjun-munggangsari-12.webp",
+    village: "Desa Munggangsari",
   },
 ];
 
@@ -124,10 +118,10 @@ type VillagePageProps = {
 type PreviewItem = {
   id: string;
   title: string;
-  category: string;
-  description: string;
-  village: string;
-  image: string;
+  village: string | null;
+  image: string | null;
+  detailHref: string;
+  mapUrl: string | null;
   whatsappUrl: string | null;
 };
 
@@ -136,13 +130,19 @@ type ArticlePreview = {
   title: string;
   description: string;
   articleUrl: string;
-  date: string;
+  category: string;
+  image: string;
   village: string;
 };
 
 type DataResult<T> = {
   data: T[];
   error: string | null;
+};
+
+type CatalogStatsResult = {
+  umkmCount: number | null;
+  warungCount: number | null;
 };
 
 export default async function VillagePage({
@@ -152,14 +152,19 @@ export default async function VillagePage({
   const isMangli = village === "mangli";
   const titleVillage = isMangli ? "Mangli" : "Munggangsari";
   const villageSlug = isAll ? undefined : village;
+  const shouldShowUmkm = isAll || isMangli;
   const shouldShowWarungs = isAll || !isMangli;
-  const [umkmResult, warungResult, articleResult] = await Promise.all([
+  const [umkmResult, warungResult, articleResult, catalogStats] = await Promise.all([
     loadUmkmPreview(villageSlug),
     shouldShowWarungs
       ? loadWarungPreview(villageSlug)
       : Promise.resolve({ data: [], error: null }),
-    loadArticlePreview(),
+    loadArticlePreview(villageSlug),
+    loadCatalogStats(),
   ]);
+  const stats = createHeroStats(catalogStats);
+  const articleArchiveHref =
+    isAll || isMangli ? "/mangli/potensi" : "/munggangsari/potensi";
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#f7f8f4] text-[#141d13] transition-colors dark:bg-[#10150f] dark:text-[#f5f7f2]">
@@ -300,7 +305,7 @@ export default async function VillagePage({
           </FadeIn>
           <FadeIn direction="right" className="relative hidden aspect-[1.35] overflow-hidden rounded-lg min-[1025px]:block">
             <Image
-              src="/images/community.jpg"
+              src="/images/digital.png"
               alt="Kegiatan budaya masyarakat desa"
               fill
               className="object-cover"
@@ -371,15 +376,17 @@ export default async function VillagePage({
         </div>
       </section>
 
-      <PreviewSection
-        id="umkm"
-        eyebrow="Produk UMKM Unggulan"
-        heading="Produk Lokal Pilihan"
-        ctaHref={isAll ? "#jelajahi" : `${isMangli ? "/mangli" : "/munggangsari"}/umkm`}
-        ctaLabel="Lihat Semua Produk"
-        emptyMessage="Belum ada data UMKM yang tersedia."
-        result={umkmResult}
-      />
+      {shouldShowUmkm && (
+        <PreviewSection
+          id="umkm"
+          eyebrow="Produk UMKM Unggulan"
+          heading="Produk Lokal Pilihan"
+          ctaHref={isAll ? "#jelajahi" : "/mangli/umkm"}
+          ctaLabel="Lihat Semua Produk"
+          emptyMessage="Belum ada data UMKM yang tersedia."
+          result={umkmResult}
+        />
+      )}
 
       {shouldShowWarungs && (
         <div className={isAll ? "hidden md:block" : undefined}>
@@ -395,131 +402,73 @@ export default async function VillagePage({
         </div>
       )}
 
-      <section id="artikel" className="bg-white pb-14 transition-colors md:pb-24 dark:bg-[#10150f]">
-        <div className="grid gap-12 px-5 md:grid-cols-[1fr_0.84fr] md:px-[40px]">
-          <div className="md:border-r md:border-[#899483] md:pr-10 md:dark:border-[#4d5e49]">
-            <div className="flex items-center justify-between md:hidden">
-              <h2 className="text-sm font-black">Galeri Kehidupan Desa</h2>
-              <a
-                href="#"
-                className="inline-flex items-center gap-1 text-[0.52rem] font-black text-[#2e6b35] dark:text-[#8bc98c]"
-              >
-                Lihat Selengkapnya
-                <ArrowRightIcon className="h-3 w-3" />
-              </a>
+      <section id="artikel" className="bg-white py-14 transition-colors md:py-20 dark:bg-[#10150f]">
+        <div className="px-5 md:px-[40px]">
+          <FadeIn className="mb-6 flex items-end justify-between gap-4 md:mb-10">
+            <div>
+              <p className="text-[0.66rem] font-black uppercase text-[#2e6b35] md:text-sm dark:text-[#8bc98c]">
+                Artikel Terbaru
+              </p>
+              <h2 className="mt-2 text-[1.45rem] font-black leading-tight md:mt-4 md:text-5xl">
+                Potensi & Cerita Desa
+              </h2>
             </div>
-            <FadeIn className="hidden md:block">
-            <p className="text-sm font-black text-[#2e6b35] dark:text-[#8bc98c]">Galeri Desa</p>
-            <h2 className="mt-4 text-4xl font-black md:text-5xl">
-              Kehidupan & Keindahan Desa
-            </h2>
-            </FadeIn>
-            <StaggerContainer className="mt-3 grid grid-cols-2 gap-3 md:mt-8 md:grid-cols-3">
-              {gallery.map((src, index) => (
-                <StaggerItem
-                  key={src}
-                  className="gallery-thumb-motion relative aspect-[1.45] overflow-hidden rounded-lg bg-[#e8ece4] dark:bg-[#172017]"
-                >
-                  <Image
-                    src={src}
-                    alt={`Galeri potensi desa ${index + 1}`}
-                    fill
-                    className="object-cover"
-                    sizes="(min-width: 768px) 18vw, 33vw"
-                  />
-                </StaggerItem>
-              ))}
-            </StaggerContainer>
             <a
-              href="#"
-              className="btn-motion focus-ring mt-8 hidden h-11 items-center gap-3 rounded-lg border border-[#2e6b35] px-6 text-sm font-black text-[#2e6b35] transition hover:bg-[#edf3eb] md:inline-flex dark:border-[#8bc98c] dark:text-[#8bc98c] dark:hover:bg-white/10"
+              href={articleArchiveHref}
+              className="mb-1 hidden shrink-0 items-center gap-2 text-sm font-black text-[#2e6b35] transition hover:underline md:inline-flex dark:text-[#8bc98c]"
             >
-              Lihat Galeri Selengkapnya
-              <ArrowRightIcon className="motion-arrow h-4 w-4" />
+              Lihat Semua Artikel
+              <ArrowRightIcon className="h-4 w-4" />
             </a>
-          </div>
-          <div>
-            <div className="flex items-end justify-between gap-4 md:hidden">
-              <div>
-                <p className="text-[0.55rem] font-black uppercase text-[#2e6b35] dark:text-[#8bc98c]">
-                  Artikel Terbaru
-                </p>
-                <h2 className="mt-2 text-[1.35rem] font-black leading-tight">
-                  Cerita & Inspirasi Desa
-                </h2>
-              </div>
-              <a
-                href="#"
-                className="mb-1 inline-flex shrink-0 items-center gap-1 text-[0.52rem] font-black text-[#2e6b35] dark:text-[#8bc98c]"
-              >
-                Lihat Semua Artikel
-                <ArrowRightIcon className="h-3 w-3" />
-              </a>
-            </div>
-            <FadeIn className="hidden md:block">
-            <p className="text-sm font-black uppercase text-[#2e6b35] dark:text-[#8bc98c]">
-              Artikel Terbaru
-            </p>
-            <h2 className="mt-4 text-4xl font-black md:text-5xl">
-              Cerita & Inspirasi Desa
-            </h2>
-            </FadeIn>
-            {articleResult.error ? (
-              <DataMessage message={articleResult.error} />
-            ) : articleResult.data.length === 0 ? (
-              <DataMessage message="Belum ada artikel yang tersedia." />
-            ) : (
-              <StaggerContainer className="mt-4 space-y-4 md:mt-8 md:space-y-6">
-                {articleResult.data.map((article) => (
-                  <StaggerItem
-                    key={article.id}
-                    className="article-item-motion grid grid-cols-[118px_1fr] gap-3 md:grid-cols-[150px_1fr] md:gap-5"
-                  >
-                    <div className="relative aspect-[1.55] overflow-hidden rounded-lg bg-[#e8ece4] dark:bg-[#172017]">
+          </FadeIn>
+          {articleResult.error ? (
+            <DataMessage message={articleResult.error} />
+          ) : articleResult.data.length === 0 ? (
+            <DataMessage message="Belum ada artikel yang tersedia." />
+          ) : (
+            <StaggerContainer className="space-y-8">
+              {articleResult.data.map((article) => (
+                <StaggerItem key={article.id}>
+                  <article className="grid gap-4 overflow-hidden rounded-2xl border border-[#dce4d8] bg-white p-3 shadow-[0_5px_0_rgb(20_29_19/0.25)] md:grid-cols-[0.72fr_1fr] md:gap-5 dark:border-[#354532] dark:bg-[#172017] dark:shadow-black/40">
+                    <div className="relative aspect-[1.55] overflow-hidden rounded-xl bg-[#e8ece4]">
                       <Image
-                        src="/images/gula-aren.jpg"
+                        src={article.image}
                         alt={article.title}
                         fill
+                        unoptimized
                         className="object-cover"
-                        sizes="150px"
+                        sizes="(min-width: 768px) 42vw, 100vw"
                       />
                     </div>
-                    <div>
-                      <a
-                        href={article.articleUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[0.64rem] font-black leading-3 transition-colors hover:text-[#2e6b35] md:text-lg md:leading-6 dark:hover:text-[#8bc98c]"
-                      >
-                        {article.title}
-                      </a>
-                      <p className="mt-1 text-[0.48rem] font-bold text-[#7d8a78] md:mt-2 md:text-xs dark:text-[#b2bdae]">
-                        {article.date} - {article.village}
-                      </p>
-                      <p className="mt-1 line-clamp-2 text-[0.48rem] font-medium leading-3 text-[#8a9586] md:mt-3 md:text-sm md:leading-6 dark:text-[#b2bdae]">
+                    <div className="flex flex-col px-1 pb-3 md:px-0 md:py-3">
+                      <span className="w-fit rounded-full bg-[#bdeec0] px-3 py-1 text-[0.62rem] font-black uppercase text-[#2e6b35] md:text-xs">
+                        {article.category}
+                      </span>
+                      <p className="mt-3 line-clamp-4 text-sm font-semibold leading-6 text-[#6f7b70] md:max-w-2xl md:text-base md:leading-7 dark:text-[#c5d0c1]">
                         {article.description}
                       </p>
                       <a
                         href={article.articleUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-3 hidden text-sm font-black text-[#2e6b35] transition hover:underline md:inline-flex dark:text-[#8bc98c]"
+                        target={article.articleUrl.startsWith("/") ? undefined : "_blank"}
+                        rel={article.articleUrl.startsWith("/") ? undefined : "noopener noreferrer"}
+                        className="btn-motion focus-ring mt-5 inline-flex h-9 w-fit items-center gap-3 rounded-lg bg-[#2e6b35] px-6 text-xs font-black text-white transition hover:bg-[#25572b]"
                       >
                         Baca Artikel
+                        <ArrowRightIcon className="motion-arrow h-4 w-4" />
                       </a>
                     </div>
-                  </StaggerItem>
-                ))}
-              </StaggerContainer>
-            )}
-            <a
-              href="#"
-              className="btn-motion focus-ring mt-8 hidden h-11 items-center gap-3 rounded-lg border border-[#2e6b35] px-6 text-sm font-black text-[#2e6b35] transition hover:bg-[#edf3eb] md:inline-flex dark:border-[#8bc98c] dark:text-[#8bc98c] dark:hover:bg-white/10"
-            >
-              Lihat Semua Artikel
-              <ArrowRightIcon className="motion-arrow h-4 w-4" />
-            </a>
-          </div>
+                  </article>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          )}
+          <a
+            href={articleArchiveHref}
+            className="btn-motion focus-ring mt-8 inline-flex h-11 items-center gap-3 rounded-lg border border-[#2e6b35] px-6 text-sm font-black text-[#2e6b35] transition hover:bg-[#edf3eb] md:hidden dark:border-[#8bc98c] dark:text-[#8bc98c] dark:hover:bg-white/10"
+          >
+            Lihat Semua Artikel
+            <ArrowRightIcon className="motion-arrow h-4 w-4" />
+          </a>
         </div>
       </section>
 
@@ -623,39 +572,61 @@ function PreviewSection({
                     .filter(Boolean)
                     .join(" ") || undefined}
                 >
-                  <article className="product-card-motion overflow-hidden rounded-lg border border-[#d5ddd1] bg-white shadow-sm transition-colors dark:border-[#334330] dark:bg-[#172017]">
-                    <div className="relative aspect-[1.05] overflow-hidden md:aspect-[1.2]">
-                      <Image
-                        src={product.image}
-                        alt={product.title}
-                        fill
-                        className="object-cover"
-                        sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                      />
-                    </div>
+                  <article className="product-card-motion relative overflow-hidden rounded-lg border border-[#d5ddd1] bg-white shadow-sm transition-colors dark:border-[#334330] dark:bg-[#172017]">
+                    <Link
+                      href={product.detailHref}
+                      aria-label={`Lihat detail ${product.title}`}
+                      className="absolute inset-0 z-10 rounded-lg focus:outline-none focus-visible:ring-4 focus-visible:ring-[#2e6b35]/25"
+                    />
+                    {product.image && (
+                      <div className="relative aspect-[1.05] overflow-hidden md:aspect-[1.2]">
+                        <Image
+                          src={product.image}
+                          alt={product.title}
+                          fill
+                          unoptimized
+                          className="object-cover"
+                          sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                        />
+                      </div>
+                    )}
                     <div className="p-2 md:p-4">
-                      <span className="rounded border border-[#dce4d8] px-1.5 py-0.5 text-[0.42rem] font-bold text-[#7d8a78] md:rounded-md md:px-2 md:py-1 md:text-xs dark:border-[#3b4a38] dark:text-[#b2bdae]">
-                        {product.category}
-                      </span>
-                      <h3 className="mt-2 min-h-8 text-[0.62rem] font-black leading-3 md:mt-3 md:min-h-12 md:text-base md:leading-6">
+                      <h3 className="min-h-8 text-[0.62rem] font-black leading-3 md:min-h-12 md:text-base md:leading-6">
                         {product.title}
                       </h3>
-                      <div className="mt-4 flex items-center justify-between md:mt-8">
-                        <p className="flex min-w-0 items-center gap-1 truncate text-[0.5rem] font-bold text-[#7d8a78] md:text-sm dark:text-[#b2bdae]">
-                          <PinIcon className="h-3 w-3 shrink-0 text-[#273226] md:h-4 md:w-4 dark:text-[#e6efe3]" />
-                          {product.village}
-                        </p>
-                        {product.whatsappUrl && (
-                          <a
-                            href={product.whatsappUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label={`Hubungi penjual ${product.title}`}
-                            className="focus-ring grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#1dc95b] text-white transition hover:scale-110 md:h-8 md:w-8"
-                          >
-                            <WhatsAppIcon className="h-3.5 w-3.5 md:h-5 md:w-5" />
-                          </a>
+                      <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
+                        {product.village ? (
+                          <p className="flex min-w-0 items-center gap-1 truncate text-[0.5rem] font-bold text-[#7d8a78] md:text-sm dark:text-[#b2bdae]">
+                            <PinIcon className="h-3 w-3 shrink-0 text-[#273226] md:h-4 md:w-4 dark:text-[#e6efe3]" />
+                            {product.village}
+                          </p>
+                        ) : (
+                          <span aria-hidden="true" />
                         )}
+                        <div className="flex shrink-0 items-center gap-1 md:gap-2">
+                          {product.mapUrl && (
+                            <a
+                              href={product.mapUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={`Buka lokasi ${product.title} di Google Maps`}
+                              className="focus-ring relative z-20 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#2e6b35] text-white transition hover:scale-110 md:h-8 md:w-8"
+                            >
+                              <PinIcon className="h-3.5 w-3.5 md:h-5 md:w-5" />
+                            </a>
+                          )}
+                          {product.whatsappUrl && (
+                            <a
+                              href={product.whatsappUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={`Hubungi penjual ${product.title}`}
+                              className="focus-ring relative z-20 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#1dc95b] text-white transition hover:scale-110 md:h-8 md:w-8"
+                            >
+                              <WhatsAppIcon className="h-3.5 w-3.5 md:h-5 md:w-5" />
+                            </a>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </article>
@@ -681,15 +652,60 @@ function PreviewSection({
   );
 }
 
+function createHeroStats({ umkmCount, warungCount }: CatalogStatsResult) {
+  return [
+    umkmCount === null
+      ? null
+      : {
+          value: String(umkmCount),
+          label: "UMKM Terdaftar",
+          icon: StoreIcon,
+          color: "#2e6b35",
+        },
+    warungCount === null
+      ? null
+      : {
+          value: String(warungCount),
+          label: "Warung Terdaftar",
+          icon: WarungIcon,
+          color: "#ef8b00",
+        },
+    {
+      value: String(VILLAGE_COUNT),
+      label: "Desa Bersatu",
+      icon: HomeIcon,
+      color: "#2e6b35",
+    },
+  ].filter((stat): stat is Exclude<typeof stat, null> => Boolean(stat));
+}
+
+async function loadCatalogStats(): Promise<CatalogStatsResult> {
+  try {
+    const [umkmCount, warungCount] = await Promise.all([
+      getUmkmCount(),
+      getWarungCount(),
+    ]);
+
+    return {
+      umkmCount,
+      warungCount,
+    };
+  } catch {
+    return {
+      umkmCount: null,
+      warungCount: null,
+    };
+  }
+}
+
 async function loadUmkmPreview(
   villageSlug?: VillageSlug,
 ): Promise<DataResult<PreviewItem>> {
   try {
     const umkm = await getUmkm({ villageSlug, limit: 4 });
-    const data = fillPreviewItems(umkm.map(mapUmkmPreview), fallbackUmkmPreview);
 
     return {
-      data,
+      data: umkm.map(mapUmkmPreview),
       error: null,
     };
   } catch (error) {
@@ -724,9 +740,16 @@ async function loadWarungPreview(
   }
 }
 
-async function loadArticlePreview(): Promise<DataResult<ArticlePreview>> {
+async function loadArticlePreview(
+  villageSlug?: VillageSlug,
+): Promise<DataResult<ArticlePreview>> {
+  const data =
+    villageSlug === "munggangsari"
+      ? munggangsariPotensiArticlePreview
+      : mangliPotensiArticlePreview;
+
   return {
-    data: fallbackArticlePreview,
+    data,
     error: null,
   };
 }
@@ -735,11 +758,11 @@ function mapUmkmPreview(umkm: Umkm): PreviewItem {
   return {
     id: umkm.id,
     title: umkm.name,
-    category: "Makanan & Minuman",
-    description: umkm.description,
-    village: `Desa ${umkm.villages?.name ?? "Mangli"}`,
-    image: getVillageAssetUrl(umkm.photo_path) ?? "/images/chips.jpg",
-    whatsappUrl: getWhatsAppUrl(umkm.whatsapp_number, umkm.name),
+    village: umkm.villages?.name ? `Desa ${umkm.villages.name}` : null,
+    image: getVillageAssetUrl(umkm.photo_path),
+    detailHref: `/umkm/${umkm.id}`,
+    mapUrl: getGoogleMapsUrlFromAddress(umkm.address),
+    whatsappUrl: getWhatsAppUrl(umkm.whatsapp_number),
   };
 }
 
@@ -747,20 +770,12 @@ function mapWarungPreview(warung: Warung): PreviewItem {
   return {
     id: warung.id,
     title: warung.name,
-    category: "Warung Kuliner",
-    description: warung.owner_name ?? warung.address ?? "Warung lokal desa.",
-    village: `Desa ${warung.villages?.name ?? "Munggangsari"}`,
-    image: getVillageAssetUrl(warung.photo_path) ?? "/images/culinary.jpg",
-    whatsappUrl: getWhatsAppUrl(warung.whatsapp_number, warung.name),
+    village: warung.villages?.name ? `Desa ${warung.villages.name}` : null,
+    image: getVillageAssetUrl(warung.photo_path),
+    detailHref: `/warung/${warung.id}`,
+    mapUrl: getGoogleMapsUrlFromAddress(warung.address),
+    whatsappUrl: getWhatsAppUrl(warung.whatsapp_number),
   };
-}
-
-function fillPreviewItems<T>(items: T[], fallback: T[], minimum = 3): T[] {
-  if (items.length >= minimum) {
-    return items;
-  }
-
-  return [...items, ...fallback].slice(0, minimum);
 }
 
 function DataMessage({ message }: { message: string }) {
@@ -809,11 +824,14 @@ function StoreIcon({ className }: IconProps) {
   );
 }
 
-function CompassIcon({ className }: IconProps) {
+function WarungIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
-      <circle cx="12" cy="12" r="9" />
-      <path d="m15.5 8.5-2.2 4.8-4.8 2.2 2.2-4.8 4.8-2.2Z" />
+      <path d="M4 10h16l-1.2-5.5H5.2L4 10Z" />
+      <path d="M6 10v9h12v-9" />
+      <path d="M8 14h8" />
+      <path d="M8 17h8" />
+      <path d="M4 10a2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0" />
     </svg>
   );
 }

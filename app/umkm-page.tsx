@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { FadeIn } from "@/components/animations/FadeIn";
 import { StaggerContainer } from "@/components/animations/StaggerContainer";
 import { StaggerItem } from "@/components/animations/StaggerItem";
@@ -7,6 +8,10 @@ import {
   PublicHeader,
   VillageSwitch,
 } from "@/components/layout/public-site-shell";
+import {
+  getAddressDisplayText,
+  getGoogleMapsUrlFromAddress,
+} from "@/lib/utils/location";
 import { getWhatsAppUrl } from "@/lib/utils/whatsapp";
 import { getUmkm } from "@/services/umkm.service";
 import { getVillageAssetUrl } from "@/services/storage.service";
@@ -27,10 +32,11 @@ type IconProps = {
 type CatalogItem = {
   id: string;
   title: string;
-  category: string;
-  description: string;
-  image: string;
-  villageName: string;
+  description: string | null;
+  image: string | null;
+  villageName: string | null;
+  detailHref: string;
+  mapUrl: string | null;
   whatsappUrl: string | null;
 };
 
@@ -45,7 +51,6 @@ const catalogCopy: Record<
     title: string;
     eyebrow: string;
     heading: string;
-    category: string;
     heroDescription: string;
     empty: string;
   }
@@ -54,7 +59,6 @@ const catalogCopy: Record<
     title: "UMKM",
     eyebrow: "Produk UMKM Unggulan",
     heading: "Produk Lokal Pilihan",
-    category: "Produk Desa",
     heroDescription:
       "Temukan produk unggulan dan layanan terbaik dari pengusaha lokal",
     empty: "Belum ada data UMKM yang tersedia untuk desa ini.",
@@ -63,7 +67,6 @@ const catalogCopy: Record<
     title: "Warung",
     eyebrow: "Warung Kuliner Unggulan",
     heading: "Warung Lokal Pilihan",
-    category: "Warung Kuliner",
     heroDescription:
       "Temukan warung kuliner dan layanan terbaik dari warga lokal",
     empty: "Belum ada data warung yang tersedia untuk desa ini.",
@@ -131,42 +134,66 @@ export default async function UmkmPage({
             <StaggerContainer className="mt-4 grid grid-cols-3 gap-3 md:mt-8 md:grid-cols-2 md:gap-6 lg:grid-cols-5">
               {catalogResult.items.map((product) => (
                 <StaggerItem key={product.id}>
-                  <article className="product-card-motion group overflow-hidden rounded-lg border border-[#d5ddd1] bg-white shadow-sm transition duration-300 hover:border-[#8fb98d] hover:shadow-xl hover:shadow-[#2e6b35]/12 md:rounded-[22px] dark:border-[#344233] dark:bg-[#172017] dark:hover:border-[#8bc98c]/70">
-                    <div className="relative aspect-[1.05] overflow-hidden md:aspect-[1.18]">
-                      <Image
-                        src={product.image}
-                        alt={product.title}
-                        fill
-                        className="object-cover transition duration-500 group-hover:scale-[1.08]"
-                        sizes="(min-width: 1024px) 20vw, (min-width: 640px) 50vw, 100vw"
-                      />
-                    </div>
+                  <article className="product-card-motion group relative overflow-hidden rounded-lg border border-[#d5ddd1] bg-white shadow-sm transition duration-300 hover:border-[#8fb98d] hover:shadow-xl hover:shadow-[#2e6b35]/12 md:rounded-[22px] dark:border-[#344233] dark:bg-[#172017] dark:hover:border-[#8bc98c]/70">
+                    <Link
+                      href={product.detailHref}
+                      aria-label={`Lihat detail ${product.title}`}
+                      className="absolute inset-0 z-10 rounded-lg focus:outline-none focus-visible:ring-4 focus-visible:ring-[#2e6b35]/25 md:rounded-[22px]"
+                    />
+                    {product.image && (
+                      <div className="relative aspect-[1.05] overflow-hidden md:aspect-[1.18]">
+                        <Image
+                          src={product.image}
+                          alt={product.title}
+                          fill
+                          unoptimized
+                          className="object-cover transition duration-500 group-hover:scale-[1.08]"
+                          sizes="(min-width: 1024px) 20vw, (min-width: 640px) 50vw, 100vw"
+                        />
+                      </div>
+                    )}
                     <div className="flex min-h-[118px] flex-col p-2 md:min-h-[220px] md:p-5">
-                      <span className="w-fit rounded border border-[#dce4d8] px-1.5 py-0.5 text-[0.42rem] font-bold text-[#8a9286] md:rounded-md md:px-3 md:py-1 md:text-sm dark:border-[#40503e] dark:text-[#b6c3b1]">
-                        {product.category}
-                      </span>
-                      <h3 className="mt-2 min-h-8 text-[0.62rem] font-black leading-3 md:mt-4 md:min-h-12 md:text-xl md:leading-6">
+                      <h3 className="min-h-8 text-[0.62rem] font-black leading-3 md:min-h-12 md:text-xl md:leading-6">
                         {product.title}
                       </h3>
-                      <p className="mt-2 hidden line-clamp-2 text-base font-semibold leading-7 text-[#8a9286] md:block dark:text-[#b6c3b1]">
-                        {product.description}
-                      </p>
-                      <div className="mt-auto flex items-center justify-between pt-4 md:pt-8">
-                        <p className="flex min-w-0 items-center gap-1 truncate text-[0.5rem] font-black text-[#8a9286] md:gap-2 md:text-sm dark:text-[#b6c3b1]">
-                          <PinIcon className="h-3 w-3 shrink-0 text-[#273226] md:h-5 md:w-5 dark:text-[#e6efe3]" />
-                          Desa {product.villageName}
+                      {product.description && (
+                        <p className="mt-2 hidden line-clamp-2 text-base font-semibold leading-7 text-[#8a9286] md:block dark:text-[#b6c3b1]">
+                          {product.description}
                         </p>
-                        {product.whatsappUrl && (
-                          <a
-                            href={product.whatsappUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label={`Hubungi penjual ${product.title}`}
-                            className="focus-ring grid h-5 w-5 shrink-0 place-items-center rounded-full text-[#00bf3a] transition duration-300 hover:scale-110 hover:bg-[#e8f8ec] md:h-10 md:w-10 dark:hover:bg-white/10"
-                          >
-                            <WhatsAppIcon className="h-4 w-4 md:h-9 md:w-9" />
-                          </a>
+                      )}
+                      <div className="mt-auto flex items-center justify-between gap-2 pt-4 md:pt-8">
+                        {product.villageName ? (
+                          <p className="flex min-w-0 items-center gap-1 truncate text-[0.5rem] font-black text-[#8a9286] md:gap-2 md:text-sm dark:text-[#b6c3b1]">
+                            <PinIcon className="h-3 w-3 shrink-0 text-[#273226] md:h-5 md:w-5 dark:text-[#e6efe3]" />
+                            Desa {product.villageName}
+                          </p>
+                        ) : (
+                          <span aria-hidden="true" />
                         )}
+                        <div className="flex shrink-0 items-center gap-1 md:gap-2">
+                          {product.mapUrl && (
+                            <a
+                              href={product.mapUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={`Buka lokasi ${product.title} di Google Maps`}
+                              className="focus-ring relative z-20 grid h-5 w-5 shrink-0 place-items-center rounded-full text-[#2e6b35] transition duration-300 hover:scale-110 hover:bg-[#edf3eb] md:h-10 md:w-10 dark:text-[#8bc98c] dark:hover:bg-white/10"
+                            >
+                              <PinIcon className="h-4 w-4 md:h-6 md:w-6" />
+                            </a>
+                          )}
+                          {product.whatsappUrl && (
+                            <a
+                              href={product.whatsappUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={`Hubungi penjual ${product.title}`}
+                              className="focus-ring relative z-20 grid h-5 w-5 shrink-0 place-items-center rounded-full text-[#00bf3a] transition duration-300 hover:scale-110 hover:bg-[#e8f8ec] md:h-10 md:w-10 dark:hover:bg-white/10"
+                            >
+                              <WhatsAppIcon className="h-4 w-4 md:h-9 md:w-9" />
+                            </a>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </article>
@@ -219,11 +246,12 @@ function mapUmkmToCatalogItem(umkm: Umkm): CatalogItem {
   return {
     id: umkm.id,
     title: umkm.name,
-    category: catalogCopy.umkm.category,
-    description: umkm.description,
-    image: getVillageAssetUrl(umkm.photo_path) ?? "/images/chips.jpg",
-    villageName: umkm.villages?.name ?? "Mangli",
-    whatsappUrl: getWhatsAppUrl(umkm.whatsapp_number, umkm.name),
+    description: getVisibleText(umkm.description),
+    image: getVillageAssetUrl(umkm.photo_path),
+    villageName: getVisibleText(umkm.villages?.name ?? null),
+    detailHref: `/umkm/${umkm.id}`,
+    mapUrl: getGoogleMapsUrlFromAddress(umkm.address),
+    whatsappUrl: getWhatsAppUrl(umkm.whatsapp_number),
   };
 }
 
@@ -231,21 +259,33 @@ function mapWarungToCatalogItem(warung: Warung): CatalogItem {
   return {
     id: warung.id,
     title: warung.name,
-    category: catalogCopy.warung.category,
     description: getWarungDescription(warung),
-    image: getVillageAssetUrl(warung.photo_path) ?? "/images/culinary.jpg",
-    villageName: warung.villages?.name ?? "Munggangsari",
-    whatsappUrl: getWhatsAppUrl(warung.whatsapp_number, warung.name),
+    image: getVillageAssetUrl(warung.photo_path),
+    villageName: getVisibleText(warung.villages?.name ?? null),
+    detailHref: `/warung/${warung.id}`,
+    mapUrl: getGoogleMapsUrlFromAddress(warung.address),
+    whatsappUrl: getWhatsAppUrl(warung.whatsapp_number),
   };
 }
 
-function getWarungDescription(warung: Warung): string {
+function getWarungDescription(warung: Warung): string | null {
+  const addressText = getAddressDisplayText(warung.address);
   const details = [
     warung.owner_name ? `Pemilik: ${warung.owner_name}` : null,
-    warung.address,
+    addressText,
   ].filter((detail): detail is string => Boolean(detail));
 
-  return details.join(" - ") || "Warung lokal desa dengan hidangan pilihan.";
+  if (details.length > 0) {
+    return details.join(" - ");
+  }
+
+  return null;
+}
+
+function getVisibleText(value: string | null): string | null {
+  const trimmedValue = value?.trim();
+
+  return trimmedValue || null;
 }
 
 function DataMessage({ message }: { message: string }) {

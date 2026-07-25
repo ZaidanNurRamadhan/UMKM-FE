@@ -1,0 +1,10 @@
+
+> fe-umkm@0.1.0 dev
+> next dev --port 3007
+
+▲ Next.js 16.2.10 (Turbopack)
+- Local:         http://localhost:3007
+- Network:       http://10.109.47.54:3007
+- Environments: .env
+✓ Ready in 771ms
+[?25h
