@@ -109,11 +109,7 @@ Jangan menyimpan service role key di frontend.
 | `/admin/sign-in` | Login admin | `app/admin/sign-in/page.tsx` |
 | `/admin/mangli` | Dashboard admin Mangli | `app/admin/mangli/page.tsx` |
 | `/admin/mangli/umkm` | Kelola UMKM Mangli | `app/admin/mangli/umkm/page.tsx` |
-| `/admin/mangli/warung` | Kelola warung Mangli | `app/admin/mangli/warung/page.tsx` |
-| `/admin/mangli/warung/tambah` | Tambah warung Mangli | `app/admin/mangli/warung/tambah/page.tsx` |
-| `/admin/mangli/warung/[id]/edit` | Edit warung Mangli | `app/admin/mangli/warung/[id]/edit/page.tsx` |
 | `/admin/munggangsari` | Dashboard admin Munggangsari | `app/admin/munggangsari/page.tsx` |
-| `/admin/munggangsari/umkm` | Kelola UMKM Munggangsari | `app/admin/munggangsari/umkm/page.tsx` |
 | `/admin/munggangsari/warung` | Kelola warung Munggangsari | `app/admin/munggangsari/warung/page.tsx` |
 | `/admin/munggangsari/warung/tambah` | Tambah warung Munggangsari | `app/admin/munggangsari/warung/tambah/page.tsx` |
 | `/admin/munggangsari/warung/[id]/edit` | Edit warung Munggangsari | `app/admin/munggangsari/warung/[id]/edit/page.tsx` |

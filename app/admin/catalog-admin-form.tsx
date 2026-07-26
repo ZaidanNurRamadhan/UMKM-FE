@@ -7,7 +7,6 @@ import { useMemo, useState, type DragEvent } from "react";
 import { useForm, useWatch, type FieldErrors } from "react-hook-form";
 import { toast } from "sonner";
 import {
-  CameraIcon,
   ImageIcon,
   InfoIcon,
   LocateIcon,
@@ -611,7 +610,7 @@ function UmkmAdminForm({
                     : "text-[#667085]"
                 }`}
               >
-                Format: JPG, PNG, WebP (Max 500KB)
+                Format: JPG, PNG, WebP
               </p>
             </div>
           </div>
@@ -623,6 +622,9 @@ function UmkmAdminForm({
             aria-describedby={errors.photo ? errorId("photo") : undefined}
             onChange={(event) => updatePhoto(event.target.files?.[0] ?? null)}
           />
+          <span className="mt-2 block text-xs font-medium text-[#667085]">
+            Maks. ukuran foto 500 KB.
+          </span>
           <FieldError id={errorId("photo")} message={errors.photo?.message} />
         </label>
       </div>
@@ -687,6 +689,11 @@ function WarungAdminForm({
 
   function updateAddress(address: string) {
     setValue("address", address, { shouldDirty: true, shouldValidate: true });
+  }
+
+  function handlePhotoDrop(event: DragEvent<HTMLDivElement>) {
+    event.preventDefault();
+    updatePhoto(event.dataTransfer.files?.[0] ?? null);
   }
 
   async function onSubmit(values: WarungFormValues) {
@@ -800,14 +807,25 @@ function WarungAdminForm({
 
   const fieldGridClass =
     variant === "panel"
-      ? "mt-4 grid gap-y-5 lg:grid-cols-2 lg:gap-5"
-      : "grid gap-7 lg:grid-cols-2";
+      ? "mt-4 grid gap-y-5 lg:grid-cols-2 lg:gap-x-5 lg:gap-y-3"
+      : "mt-6 grid gap-x-8 gap-y-7 lg:grid-cols-2";
   const compactControlClass =
     variant === "panel" ? "lg:h-10 lg:text-sm" : "";
   const compactTextareaClass =
-    variant === "panel" ? "lg:min-h-[112px] lg:py-2 lg:text-sm lg:leading-5" : "";
-  const photoBoxClass = `mt-2 grid min-h-[220px] cursor-pointer place-items-center border bg-[#e5e5e5] text-[#454c48] ${
-    variant === "panel" ? "lg:min-h-[112px]" : ""
+    variant === "panel"
+      ? "lg:min-h-[112px] lg:py-2 lg:pb-8 lg:text-sm lg:leading-5"
+      : "";
+  const helperTextClass = `mt-3 text-sm font-medium text-[#667085] ${
+    variant === "panel" ? "lg:hidden" : ""
+  }`;
+  const photoLabelClass = `mt-7 block border-t border-[#e3e8e1] pt-6 ${
+    variant === "panel" ? "lg:mt-3 lg:pt-3" : ""
+  }`;
+  const photoTitleClass = `text-xl font-black text-[#202a37] ${
+    variant === "panel" ? "lg:text-base" : ""
+  }`;
+  const uploadBoxClass = `mt-6 grid min-h-[164px] cursor-pointer place-items-center rounded-xl border-2 border-dashed bg-[#fbfcfd] text-[#202a37] transition hover:border-[#168333] hover:bg-[#f6fbf3] ${
+    variant === "panel" ? "lg:mt-3 lg:min-h-[82px]" : ""
   }`;
 
   return (
@@ -816,7 +834,7 @@ function WarungAdminForm({
       className={
         variant === "panel"
           ? "flex h-full flex-col overflow-hidden bg-white"
-          : "mt-10 border border-[#9ee09e] px-6 py-7 md:px-10"
+          : "mt-2 overflow-hidden rounded-xl border border-[#dfe6df] bg-white shadow-[0_22px_60px_rgb(15_23_42/0.08)]"
       }
       noValidate
     >
@@ -824,169 +842,217 @@ function WarungAdminForm({
         className={
           variant === "panel"
             ? "min-h-0 flex-1 overflow-y-auto px-5 py-6 sm:px-7 lg:overflow-hidden lg:px-6 lg:py-4"
-            : undefined
+            : "px-6 py-7 md:px-8 lg:px-8"
         }
       >
-        {variant === "panel" && (
-          <div className="flex items-start gap-3">
-            <InfoIcon className="mt-0.5 h-6 w-6 shrink-0 text-[#0f7a2b]" />
-            <div>
-              <h3 className="text-xl font-black text-[#0f7a2b]">
-                Informasi Warung
-              </h3>
-              <p className="mt-1 text-sm font-medium text-[#6a7280]">
-                Lengkapi detail warung dan kuliner lokal desa.
-              </p>
-            </div>
+        <div className="flex items-start gap-3">
+          <InfoIcon className="mt-0.5 h-6 w-6 shrink-0 text-[#0f7a2b]" />
+          <div>
+            <h3 className="text-xl font-black text-[#0f7a2b]">
+              Informasi Warung
+            </h3>
+            <p className="mt-1 text-sm font-medium text-[#6a7280]">
+              Lengkapi detail warung dan kuliner lokal desa.
+            </p>
           </div>
-        )}
+        </div>
 
         <div className={fieldGridClass}>
-          <div className="space-y-6 lg:space-y-3">
-            <label className="block">
-              <span className="text-xs font-medium uppercase">Nama Warung</span>
-              <input
-                type="text"
-                placeholder="Input teks..."
-                aria-invalid={Boolean(errors.name)}
-                aria-describedby={errors.name ? errorId("name") : undefined}
-                className={`${inputClass(Boolean(errors.name))} ${compactControlClass}`}
-                {...register("name")}
-              />
-              <FieldError
-                id={errorId("name")}
-                message={errors.name?.message}
-              />
-            </label>
+          <label className="block">
+            <span className="text-sm font-black text-[#202a37]">
+              Nama Warung <RequiredMark />
+            </span>
+            <input
+              type="text"
+              placeholder="Contoh: Warung Makan Bu Sari"
+              aria-invalid={Boolean(errors.name)}
+              aria-describedby={errors.name ? errorId("name") : undefined}
+              className={`${inputClass(Boolean(errors.name))} ${compactControlClass}`}
+              {...register("name")}
+            />
+            <p className={helperTextClass}>
+              Masukkan nama warung atau tempat kuliner.
+            </p>
+            <FieldError
+              id={errorId("name")}
+              message={errors.name?.message}
+            />
+          </label>
 
-            <label className="block">
-              <span className="text-xs font-medium uppercase">
-                Nama Pemilik
+          <label className="block">
+            <span className="text-sm font-black text-[#202a37]">
+              Nama Pemilik{" "}
+              <span className="text-sm font-semibold text-[#667085]">
+                (Opsional)
               </span>
-              <input
-                type="text"
-                placeholder="Input nama pemilik..."
-                aria-invalid={Boolean(errors.owner_name)}
-                aria-describedby={
-                  errors.owner_name ? errorId("owner_name") : undefined
-                }
-                className={`${inputClass(Boolean(errors.owner_name))} ${compactControlClass}`}
-                {...register("owner_name")}
-              />
-              <FieldError
-                id={errorId("owner_name")}
-                message={errors.owner_name?.message}
-              />
-            </label>
+            </span>
+            <input
+              type="text"
+              placeholder="Contoh: Siti Aminah"
+              aria-invalid={Boolean(errors.owner_name)}
+              aria-describedby={
+                errors.owner_name ? errorId("owner_name") : undefined
+              }
+              className={`${inputClass(Boolean(errors.owner_name))} ${compactControlClass}`}
+              {...register("owner_name")}
+            />
+            <p className={helperTextClass}>
+              Nama pemilik membantu pelanggan mengenali warung.
+            </p>
+            <FieldError
+              id={errorId("owner_name")}
+              message={errors.owner_name?.message}
+            />
+          </label>
 
-            <label className="block">
-              <span className="text-xs font-medium uppercase">
-                Nomor WhatsApp
+          <label className="block">
+            <span className="text-sm font-black text-[#202a37]">
+              Nomor WhatsApp{" "}
+              <span className="text-sm font-semibold text-[#667085]">
+                (Opsional)
               </span>
+            </span>
+            <div className="relative">
+              <WhatsAppIcon className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#0f9a3d]" />
               <input
                 type="tel"
-                placeholder="08..."
+                placeholder="08xxxxxxxxxxx"
                 aria-invalid={Boolean(errors.whatsapp_number)}
                 aria-describedby={
                   errors.whatsapp_number
                     ? errorId("whatsapp_number")
                     : undefined
                 }
-                className={`${inputClass(Boolean(errors.whatsapp_number))} ${compactControlClass}`}
+                className={`${inputClass(Boolean(errors.whatsapp_number))} pl-12 ${compactControlClass}`}
                 {...register("whatsapp_number")}
               />
-              <FieldError
-                id={errorId("whatsapp_number")}
-                message={errors.whatsapp_number?.message}
-              />
-            </label>
-          </div>
+            </div>
+            <p className={helperTextClass}>
+              Nomor ini dapat ditampilkan ke publik.
+            </p>
+            <FieldError
+              id={errorId("whatsapp_number")}
+              message={errors.whatsapp_number?.message}
+            />
+          </label>
 
-          <div className="space-y-6 lg:space-y-3">
-            <label className="block">
-              <span className="text-xs font-medium uppercase">Foto Warung</span>
-              <div
-                className={`${photoBoxClass} ${
-                  errors.photo ? "border-[#b32323]" : "border-[#7f877f]"
-                }`}
-                style={
-                  previewUrl || existingPhotoUrl
-                    ? {
-                        backgroundImage: `url(${previewUrl ?? existingPhotoUrl})`,
-                        backgroundPosition: "center",
-                        backgroundSize: "cover",
-                      }
-                    : undefined
-                }
-              >
-                {!previewUrl && !existingPhotoUrl && (
-                  <div className="text-center">
-                    <CameraIcon
-                      className={`mx-auto h-10 w-10 ${
-                        variant === "panel" ? "lg:h-7 lg:w-7" : ""
-                      }`}
-                    />
-                    <p className="mt-2 text-xs font-medium uppercase">
-                      Unggah Foto
-                    </p>
-                  </div>
-                )}
-              </div>
-              <input
-                type="file"
-                accept={PHOTO_ACCEPT_ATTRIBUTE}
-                className="sr-only"
-                aria-invalid={Boolean(errors.photo)}
-                aria-describedby={errors.photo ? errorId("photo") : undefined}
-                onChange={(event) =>
-                  updatePhoto(event.target.files?.[0] ?? null)
-                }
-              />
-              <span
-                className={`mt-2 block text-xs italic text-[#555] ${
-                  variant === "panel" ? "lg:hidden" : ""
-                }`}
-              >
-                *Format: JPG, PNG, WebP (Max 500KB)
+          <div className="block">
+            <label
+              htmlFor="warung-address"
+              className="text-sm font-black text-[#202a37]"
+            >
+              Alamat{" "}
+              <span className="text-sm font-semibold text-[#667085]">
+                (Opsional)
               </span>
-              <FieldError
-                id={errorId("photo")}
-                message={errors.photo?.message}
-              />
             </label>
-
-            <div className="block">
-              <label
-                htmlFor="warung-address"
-                className="text-xs font-medium uppercase"
-              >
-                Alamat
-              </label>
+            <div className="relative">
               <textarea
                 id="warung-address"
-                placeholder="Input alamat lengkap..."
-                rows={4}
+                placeholder="Masukkan alamat lengkap warung..."
+                rows={6}
                 maxLength={500}
                 aria-invalid={Boolean(errors.address)}
                 aria-describedby={
                   errors.address ? errorId("address") : undefined
                 }
-                className={`${textareaClass(Boolean(errors.address))} ${compactTextareaClass}`}
+                className={`${textareaClass(Boolean(errors.address))} min-h-[190px] pb-10 ${compactTextareaClass}`}
                 {...register("address")}
               />
-              <AddressLocationTools
-                address={addressValue}
-                compact={variant === "panel"}
-                onAddressChange={updateAddress}
-                village={village}
-              />
-              <FieldError
-                id={errorId("address")}
-                message={errors.address?.message}
-              />
+              <span className="pointer-events-none absolute bottom-4 right-4 text-sm font-medium text-[#687286]">
+                {Math.min(addressValue.length, 500)}/500
+              </span>
             </div>
+            <AddressLocationTools
+              address={addressValue}
+              compact={variant === "panel"}
+              onAddressChange={updateAddress}
+              village={village}
+            />
+            <p className={helperTextClass}>
+              Alamat membantu pelanggan menemukan lokasi warung.
+            </p>
+            <FieldError
+              id={errorId("address")}
+              message={errors.address?.message}
+            />
           </div>
         </div>
+
+        <label className={photoLabelClass}>
+          <span className="flex items-center gap-3">
+            <ImageIcon className="h-6 w-6 text-[#0f7a2b]" />
+            <span>
+              <span className={photoTitleClass}>
+                Foto Warung
+              </span>{" "}
+              <span className="text-sm font-semibold text-[#667085]">
+                (Opsional)
+              </span>
+              <span className={helperTextClass}>
+                Foto yang menarik dapat meningkatkan kepercayaan pelanggan
+              </span>
+            </span>
+          </span>
+          <div
+            className={`${uploadBoxClass} ${
+              errors.photo ? "border-[#d92d20]" : "border-[#d5dbe5]"
+            }`}
+            style={
+              previewUrl || existingPhotoUrl
+                ? {
+                    backgroundImage: `linear-gradient(rgb(15 23 42 / 0.22), rgb(15 23 42 / 0.22)), url(${previewUrl ?? existingPhotoUrl})`,
+                    backgroundPosition: "center",
+                    backgroundSize: "cover",
+                  }
+                : undefined
+            }
+            onDragOver={(event) => event.preventDefault()}
+            onDrop={handlePhotoDrop}
+          >
+            <div className="px-4 text-center">
+              <UploadCloudIcon
+                className={`mx-auto h-11 w-11 text-[#0f7a2b] ${
+                  variant === "panel" ? "lg:h-7 lg:w-7" : ""
+                }`}
+              />
+              <p
+                className={`mt-3 text-sm font-black ${
+                  variant === "panel" ? "lg:mt-1 lg:text-xs" : ""
+                } ${
+                  previewUrl || existingPhotoUrl ? "text-white" : "text-[#202a37]"
+                }`}
+              >
+                {previewUrl || existingPhotoUrl
+                  ? "Klik untuk mengganti foto"
+                  : "Klik untuk unggah atau drag & drop foto di sini"}
+              </p>
+              <p
+                className={`mt-2 text-sm font-medium ${
+                  variant === "panel" ? "lg:hidden" : ""
+                } ${
+                  previewUrl || existingPhotoUrl
+                    ? "text-white/90"
+                    : "text-[#667085]"
+                }`}
+              >
+                Format: JPG, PNG, WebP
+              </p>
+            </div>
+          </div>
+          <input
+            type="file"
+            accept={PHOTO_ACCEPT_ATTRIBUTE}
+            className="sr-only"
+            aria-invalid={Boolean(errors.photo)}
+            aria-describedby={errors.photo ? errorId("photo") : undefined}
+            onChange={(event) => updatePhoto(event.target.files?.[0] ?? null)}
+          />
+          <span className="mt-2 block text-xs font-medium text-[#667085]">
+            Maks. ukuran foto 500 KB.
+          </span>
+          <FieldError id={errorId("photo")} message={errors.photo?.message} />
+        </label>
       </div>
 
       <SubmitActions

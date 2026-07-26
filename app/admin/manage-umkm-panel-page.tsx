@@ -17,24 +17,28 @@ import {
 } from "@/components/icons/admin-icons";
 import { AdminHeader } from "@/components/layout/admin-header";
 import { AdminSidebar } from "@/components/layout/admin-sidebar";
+import { CATALOG_CONFIG } from "@/constants/catalog";
 import { CatalogAdminForm } from "./catalog-admin-form";
 import { DeleteCatalogButton } from "./delete-catalog-button";
 import { RetryButton } from "./retry-button";
-import type { CatalogFormMode } from "@/types/catalog";
-import type { Umkm, VillageSlug } from "@/types/database";
+import type { CatalogFormMode, CatalogKind } from "@/types/catalog";
+import type { Umkm, VillageSlug, Warung } from "@/types/database";
 
-type UmkmPanelRow = {
+export type CatalogPanelData = Umkm | Warung;
+
+export type CatalogPanelRow = {
   id: string;
   name: string;
   category: string;
   whatsappNumber: string | null;
   photoUrl: string | null;
-  data: Umkm;
+  data: CatalogPanelData;
 };
 
 type ManageUmkmPanelPageProps = {
   village: VillageSlug;
-  items: UmkmPanelRow[];
+  kind?: CatalogKind;
+  items: CatalogPanelRow[];
   total: number;
   error: string | null;
 };
@@ -43,13 +47,15 @@ const PAGE_SIZE = 10;
 
 export function ManageUmkmPanelPage({
   village,
+  kind = "umkm",
   items,
   total,
   error,
 }: ManageUmkmPanelPageProps) {
+  const copy = CATALOG_CONFIG[kind];
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [panelMode, setPanelMode] = useState<CatalogFormMode>("create");
-  const [selectedItem, setSelectedItem] = useState<Umkm | null>(null);
+  const [selectedItem, setSelectedItem] = useState<CatalogPanelData | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const normalizedSearch = searchTerm.trim().toLowerCase();
@@ -69,18 +75,23 @@ export function ManageUmkmPanelPage({
   const rangeStart = filteredItems.length === 0 ? 0 : firstIndex + 1;
   const rangeEnd = Math.min(firstIndex + PAGE_SIZE, filteredItems.length);
   const footerTotal = normalizedSearch.length === 0 ? total : filteredItems.length;
+  const shouldShowCatalogNav = kind !== "umkm" || village === "mangli";
   const sidebarItems = [
     {
       href: `/admin/${village}`,
       label: "Dashboard",
       icon: <DashboardIcon className="h-5 w-5" />,
     },
-    {
-      href: `/admin/${village}/umkm`,
-      label: "Kelola UMKM",
-      icon: <StoreIcon className="h-5 w-5" />,
-      active: true,
-    },
+    ...(shouldShowCatalogNav
+      ? [
+          {
+            href: `/admin/${village}/${copy.segment}`,
+            label: copy.manageLabel,
+            icon: <StoreIcon className="h-5 w-5" />,
+            active: true,
+          },
+        ]
+      : []),
   ];
 
   useEffect(() => {
@@ -95,13 +106,13 @@ export function ManageUmkmPanelPage({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  function openCreateUmkmPanel() {
+  function openCreatePanel() {
     setSelectedItem(null);
     setPanelMode("create");
     setIsPanelOpen(true);
   }
 
-  function openEditPanel(item: Umkm) {
+  function openEditPanel(item: CatalogPanelData) {
     setSelectedItem(item);
     setPanelMode("edit");
     setIsPanelOpen(true);
@@ -132,19 +143,19 @@ export function ManageUmkmPanelPage({
             <div className="flex flex-col justify-between gap-5 md:flex-row md:items-center">
               <div>
                 <h2 className="text-4xl font-black text-[#2e6230]">
-                  Kelola UMKM
+                  {copy.listTitle}
                 </h2>
                 <p className="mt-1 text-base font-medium text-[#666]">
-                  Manajemen basis data pelaku usaha mikro, kecil, dan menengah.
+                  {copy.listDescription}
                 </p>
               </div>
               <button
                 type="button"
-                onClick={openCreateUmkmPanel}
+                onClick={openCreatePanel}
                 className="inline-flex h-12 w-fit items-center justify-center gap-2 rounded-lg bg-[#33a4ff] px-6 text-base font-black text-white transition hover:bg-[#198de9]"
               >
                 <PlusCircleIcon className="h-5 w-5" />
-                Tambah UMKM
+                {copy.addLabel}
               </button>
             </div>
 
@@ -158,11 +169,11 @@ export function ManageUmkmPanelPage({
             <section className="mt-8 overflow-hidden rounded-lg border border-[#bfc8bf]">
               <div className="border-b border-[#dfe6df] bg-white px-6 py-4">
                 <input
-                  id="umkm-search"
+                  id={`${kind}-search`}
                   type="search"
                   value={searchTerm}
                   onChange={(event) => handleSearchChange(event.target.value)}
-                  placeholder="Cari UMKM..."
+                  placeholder={`Cari ${copy.totalLabel}...`}
                   className="h-11 w-full rounded-lg border border-[#cfd8cf] px-4 text-sm font-semibold text-[#1e2533] outline-none transition placeholder:text-[#8a938a] focus:border-[#2f662d] focus:ring-2 focus:ring-[#2f662d]/15"
                 />
               </div>
@@ -177,7 +188,7 @@ export function ManageUmkmPanelPage({
                         Foto
                       </th>
                       <th className="px-6 py-4 text-sm font-black">
-                        Nama UMKM
+                        {copy.nameHeader}
                       </th>
                       <th className="w-36 px-6 py-4 text-sm font-black">
                         Kategori
@@ -223,7 +234,7 @@ export function ManageUmkmPanelPage({
                                 <EditIcon className="h-5 w-5" />
                               </button>
                               <DeleteCatalogButton
-                                kind="umkm"
+                                kind={kind}
                                 id={item.id}
                                 name={item.name}
                               />
@@ -238,7 +249,7 @@ export function ManageUmkmPanelPage({
                           className="px-6 py-16 text-center text-sm font-bold text-[#777]"
                         >
                           {items.length === 0
-                            ? "Belum ada data UMKM."
+                            ? copy.empty
                             : "Data tidak ditemukan."}
                         </td>
                       </tr>
@@ -248,7 +259,8 @@ export function ManageUmkmPanelPage({
               </div>
               <div className="flex flex-col gap-4 bg-[#2f662d] px-6 py-4 text-white sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-sm font-medium">
-                  Menampilkan {rangeStart}-{rangeEnd} dari {footerTotal} UMKM
+                  Menampilkan {rangeStart}-{rangeEnd} dari {footerTotal}{" "}
+                  {copy.totalLabel}
                 </p>
                 <div className="flex items-center gap-2">
                   <PaginationButton
@@ -285,7 +297,7 @@ export function ManageUmkmPanelPage({
         onClick={closePanel}
       />
       <aside
-        aria-label={getPanelTitle(panelMode)}
+        aria-label={getPanelTitle(kind, panelMode)}
         className={`fixed right-0 top-0 z-50 flex h-screen w-full max-w-none flex-col bg-white shadow-[-22px_0_50px_rgb(15_23_42/0.2)] transition-transform duration-300 ease-out sm:w-[75vw] ${
           isPanelOpen ? "translate-x-0" : "translate-x-full"
         }`}
@@ -293,10 +305,10 @@ export function ManageUmkmPanelPage({
         <div className="flex items-start justify-between border-b border-[#dfe6df] px-5 py-5 sm:px-7">
           <div>
             <h2 className="text-2xl font-black text-[#202a37]">
-              {getPanelTitle(panelMode)}
+              {getPanelTitle(kind, panelMode)}
             </h2>
             <p className="mt-1 text-sm font-medium text-[#667085]">
-              {getPanelDescription(panelMode)}
+              {getPanelDescription(kind, panelMode)}
             </p>
           </div>
           <button
@@ -311,8 +323,8 @@ export function ManageUmkmPanelPage({
         <div className="min-h-0 flex-1 overflow-y-auto lg:overflow-hidden">
           {isPanelOpen && (
             <CatalogAdminForm
-              key={`${panelMode}-${selectedItem?.id ?? "baru"}`}
-              kind="umkm"
+              key={`${kind}-${panelMode}-${selectedItem?.id ?? "baru"}`}
+              kind={kind}
               mode={panelMode}
               village={village}
               variant="panel"
@@ -327,12 +339,16 @@ export function ManageUmkmPanelPage({
   );
 }
 
-function getPanelTitle(mode: CatalogFormMode): string {
-  return mode === "edit" ? "Edit UMKM" : "Tambah UMKM";
+function getPanelTitle(kind: CatalogKind, mode: CatalogFormMode): string {
+  const copy = CATALOG_CONFIG[kind];
+
+  return mode === "edit" ? copy.titleEdit : copy.titleCreate;
 }
 
-function getPanelDescription(mode: CatalogFormMode): string {
+function getPanelDescription(kind: CatalogKind, mode: CatalogFormMode): string {
+  const label = kind === "warung" ? "warung" : "UMKM";
+
   return mode === "edit"
-    ? "Perbarui data UMKM tanpa berpindah halaman."
-    : "Lengkapi data UMKM tanpa berpindah halaman.";
+    ? `Perbarui data ${label} tanpa berpindah halaman.`
+    : `Lengkapi data ${label} tanpa berpindah halaman.`;
 }

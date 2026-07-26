@@ -381,7 +381,7 @@ export default async function VillagePage({
           id="umkm"
           eyebrow="Produk UMKM Unggulan"
           heading="Produk Lokal Pilihan"
-          ctaHref={isAll ? "#jelajahi" : "/mangli/umkm"}
+          ctaHref= "/mangli/umkm"
           ctaLabel="Lihat Semua Produk"
           emptyMessage="Belum ada data UMKM yang tersedia."
           result={umkmResult}
@@ -430,7 +430,7 @@ export default async function VillagePage({
               {articleResult.data.map((article) => (
                 <StaggerItem key={article.id}>
                   <article className="grid gap-4 overflow-hidden rounded-2xl border border-[#dce4d8] bg-white p-3 shadow-[0_5px_0_rgb(20_29_19/0.25)] md:grid-cols-[0.72fr_1fr] md:gap-5 dark:border-[#354532] dark:bg-[#172017] dark:shadow-black/40">
-                    <div className="relative aspect-[1.55] overflow-hidden rounded-xl bg-[#e8ece4]">
+                    <div className="relative aspect-[1.55] overflow-hidden rounded-xl bg-[#e8ece4] ">
                       <Image
                         src={article.image}
                         alt={article.title}
@@ -444,7 +444,7 @@ export default async function VillagePage({
                       <span className="w-fit rounded-full bg-[#bdeec0] px-3 py-1 text-[0.62rem] font-black uppercase text-[#2e6b35] md:text-xs">
                         {article.category}
                       </span>
-                      <p className="mt-3 line-clamp-4 text-sm font-semibold leading-6 text-[#6f7b70] md:max-w-2xl md:text-base md:leading-7 dark:text-[#c5d0c1]">
+                      <p className="mt-3 xl:line-clamp-9 lg:line-clamp-7 md:line-clamp-4 line-clamp-3 text-sm font-semibold leading-6 text-[#6f7b70] md:max-w-2xl md:text-base md:leading-7 dark:text-[#c5d0c1]">
                         {article.description}
                       </p>
                       <a

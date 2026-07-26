@@ -28,12 +28,16 @@ export default function CatalogFormPage({
       label: "Dashboard",
       icon: <DashboardIcon className="h-5 w-5" />,
     },
-    {
-      href: `/admin/${village}/umkm`,
-      label: "Kelola UMKM",
-      icon: <StoreIcon className="h-5 w-5" />,
-      active: kind === "umkm",
-    },
+    ...(village === "mangli"
+      ? [
+          {
+            href: `/admin/${village}/umkm`,
+            label: "Kelola UMKM",
+            icon: <StoreIcon className="h-5 w-5" />,
+            active: kind === "umkm",
+          },
+        ]
+      : []),
     ...(kind === "warung"
       ? [
           {
