@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import { PublicHeader, VillageSwitch } from "@/components/layout/public-site-shell";
+import { FadeIn } from "@/components/animations/FadeIn";
+import { PublicHeader, VillageSwitch, PublicFooter } from "@/components/layout/public-site-shell";
 
 type ArchiveImage = {
   src: string;
@@ -421,9 +422,9 @@ export function MunggangsariArchiveClient() {
         </article>
       </div>
 
-      <footer className="border-t border-[#d7cfc2] bg-[#ebe6dc] px-5 py-8 text-center text-sm font-bold text-[#5d5548] dark:border-[#2b2c26] dark:bg-[#10110e] dark:text-[#a59b87]">
-        Potensi Alam Air Terjun di Desa Munggangsari
-      </footer>
+      <FadeIn>
+        <PublicFooter />
+      </FadeIn>
 
       {currentImage && activeImage !== null && (
         <div className="fixed inset-0 z-[100] flex flex-col bg-black/94 text-white">

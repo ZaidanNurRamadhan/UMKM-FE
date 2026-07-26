@@ -33,19 +33,19 @@ const heroImage = "/images/mangli-potensi-thumb.webp";
 const fallbackArticles: PotensiArticle[] = [
   {
     id: "fallback-terasering-sawah-1",
-    title: "Menjelajahi Pesona Terasering Sawah Mangli: Warisan Abadi Sang Petani",
+    title: "Menjelajahi UMKM Desa Mangli",
     description:
       "Usaha Mikro, Kecil, dan Menengah (UMKM) merupakan salah satu sektor yang berperan penting dalam meningkatkan perekonomian masyarakat, khususnya di wilayah pedesaan. Artikel ini bertujuan untuk memperkenalkan potensi UMKM yang berkembang di Desa Mangli, Kecamatan Kaliangkrik, Kabupaten Magelang, serta mengidentifikasi tantangan yang dihadapi dalam pengembangannya. Penulisan artikel dilakukan menggunakan pendekatan deskriptif kualitatif melalui observasi lapangan dan wawancara dengan pelaku UMKM. Hasil pembahasan menunjukkan bahwa Desa Mangli memiliki tiga UMKM unggulan, yaitu Taburica, Teh Mangli, dan Krisang Melte Banana Nano. Produk-produk tersebut memanfaatkan hasil pertanian lokal sebagai bahan baku utama dan sebagian besar berkembang melalui pelatihan yang diselenggarakan oleh Dinas Perindustrian dan Perdagangan Kabupaten Magelang, sementara sebagian lainnya tumbuh dari inisiatif masyarakat. Meskipun memiliki potensi yang besar, para pelaku UMKM masih menghadapi berbagai kendala, seperti keterbatasan pemasaran, rendahnya pemanfaatan teknologi digital, keterbatasan bahan baku, biaya distribusi, serta kondisi masyarakat yang lebih memprioritaskan sektor pertanian sebagai mata pencaharian utama. Namun demikian, UMKM Desa Mangli tetap mampu menghasilkan produk berkualitas yang mencerminkan potensi lokal dan kearifan masyarakat setempat. Oleh karena itu, diperlukan dukungan berkelanjutan dari berbagai pihak, baik pemerintah maupun masyarakat, untuk memperluas pemasaran, meningkatkan kapasitas pelaku usaha, serta menjaga keberlanjutan UMKM sebagai salah satu penggerak ekonomi dan identitas Desa Mangli.",
-    articleUrl: "#",
+    articleUrl: "https://medium.com/@artikelofmangli/menjelajahi-umkm-desa-mangli-06adcb117398",
     image: "/images/mangli-article/UMKM.jpeg",
     category: "UMKM",
   },
   {
     id: "fallback-terasering-sawah-2",
-    title: "Menjelajahi Pesona Terasering Sawah Mangli: Warisan Abadi Sang Petani",
+    title: "Mengenal Budaya Bertani di Desa Mangli",
     description:
       "Budaya bertani merupakan bagian dari kehidupan masyarakat agraris yang mencerminkan perpaduan antara pengetahuan, kebiasaan, nilai, dan kearifan lokal yang diwariskan secara turun-temurun. Artikel ini bertujuan untuk memperkenalkan budaya bertani masyarakat Desa Mangli, Kecamatan Kaliangkrik, Kabupaten Magelang, serta menggambarkan keterkaitan antara aktivitas pertanian dengan tradisi yang masih dilestarikan. Penulisan artikel menggunakan pendekatan deskriptif kualitatif melalui observasi lapangan dan wawancara dengan masyarakat setempat. Hasil pembahasan menunjukkan bahwa sebagian besar masyarakat Desa Mangli menggantungkan mata pencaharian pada sektor pertanian hortikultura yang didukung oleh kondisi alam lereng Gunung Sumbing yang subur dan beriklim sejuk. Aktivitas pertanian dilakukan secara manual dengan memanfaatkan pengetahuan yang diwariskan antargenerasi, mulai dari pembibitan, pemeliharaan, hingga panen. Di samping itu, masyarakat masih mempertahankan berbagai tradisi pertanian, seperti pembuatan jenang merah putih sebelum masa tanam dan pemberian sesajen menjelang panen sebagai bentuk rasa syukur, penghormatan kepada leluhur, serta penghormatan terhadap Dewi Sri sebagai simbol kesuburan. Meskipun menghadapi berbagai tantangan, seperti gangguan satwa liar dan keterbatasan dalam pengelolaan pertanian, masyarakat tetap menjaga praktik pertanian yang selaras dengan lingkungan dan nilai budaya setempat. Budaya bertani di Desa Mangli menunjukkan bahwa pertanian tidak hanya berperan sebagai sumber penghidupan, tetapi juga menjadi identitas budaya yang mengandung nilai sosial, spiritual, dan kearifan lokal yang perlu dilestarikan.",
-    articleUrl: "#",
+    articleUrl: "https://medium.com/@artikelofmangli/mengenal-budaya-bertani-di-desa-mangli-586a14ef6f7b",
     image: "/images/mangli-article/Pertanian.jpeg",
     category: "Pertanian",
   },
@@ -120,7 +120,7 @@ export default async function MangliPotensiPage() {
                       <span className="w-fit rounded-full bg-[#bdeec0] px-3 py-1 text-[0.62rem] font-black uppercase text-[#2e6b35] md:text-xs">
                         {article.category}
                       </span>
-                      <p className="mt-3 line-clamp-4 text-sm font-semibold leading-6 text-[#6f7b70] md:max-w-2xl md:text-base md:leading-7 dark:text-[#c5d0c1]">
+                      <p className="mt-3 line-clamp-3 xl:line-clamp-9 text-sm font-semibold leading-6 text-[#6f7b70] md:max-w-2xl md:text-base md:leading-7 dark:text-[#c5d0c1]">
                         {article.description}
                       </p>
                       <a
@@ -145,15 +145,14 @@ export default async function MangliPotensiPage() {
         <div className="absolute inset-0 opacity-10 [background-image:linear-gradient(135deg,#ffffff_1px,transparent_1px)] [background-size:18px_18px]" />
         <FadeIn className="relative mx-auto flex max-w-3xl flex-col items-center gap-6 px-6 text-center">
           <a
-            href="#"
+            href="https://medium.com/@artikelofmangli"
             className="btn-motion focus-ring inline-flex h-12 items-center justify-center gap-3 rounded-xl border border-white px-7 text-sm font-black text-white transition hover:bg-white/10"
           >
             Ikuti Komunitas Artikel Desa Mangli
             <ArrowRightIcon className="motion-arrow h-5 w-5" />
           </a>
           <p className="max-w-xl text-sm font-semibold leading-6 text-white/78">
-            Jadilah yang pertama mengetahui rilis produk UMKM baru, festival
-            desa, dan promo khusus langsung.
+            Jelajahi setiap cerita, temukan setiap potensi, dan kenali Desa Mangli lebih dekat melalui artikel pilihan.
           </p>
         </FadeIn>
       </section>
