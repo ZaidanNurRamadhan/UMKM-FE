@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { focusFirstFieldError } from "@/lib/errors/validation-error";
 import { signInAdmin } from "@/services/auth.service";
 import { getCurrentProfile } from "@/services/profile.service";
+import { setAdminSessionCookie } from "@/lib/admin-session";
 import type { LoginFormValues } from "@/validations/auth.schema";
 import { loginFormSchema } from "@/validations/auth.schema";
 
@@ -66,9 +67,14 @@ export function SignInForm() {
     toast.success(result.message);
     const { profile, village } = profileResult.data;
 
-    router.push(
-      profile.role === "admin" && village ? `/admin/${village.slug}` : "/",
-    );
+    if (profile.role === "admin" && village) {
+      setAdminSessionCookie({ role: "admin", villageSlug: village.slug });
+      router.push(`/admin/${village.slug}`);
+      router.refresh();
+      return;
+    }
+
+    router.push("/");
     router.refresh();
   }
 

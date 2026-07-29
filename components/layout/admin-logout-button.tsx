@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { LogOutIcon } from "@/components/icons/admin-icons";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { signOutAdmin } from "@/services/auth.service";
+import { removeAdminSessionCookie } from "@/lib/admin-session";
 
 type AdminLogoutButtonProps = {
   className: string;
@@ -33,6 +34,7 @@ export function AdminLogoutButton({
       return;
     }
 
+    removeAdminSessionCookie();
     router.replace("/admin/sign-in");
     router.refresh();
   }

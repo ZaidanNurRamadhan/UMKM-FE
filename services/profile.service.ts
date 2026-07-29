@@ -131,6 +131,12 @@ export async function getCurrentAdminProfile(): Promise<
   };
 }
 
+export async function requireAdminSession(): Promise<
+  ServiceResult<CurrentAdminProfile>
+> {
+  return getCurrentAdminProfile();
+}
+
 export async function getCurrentMangliAdminProfile(): Promise<
   ServiceResult<CurrentAdminProfile>
 > {
