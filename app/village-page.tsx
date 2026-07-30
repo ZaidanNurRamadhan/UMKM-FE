@@ -294,21 +294,21 @@ export default async function VillagePage({
               ))}
             </StaggerContainer>
           </FadeIn>
-          <FadeIn direction="right" className="relative mx-auto aspect-[0.86] w-full max-w-[560px] overflow-hidden rounded-[18px] min-[1025px]:hidden">
+          <FadeIn direction="right" className="relative mx-auto aspect-[2/1] w-full max-w-[560px] overflow-hidden rounded-[18px] min-[1025px]:hidden">
             <Image
-              src="/images/digital.png"
+              src="/images/myteam.jpeg"
               alt="Tim desa digital"
               fill
-              className="object-cover"
+              className="object-contain"
               sizes="(max-width: 1024px) calc(100vw - 80px), 560px"
             />
           </FadeIn>
           <FadeIn direction="right" className="relative hidden aspect-[1.35] overflow-hidden rounded-lg min-[1025px]:block">
             <Image
-              src="/images/digital.png"
+              src="/images/myteam.jpeg"
               alt="Kegiatan budaya masyarakat desa"
               fill
-              className="object-cover"
+              className="object-contain"
               sizes="(min-width: 768px) 42vw, 100vw"
             />
           </FadeIn>
