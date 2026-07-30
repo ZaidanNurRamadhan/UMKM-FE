@@ -57,6 +57,7 @@ export type UpdateUmkmInput = Partial<CreateUmkmInput> & {
 };
 
 export type CreateWarungInput = {
+  village_id: string;
   name: string;
   owner_name: string | null;
   address: string | null;
