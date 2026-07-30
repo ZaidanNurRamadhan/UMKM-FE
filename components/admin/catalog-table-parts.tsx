@@ -9,10 +9,9 @@ export function PhotoCell({ src, alt }: { src: string | null; alt: string }) {
       </div>
     );
   }
-
   return (
     <div className="relative h-12 w-12 overflow-hidden rounded border border-[#d9ded9] bg-[#f8f8f8]">
-      <Image src={src} alt={alt} fill className="object-cover" sizes="48px" />
+      <Image src={src} alt={alt} loader={({ src }) => src} fill className="object-cover" sizes="48px" />
     </div>
   );
 }

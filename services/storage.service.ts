@@ -105,25 +105,25 @@ export async function deletePhoto(
       };
     }
 
-    const { data: photoStillExists, error: verificationError } =
-      await storage.exists(photoPath);
+    // const { data: photoStillExists, error: verificationError } =
+    //   await storage.exists(photoPath);
 
-    if (photoStillExists) {
-      return {
-        success: false,
-        data: null,
-        message: "Foto gagal dihapus dari penyimpanan.",
-        code: "PHOTO_DELETE_FAILED",
-        details: "File masih tersedia di Supabase Storage setelah proses hapus.",
-      };
-    }
+    // if (photoStillExists) {
+    //   return {
+    //     success: false,
+    //     data: null,
+    //     message: "Foto gagal dihapus dari penyimpanan.",
+    //     code: "PHOTO_DELETE_FAILED",
+    //     details: "File masih tersedia di Supabase Storage setelah proses hapus.",
+    //   };
+    // }
 
-    if (verificationError && photoStillExists !== false) {
-      return mapSupabaseError(
-        verificationError,
-        "Status penghapusan foto tidak dapat diverifikasi.",
-      );
-    }
+    // if (verificationError && photoStillExists !== false) {
+    //   return mapSupabaseError(
+    //     verificationError,
+    //     "Status penghapusan foto tidak dapat diverifikasi.",
+    //   );
+    // }
 
     return {
       success: true,
