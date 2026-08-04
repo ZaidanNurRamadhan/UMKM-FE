@@ -126,7 +126,7 @@ export function CatalogDetailPage({ detail }: CatalogDetailPageProps) {
       </section>
 
       <FadeIn>
-        <PublicFooter route={villageRoute} />
+        <PublicFooter/>
       </FadeIn>
     </main>
   );
