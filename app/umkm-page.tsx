@@ -209,7 +209,7 @@ export default async function UmkmPage({
       </section>
 
       <FadeIn>
-        <PublicFooter route={route} />
+        <PublicFooter />
       </FadeIn>
     </main>
   );

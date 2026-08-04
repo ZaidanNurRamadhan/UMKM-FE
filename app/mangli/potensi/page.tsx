@@ -158,7 +158,7 @@ export default async function MangliPotensiPage() {
       </section>
 
       <FadeIn>
-        <PublicFooter route="/mangli" />
+        <PublicFooter />
       </FadeIn>
     </main>
   );
