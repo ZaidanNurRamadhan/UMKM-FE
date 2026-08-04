@@ -175,65 +175,90 @@ export function VillageSwitch({ village }: { village: PublicVillage }) {
   );
 }
 
-export function PublicFooter({ route }: { route?: string }) {
-  const aboutHref = route ? `${route}#potensi` : "#potensi";
-  const contactHref = route ? `${route}/umkm` : "#umkm";
-
+export function PublicFooter() {
   return (
     <footer className="bg-white pt-7 transition-colors md:pt-12 dark:bg-[#10150f]">
-      <div className="grid divide-y divide-[#b8c0b5] px-4 pb-8 md:grid-cols-[1.4fr_0.65fr_0.7fr_1fr] md:gap-10 md:divide-y-0 md:px-[40px] md:pb-16">
+      <div className="grid divide-y divide-[#b8c0b5] px-4 pb-8 md:grid-cols-[1.4fr_0.85fr_1fr] md:gap-10 md:divide-y-0 md:px-[40px] md:pb-16">
+        {/* Kolom 1: Logo & Deskripsi */}
         <div className="pb-7 md:pb-0">
           <Logo />
+
           <p className="mt-5 max-w-sm text-sm font-semibold leading-5 text-[#334135] md:mt-6 md:text-base md:leading-7 dark:text-[#d4decf]">
             Portal resmi katalog potensi Desa Mangli & Munggangsari.
             Menghubungkan tradisi dengan inovasi digital.
           </p>
-          <div className="mt-5 flex gap-3 text-[#20b15a] md:mt-6 md:gap-4">
-            <InstagramIcon className="social-motion h-6 w-6 md:h-5 md:w-5" />
-            <FacebookIcon className="social-motion h-6 w-6 md:h-5 md:w-5" />
-            <YoutubeIcon className="social-motion h-6 w-6 md:h-5 md:w-5" />
-            <WhatsAppIcon className="social-motion h-6 w-6 md:h-5 md:w-5" />
-          </div>
         </div>
+
+        {/* Kolom 2: Hubungi Admin */}
         <div className="py-7 md:py-0">
-          <h3 className="text-xl font-black text-[#2e6b35] dark:text-[#8bc98c]">Tautan Cepat</h3>
-          <ul className="mt-4 space-y-3 text-sm font-bold text-[#2e6b35] md:mt-5 dark:text-[#a9d8aa]">
+          <h3 className="text-xl font-black text-[#2e6b35] dark:text-[#8bc98c]">
+            Hubungi Admin
+          </h3>
+
+          <p className="mt-3 text-xs font-semibold leading-5 text-[#9aa39a] md:text-sm dark:text-[#b2bdae]">
+            Ingin mendaftarkan Produk UMKM ke website? Hubungi admin desa di
+            bawah ini.
+          </p>
+
+          <ul className="mt-5 space-y-4">
             <li>
-              <Link href={aboutHref} className="footer-link">Tentang Kami</Link>
+              <a
+                href="https://wa.me/62812xxxxxxx"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer-link inline-flex items-center gap-2"
+              >
+                <WhatsAppIcon className="h-4 w-4 text-[#20b15a]" />
+                <span>Admin Munggangsari</span>
+              </a>
             </li>
+
             <li>
-              <Link href={contactHref} className="footer-link">Kontak</Link>
+              <a
+                href="https://wa.me/6287703664155"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer-link inline-flex items-center gap-2"
+              >
+                <WhatsAppIcon className="h-4 w-4 text-[#20b15a]" />
+                <span>Admin Mangli</span>
+              </a>
             </li>
           </ul>
         </div>
-        <div className="py-7 md:py-0">
-          <h3 className="text-xl font-black text-[#2e6b35] dark:text-[#8bc98c]">Informasi</h3>
-          <ul className="mt-4 space-y-3 text-sm font-bold text-[#2e6b35] md:mt-5 dark:text-[#a9d8aa]">
-            <li>
-              <a href="#" className="footer-link">Kebijakan Privasi</a>
-            </li>
-          </ul>
-        </div>
+
+        {/* Kolom 3: Lokasi Kantor */}
         <div className="pt-7 md:pt-0">
-          <h3 className="text-xl font-black text-[#2e6b35] dark:text-[#8bc98c]">Lokasi Kantor</h3>
+          <h3 className="text-xl font-black text-[#2e6b35] dark:text-[#8bc98c]">
+            Lokasi Kantor
+          </h3>
+
           <div className="mt-4 space-y-5 text-sm font-semibold leading-5 text-[#9aa39a] md:mt-5 md:space-y-7 md:leading-6 dark:text-[#b2bdae]">
             <div>
-              <p className="font-black text-[#2e6b35] dark:text-[#8bc98c]">Balai Desa Munggangsari</p>
+              <p className="font-black text-[#2e6b35] dark:text-[#8bc98c]">
+                Balai Desa Munggangsari
+              </p>
+
               <p>
-                H464+R3H, Kwayuhan, Munggangsari, Kec. Kaliangkrik, Kabupaten
-                Magelang, Jawa Tengah 56153
+                H464+R3H, Kwayuhan, Munggangsari, Kec. Kaliangkrik,
+                Kabupaten Magelang, Jawa Tengah 56153
               </p>
             </div>
+
             <div>
-              <p className="font-black text-[#2e6b35] dark:text-[#8bc98c]">Balai Desa Mangli</p>
+              <p className="font-black text-[#2e6b35] dark:text-[#8bc98c]">
+                Balai Desa Mangli
+              </p>
+
               <p>
-                HQG3+666, Mangli, Kec. Kaliangkrik, Kabupaten Magelang, Jawa
-                Tengah 56153
+                HQG3+666, Mangli, Kec. Kaliangkrik,
+                Kabupaten Magelang, Jawa Tengah 56153
               </p>
             </div>
           </div>
         </div>
       </div>
+
       <div className="bg-[#23672d] py-3 text-center text-[0.58rem] font-bold text-white md:border-t md:border-[#edf0eb] md:bg-transparent md:py-6 md:text-xs md:text-[#2e6b35] md:dark:border-[#273425] md:dark:text-[#8bc98c]">
         Dikembangkan oleh Tim KKN-PPM UGM Kaliangkrik 2026
       </div>

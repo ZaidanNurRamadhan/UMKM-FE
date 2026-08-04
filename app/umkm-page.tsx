@@ -140,8 +140,8 @@ export default async function UmkmPage({
                       aria-label={`Lihat detail ${product.title}`}
                       className="absolute inset-0 z-10 rounded-lg focus:outline-none focus-visible:ring-4 focus-visible:ring-[#2e6b35]/25 md:rounded-[22px]"
                     />
-                    {product.image && (
-                      <div className="relative aspect-[1.05] overflow-hidden md:aspect-[1.18]">
+                    <div className="relative aspect-[1.05] overflow-hidden bg-[#f0f2ee] md:aspect-[1.18] dark:bg-[#1c261b]">
+                      {product.image ? (
                         <Image
                           src={product.image}
                           alt={product.title}
@@ -150,8 +150,12 @@ export default async function UmkmPage({
                           className="object-cover transition duration-500 group-hover:scale-[1.08]"
                           sizes="(min-width: 1024px) 20vw, (min-width: 640px) 50vw, 100vw"
                         />
-                      </div>
-                    )}
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-[#b7c0b3] dark:text-[#4a5949]">
+                          <PinIcon className="h-8 w-8 opacity-40" />
+                        </div>
+                      )}
+                    </div>
                     <div className="flex min-h-[118px] flex-col p-2 md:min-h-[220px] md:p-5">
                       <h3 className="min-h-8 text-[0.62rem] font-black leading-3 md:min-h-12 md:text-xl md:leading-6">
                         {product.title}
