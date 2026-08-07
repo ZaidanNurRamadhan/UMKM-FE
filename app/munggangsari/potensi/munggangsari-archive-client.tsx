@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { FadeIn } from "@/components/animations/FadeIn";
 import { PublicHeader, VillageSwitch, PublicFooter } from "@/components/layout/public-site-shell";
+import { culturalArchives, type CulturalArchiveItem } from "@/data/culturalArchives";
 
 type ArchiveImage = {
   src: string;
@@ -302,13 +303,13 @@ export function MunggangsariArchiveClient() {
         <div className="relative flex min-h-[calc(100vh-4rem)] flex-col justify-end px-6 pb-14 pt-28 md:px-[40px] lg:min-h-[calc(100vh-6rem)] lg:pb-20">
           <div className="max-w-[820px]">
             <p className="w-fit rounded-full border border-white/24 bg-white/10 px-4 py-2 text-[0.68rem] font-black uppercase tracking-[0.2em] text-white/82 backdrop-blur">
-              Potensi Alam Air Terjun di Desa Munggangsari
+              Potensi Alam & Budaya Desa Munggangsari
             </p>
             <h1 className="mt-5 text-[2.75rem] font-black leading-[0.92] tracking-tight md:text-7xl lg:text-8xl">
-              Potensi Alam Air Terjun di Desa Munggangsari
+              Potensi Alam & Budaya Desa Munggangsari
             </h1>
             <p className="mt-6 max-w-2xl text-sm font-semibold leading-7 text-white/82 md:text-lg md:leading-9">
-              Pada ketinggian lebih dari 1200 mdpl di lereng Gunung Sumbing, sebuah desa berdiri dengan beragam kekayaan alam dan budayanya.
+              Lebih dari sekadar air terjun, Munggangsari menyimpan tradisi Merti Dusun yang hidup sebagai bagian dari potensi budaya dan ekonomi masyarakat.
             </p>
             <p className="mt-7 text-xs font-black uppercase tracking-[0.22em] text-white/58">
               10 halaman · 18 gambar
@@ -419,6 +420,8 @@ export function MunggangsariArchiveClient() {
               </figure>
             </div>
           </section>
+
+          <CulturalArchiveSection archive={culturalArchives[0]} />
         </article>
       </div>
 
@@ -533,6 +536,64 @@ function ComparisonPair({
         {caption}
       </figcaption>
     </figure>
+  );
+}
+
+function CulturalArchiveSection({ archive }: { archive: CulturalArchiveItem }) {
+  return (
+    <section id="arsip-budaya" className="scroll-mt-24 py-10 md:py-16">
+      <h2 className="text-3xl font-black leading-tight tracking-[-0.01em] text-[#233821] md:text-5xl dark:text-[#e9e0d1]">
+        Arsip Budaya
+      </h2>
+      <div className="mt-8 space-y-8 rounded-[2rem] border border-[#d5d2c7] bg-white shadow-[0_18px_60px_rgb(31_29_24/0.12)] p-8 dark:border-[#39362f] dark:bg-[#101510] md:p-12">
+        <p className="text-[1.05rem] font-medium leading-9 text-[#3f3a31] md:text-[1.16rem] md:leading-10 dark:text-[#d5cbb9]">
+          {archive.description}
+        </p>
+
+        <div className="space-y-6">
+          {archive.documents.map((document) => (
+            <article
+              key={document.language}
+              className="rounded-3xl border border-[#d5d2c7] bg-[#f7f3ea] p-6 shadow-[0_10px_30px_rgb(31_29_24/0.08)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_40px_rgb(31_29_24/0.12)] dark:border-[#334330] dark:bg-[#161912]"
+            >
+              <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+                <div className="space-y-3">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-[#2e6b35] bg-[#edf3eb] px-3 py-1 text-[0.65rem] font-black uppercase tracking-[0.2em] text-[#2e6b35] dark:border-[#8bc98c] dark:bg-[#11220f] dark:text-[#b8e0ba]">
+                      📄 PDF
+                    </span>
+                    <span className="text-sm font-semibold text-[#55644d] dark:text-[#b2bdae]">
+                      {document.language}
+                    </span>
+                  </div>
+                  <p className="text-sm leading-6 text-[#6b6b5f] dark:text-[#a59b87]">
+                    Ukuran: {document.size}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-3">
+                  <a
+                    href={document.previewUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex h-11 items-center justify-center rounded-full border border-[#2e6b35] bg-white px-5 text-sm font-black text-[#2e6b35] transition hover:bg-[#edf3eb] dark:border-[#8bc98c] dark:bg-[#11220f] dark:text-[#8bc98c] dark:hover:bg-white/10"
+                  >
+                    Lihat Dokumen
+                  </a>
+                  <a
+                    href={document.downloadUrl}
+                    download
+                    className="inline-flex h-11 items-center justify-center rounded-full border border-[#2e6b35] bg-[#2e6b35] px-5 text-sm font-black text-white transition hover:bg-[#25572b] dark:bg-[#8bc98c] dark:text-[#10150f] dark:hover:bg-[#6aa66b]"
+                  >
+                    Download
+                  </a>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
